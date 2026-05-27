@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>presence.js — live demo</title>
+  <script src="presence.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      color: #00ff88;
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; }
+
+    h1 {
+      font-size: 13px;
+      letter-spacing: 6px;
+      color: #00ff88;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .sub {
+      font-size: 12px;
+      color: #2a6644;
+      letter-spacing: 3px;
+      margin-bottom: 48px;
+    }
+
+    .profile-block {
+      border: 1px solid #00ff8822;
+      padding: 32px;
+      margin-bottom: 32px;
+      background: #00ff8805;
+    }
+    .profile-label {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: #2a6644;
+      margin-bottom: 12px;
+    }
+    .profile-value {
+      font-size: 32px;
+      letter-spacing: 4px;
+      color: #00ff88;
+      margin-bottom: 8px;
+    }
+    .profile-desc {
+      font-size: 12px;
+      color: #2a6644;
+      line-height: 1.8;
+      margin-top: 16px;
+    }
+
+    .signals-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: #00ff8811;
+      border: 1px solid #00ff8822;
+      margin-bottom: 32px;
+    }
+    .signal-cell {
+      background: #000;
+      padding: 16px 20px;
+    }
+    .signal-key {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #2a6644;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .signal-val {
+      font-size: 13px;
+      color: #00ff88;
+      word-break: break-all;
+    }
+
+    .verify-block {
+      border: 1px solid #00ff8822;
+      padding: 24px 28px;
+      margin-bottom: 32px;
+    }
+    .verify-title {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: #2a6644;
+      margin-bottom: 16px;
+    }
+    .verify-block p {
+      font-size: 12px;
+      color: #2a6644;
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+    code {
+      display: block;
+      background: #0a0a0a;
+      border: 1px solid #00ff8822;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #00ff88;
+      margin: 8px 0 16px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .footer {
+      font-size: 11px;
+      color: #2a6644;
+      letter-spacing: 2px;
+      border-top: 1px solid #00ff8811;
+      padding-top: 24px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .footer a { color: #00ff8866; text-decoration: none; }
+    .footer a:hover { color: #00ff88; }
+
+    .boot-badge {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #000;
+      background: #00ff88;
+      padding: 4px 10px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .signals-grid { grid-template-columns: 1fr; }
+      .profile-value { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>presence.js</h1>
+  <div class="sub">// LIVE SIGNAL DETECTION — YOUR BROWSER, RIGHT NOW</div>
+
+  <div class="profile-block">
+    <div class="profile-label">// DETECTED PROFILE</div>
+    <div class="profile-value" id="profile">—</div>
+    <div class="profile-label">// SOURCE</div>
+    <div class="signal-val" id="source" style="font-size:14px;letter-spacing:2px;">—</div>
+    <div class="profile-desc" id="profile-desc"></div>
+    <div class="boot-badge" id="boot-badge"></div>
+  </div>
+
+  <div class="signals-grid" id="signals-grid"></div>
+
+  <div class="verify-block">
+    <div class="verify-title">// VERIFY IT YOURSELF</div>
+    <p>No network calls. Open DevTools console and run:</p>
+    <code>Presence.debug()</code>
+    <p>Confirm zero network calls:</p>
+    <code>grep -n "fetch\|XMLHttpRequest\|sendBeacon" presence.js</code>
+    <p>Check what localStorage keys were written:</p>
+    <code>localStorage.getItem('_ptv') // total visits
+localStorage.getItem('_pfs') // first seen
+localStorage.getItem('_pls') // last seen</code>
+    <p>Reset and simulate a new visitor:</p>
+    <code>['_ptv','_pfs','_pls'].forEach(k=>localStorage.removeItem(k));
+sessionStorage.removeItem('_pv');
+location.reload();</code>
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/tkrojzl-cyber/presence" target="_blank">→ github.com/tkrojzl-cyber/presence</a>
+    <a href="https://superchargebuilds.pro" target="_blank">→ brainiac ltd</a>
+  </div>
+
+</div>
+
+<script>
+  var PROFILE_DESCS = {
+    researcher: 'You arrived from an academic or professional network. Presence detected a research-oriented referral signal.',
+    founder:    'You arrived from a founder community — Product Hunt, Hacker News, Twitter/X, or IndieHackers.',
+    developer:  'You arrived from a developer source — GitHub, Stack Overflow, GitLab, dev.to, or a technical subreddit.',
+    deep_work:  'Direct traffic before 08:00, or a high-intensity returning visitor. Presence flagged this as intentional.',
+    default:    'Direct or unclassified traffic. No referral signal matched a known profile.',
+  };
+
+  var s = Presence.signals;
+
+  document.getElementById('profile').textContent      = s.profile.toUpperCase().replace('_', ' ');
+  document.getElementById('source').textContent       = s.source;
+  document.getElementById('profile-desc').textContent = PROFILE_DESCS[s.profile] || '';
+  document.getElementById('boot-badge').textContent   = 'DETECTED IN ' + s.bootMs + 'ms';
+
+  var SHOW = [
+    ['timeWindow',     s.timeWindow],
+    ['dayContext',     s.dayContext],
+    ['device',        s.device],
+    ['market',        s.market],
+    ['language',      s.lang],
+    ['timezone',      s.timezone || 'unavailable'],
+    ['hardware',      s.hardwareProfile + ' (' + s.cores + ' cores)'],
+    ['intensity',     s.intensity],
+    ['isReturning',   String(s.isReturning)],
+    ['totalVisits',   String(s.totalVisits)],
+    ['sessionVisits', String(s.sessionVisits)],
+    ['daysSinceFirst',String(s.daysSinceFirst) + ' days'],
+    ['referrer',      s.referrer || 'none'],
+    ['bootMs',        s.bootMs + 'ms'],
+  ];
+
+  var grid = document.getElementById('signals-grid');
+  SHOW.forEach(function(pair) {
+    var cell = document.createElement('div');
+    cell.className = 'signal-cell';
+    cell.innerHTML =
+      '<div class="signal-key">' + pair[0] + '</div>' +
+      '<div class="signal-val">' + pair[1] + '</div>';
+    grid.appendChild(cell);
+  });
+</script>
+</body>
+</html>
