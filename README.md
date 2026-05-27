@@ -8,7 +8,7 @@
 
 **Zero-dependency visitor intelligence layer. No cookies. No backend. No network calls.**
 
-Drop one script tag into your page. Presence reads ten browser-native signals and classifies every visitor into a profile — synchronously, before your first component renders.
+Drop one script tag into your page. Presence reads ten browser-native signals and classifies every visitor into a profile, synchronously, before your first component renders.
 
 Responsive design for humans, not devices.
 
@@ -132,7 +132,7 @@ Presence.showFor('#cta-calendly', ['founder', 'researcher']);
 
 ```js
 Presence.when('developer', function (signals) {
-  console.log('Dev from', signals.source, '— cores:', signals.cores);
+  console.log('Dev from', signals.source, '- cores:', signals.cores);
 });
 
 Presence.when(['founder', 'researcher'], function () {
@@ -193,7 +193,7 @@ Path shortcuts: `/f` forces founder, `/r` researcher, `/d` developer.
 
 ```js
 Presence.debug();
-// Prints full signal table to console — remove before production
+// Prints full signal table to console - remove before production
 ```
 
 ---
@@ -218,7 +218,7 @@ Presence.get('bootMs');
 ```
 
 On any modern machine this returns 0 or 1. The detection runs synchronously
-in a single pass — one loop through the signals, no async, no I/O.
+in a single pass. One loop through the signals, no async, no I/O.
 
 To watch it yourself:
 
@@ -227,13 +227,13 @@ To watch it yourself:
 3. Type: `Presence.get('bootMs')`
 4. Type: `Presence.debug()` to see the full signal table
 
-To confirm it yourself — open any page with presence.js and run in console:
+To confirm it yourself: open any page with presence.js and run in console:
 
 ```js
 console.log('Boot time:', Presence.get('bootMs'), 'ms');
 ```
 
-`bootMs` is stamped at script execution time — before your console opens.
+`bootMs` is stamped at script execution time, before your console opens.
 It is a measurement, not a promise. On any modern machine it will be 0 or 1.
 
 ### No cookies written
@@ -243,7 +243,7 @@ It is a measurement, not a promise. On any modern machine it will be 0 or 1.
 document.cookie; // note the value
 
 // After loading presence.js:
-document.cookie; // identical — presence.js never touches document.cookie
+document.cookie; // identical - presence.js never touches document.cookie
 ```
 
 ### What localStorage keys presence.js writes
