@@ -3,7 +3,7 @@
  * Zero-dependency visitor intelligence layer.
  * No cookies. No backend. No network calls.
  *
- * Built by Brainiac Ltd — https://superchargebuilds.pro
+ * Built by Brainiac Ltd - https://superchargebuilds.pro
  * MIT License
  */
 
