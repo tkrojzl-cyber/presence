@@ -6,7 +6,7 @@
   <title>presence.js - live demo</title>
   <script>
 /**
- * presence.js v2.1.0
+ * presence.js v3.0.0
  * Zero-dependency visitor intelligence layer.
  * No cookies. No backend. No network calls.
  *
@@ -15,7 +15,7 @@
  *   Axis 2 - Cognitive Mode:   exploring / evaluating / executing
  *   Axis 3 - Trust Level:      stranger / acquaintance / insider
  *
- * Built by Brainiac Ltd - https://superchargebuilds.pro
+ * Built by Brainiac Ltd - https://archon-stack.online
  * MIT License
  */
 
@@ -84,11 +84,9 @@
     // Research basis:
     // - Cores alone is a weak proxy. Buckets cap at 8 for privacy reasons (spec).
     // - deviceMemory is the strongest single hardware signal. Correlates directly
-    //   with RAM, which predicts whether someone is on a budget device or a workstation.
     // - devicePixelRatio separates retina/4K displays (prosumer/developer) from
     //   standard displays. 2x+ = Apple, high-end Windows. 1x = budget/office.
     // - Network quality (navigator.connection) reveals infrastructure context.
-    //   4g/wifi with low rtt = urban professional. slow-2g/3g = mobile-first market.
     // - Dark mode preference correlates with developer/power user identity.
     //   Research: ~80% of developers use dark mode vs ~35% of general users.
     //   (JetBrains Developer Survey 2023, Stack Overflow Developer Survey 2024)
@@ -100,9 +98,7 @@
     //   production/creation contexts from consumption contexts.
     // - Screen area (width x height) is a stronger signal than width alone.
     //   >2M pixels = large external monitor = workstation = professional context.
-    // - Color depth: 30bit+ = pro display pipeline. 24bit = standard. <24 = low end.
     // - Timezone UTC offset precision: non-round offsets (UTC+5:30, UTC+5:45)
-    //   identify specific emerging markets (India, Nepal) with distinct behaviour patterns.
 
     // Raw capability signals
     var cores       = navigator.hardwareConcurrency || 0;
@@ -152,7 +148,6 @@
     // â”€â”€ CAPABILITY SCORE â€” 0 to 100 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     //
     // Weighted composite. Weights derived from signal reliability and
-    // psychological/market research on what actually predicts technical sophistication:
     //
     // deviceMemory    (25pts) â€” strongest single predictor of device class
     // cores           (15pts) â€” useful but capped at 8 by spec (privacy noise)
@@ -172,7 +167,6 @@
     else if (deviceMemory >= 2) capScore += 18;
     else if (deviceMemory >= 1) capScore += 15;
     else if (deviceMemory > 0)  capScore += 8;
-    // if deviceMemory unavailable (Firefox, Safari) â€” neutral, score from other signals
 
     // cores: capped at 8 by spec, so max signal is 8+
     if      (cores >= 8) capScore += 15;
@@ -216,7 +210,6 @@
 
     // â”€â”€ CAPABILITY TIER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Maps to psychological segment:
-    // SOVEREIGN  (75-100): Pro workstation. Dark mode. Retina. High RAM. Fine pointer.
     //                       Likely: developer, designer, researcher, power user.
     //                       Serve: density, depth, no hand-holding.
     // CAPABLE    (45-74):  Mid-range professional. Decent RAM. Standard display.
@@ -526,8 +519,54 @@
   // â”€â”€ PUBLIC API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   var signals = detect();
 
+
+  // â”€â”€ SESSION CERTIFICATE GENERATOR v3.0.0 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  async function generateCertificate(signals) {
+    var issued    = new Date().toISOString();
+    var sessionId = Math.abs(
+      Math.round((signals.bootMs || 0) * 1000) ^ (new Date().getTime() % 0xFFFFFF)
+    ).toString(16).padStart(16,'0').slice(0,16);
+    var cogLoad = (signals.capabilityScore||0)>=75?'MINIMAL':(signals.capabilityScore||0)>=50?'LOW':(signals.capabilityScore||0)>=35?'MODERATE':(signals.capabilityScore||0)>=20?'HIGH':'SEVERE';
+    var canonical = ['PRESENCE-SESSION-CERTIFICATE-v3',issued,sessionId,signals.intentState||'unknown',signals.actionTag||'unknown',signals.capabilityTier||'unknown',String(signals.capabilityScore||0),(signals.bootMs||0).toFixed(2)+'ms',signals.source||'unknown',signals.device||'unknown',signals.market||'unknown',signals.timeWindow||'unknown',String(signals.prefersDark?'true':'false'),String(signals.cores||0),(signals.pixelRatio||1.0).toFixed(1)].join('|');
+    var hashHex='unavailable';
+    try {
+      var buf=new TextEncoder().encode(canonical);
+      var hbuf=await crypto.subtle.digest('SHA-256',buf);
+      hashHex='sha256:'+Array.from(new Uint8Array(hbuf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('').slice(0,48);
+    } catch(e) {
+      var h=0; for(var i=0;i<canonical.length;i++){h=(Math.imul(31,h)+canonical.charCodeAt(i))|0;}
+      hashHex='hash:'+Math.abs(h).toString(16).padStart(16,'0')+sessionId;
+    }
+    return {issued:issued,sessionId:sessionId,intentState:signals.intentState||'unknown',actionTag:signals.actionTag||'unknown',capTier:signals.capabilityTier||'unknown',capScore:signals.capabilityScore||0,cogLoad:cogLoad,bootMs:(signals.bootMs||0).toFixed(2)+'ms',source:signals.source||'unknown',device:signals.device||'unknown',market:signals.market||'unknown',timeWindow:signals.timeWindow||'unknown',prefersDark:signals.prefersDark?'true':'false',cores:signals.cores||0,pixelRatio:(signals.pixelRatio||1.0).toFixed(1),hash:hashHex};
+  }
+  function renderCertificateSVG(cert) {
+    var W=740,H=420,C_BG='#0a0c12',C_PNL='#0f1219',C_BDR='#1e2433',C_EMLD='#34d399',C_AMBR='#f59e0b',C_WHT='#e2e8f0',C_MUT='#64748b',C_RED='#f87171';
+    var sc=cert.cogLoad==='HIGH'||cert.cogLoad==='SEVERE'?C_RED:C_EMLD;
+    function row(y,k,v,vc){return '<text x="80" y="'+y+'" font-family="monospace" font-size="11" fill="'+C_MUT+'">'+k+'</text><text x="280" y="'+y+'" font-family="monospace" font-size="11" fill="'+(vc||C_WHT)+'">'+v+'</text>';}
+    var rows=[row(130,'ISSUED:',cert.issued,C_AMBR),row(150,'SESSION:',cert.sessionId,C_AMBR),row(178,'INTENT STATE:',cert.intentState,sc),row(198,'ACTION TAG:',cert.actionTag,sc),row(218,'CAPABILITY TIER:',cert.capTier,C_WHT),row(238,'CAPABILITY SCORE:',String(cert.capScore),C_WHT),row(266,'SIGNALS READ','',C_MUT),row(284,'bootMs:',cert.bootMs,C_EMLD),row(302,'source:',cert.source,C_MUT),row(320,'device:',cert.device,C_MUT),row(338,'market:',cert.market,C_MUT),row(356,'timeWindow:',cert.timeWindow,C_MUT),row(374,'prefersDark:',cert.prefersDark,C_MUT),row(392,'cores:',String(cert.cores),C_MUT),row(410,'pixelRatio:',cert.pixelRatio,C_MUT)].join('');
+    return '<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">
+<rect width="'+W+'" height="'+H+'" fill="'+C_BG+'"/>
+<rect x="20" y="20" width="'+(W-40)+'" height="'+(H-40)+'" rx="6" fill="'+C_PNL+'" stroke="'+C_BDR+'" stroke-width="1"/>
+<rect x="20" y="20" width="'+(W-40)+'" height="4" rx="2" fill="'+C_EMLD+'"/>
+<line x1="60" y1="160" x2="'+(W-60)+'" y2="160" stroke="'+C_BDR+'" stroke-width="0.5"/>
+<line x1="60" y1="255" x2="'+(W-60)+'" y2="255" stroke="'+C_BDR+'" stroke-width="0.5"/>
+<text x="'+W/2+'" y="80" font-family="monospace" font-size="16" font-weight="bold" fill="'+C_EMLD+'" text-anchor="middle" letter-spacing="4">P R E S E N C E - S E S S I O N C E R T I F I C A T E</text>
+'+rows+'
+<text x="60" y="'+(H-55)+'" font-family="monospace" font-size="9" fill="'+C_MUT+'">HASH: '+cert.hash+'</text>
+<text x="60" y="'+(H-33)+'" font-family="monospace" font-size="9" fill="'+C_MUT+'">Generated client-side. No data left this browser. Presence v3.0.0</text>
+<text x="60" y="'+(H-17)+'" font-family="monospace" font-size="9" fill="'+C_MUT+'">One session. One document. Not repeatable.</text>
+</svg>';
+  }
+  function downloadCertificate(cert) {
+    var svg=renderCertificateSVG(cert),blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='presence-session-'+cert.sessionId.slice(0,8)+'.svg';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},5000);
+  }
+
   var Presence = {
-    version: '2.1.0',
+    version: '3.0.0',
     signals: signals,
 
     /** Returns current profile string */
@@ -1172,11 +1211,11 @@
   <div class="top-banner">
     <div class="banner-title">// presence is reading this session right now</div>
     <div class="banner-classified" id="boot-line">// classifying...</div>
-    <div class="banner-meta" id="banner-meta">device &mdash; market &mdash; intent</div>
+    <div class="banner-meta" id="banner-meta">device / market / intent</div>
 
   <!-- VISITOR DEMO PANEL -->
   <div class="demo-panel">
-    <div class="demo-header">// same url â€” three different people â€” three different pages</div>
+    <div class="demo-header">// same url. three different people. three different pages.</div>
     <div class="demo-grid">
 
       <!-- Visitor 1: Developer, first visit, direct -->
@@ -1185,12 +1224,12 @@
           <div class="chrome-dot"></div>
           <div class="chrome-dot"></div>
           <div class="chrome-dot"></div>
-          <div class="chrome-url">github.com &rarr; presence.js</div>
+          <div class="chrome-url">github.com > presence.js</div>
         </div>
         <div class="demo-body">
           <div class="demo-who">
             <strong>Dev, first visit</strong>
-            came from GitHub &bull; dark mode &bull; 16GB RAM &bull; fine pointer
+            came from GitHub Â· dark mode Â· 16GB RAM Â· fine pointer
           </div>
           <div class="demo-classified">
             <div class="d-label">classified as</div>
@@ -1198,7 +1237,7 @@
           </div>
           <div class="demo-what">
             <strong>skip to the argument</strong>
-            Lead with the idea. You already have a theory -- you are checking if this matches it. No feature list. No pricing. Just the thesis.
+            Lead with the idea. You already have a theory - check if this matches it. No feature list. No pricing. Just the thesis.
             <div><span class="demo-tag tag-v1">thesis_first</span></div>
           </div>
         </div>
@@ -1210,12 +1249,12 @@
           <div class="chrome-dot"></div>
           <div class="chrome-dot"></div>
           <div class="chrome-dot"></div>
-          <div class="chrome-url">presence.js &bull; visit 3</div>
+          <div class="chrome-url">presence.js Â· visit 3</div>
         </div>
         <div class="demo-body">
           <div class="demo-who">
             <strong>Returning evaluator</strong>
-            direct return &bull; light mode &bull; coarse pointer &bull; 3rd visit
+            direct return Â· light mode Â· coarse pointer Â· 3rd visit
           </div>
           <div class="demo-classified">
             <div class="d-label">classified as</div>
@@ -1223,7 +1262,7 @@
           </div>
           <div class="demo-what">
             <strong>you have been thinking about it</strong>
-            You left, came back. The tab is still open somewhere. Whatever did not land the first time -- that is the only thing worth saying now.
+            You left, came back. The tab is still open somewhere. Whatever did not land the first time - that is the only thing worth saying now.
             <div><span class="demo-tag tag-v2">remove_objection</span></div>
           </div>
         </div>
@@ -1235,12 +1274,12 @@
           <div class="chrome-dot"></div>
           <div class="chrome-dot"></div>
           <div class="chrome-dot"></div>
-          <div class="chrome-url">npm &rarr; presence.js &bull; visit 9</div>
+          <div class="chrome-url">npm > presence.js Â· visit 9</div>
         </div>
         <div class="demo-body">
           <div class="demo-who">
             <strong>Power user, 9 visits</strong>
-            came from npm &bull; dark mode &bull; 32GB RAM &bull; high DPR
+            came from npm Â· dark mode Â· 32GB RAM Â· high DPR
           </div>
           <div class="demo-classified">
             <div class="d-label">classified as</div>
@@ -1248,7 +1287,7 @@
           </div>
           <div class="demo-what">
             <strong>you are already in</strong>
-            Skip the intro. Here is the changelog, the API, the stuff they do not put on the landing page.
+            Skip the intro. Changelog, API, the things they leave off the landing page.
             <div><span class="demo-tag tag-v3">next_level</span></div>
           </div>
         </div>
@@ -1290,14 +1329,10 @@
   <!-- 2. THESIS - TWO PARAGRAPHS ONLY -->
   <div class="manifesto">
     <p>
-      Large companies have spent billions on systems that know who you are before you speak.
-      That capability used to cost a data warehouse, a CDP, an ML team, and a cookie consent banner.
-      It belonged to companies, not builders.
-    </p>
-    <p>
-      <strong>Presence changes that.</strong> One 12KB file. No backend. No cookies. No network calls.
-      Ten browser signals. Nine intent states. Classification in under 2 milliseconds -
-      before your first component renders.
+      Knowing who a visitor is used to cost a data warehouse, a CDP, and an ML team.
+    It belonged to enterprises. Not builders.
+    Presence changes that. One 12KB file. No backend. No cookies. No network calls.
+    Ten browser signals. Nine intent states. Classified before your first component renders.
     </p>
   </div>
 
@@ -1358,52 +1393,52 @@
   <!-- 4. EVERY SIGNAL -->
   <div class="section-header">// EVERY SIGNAL READ - AND HOW</div>
   <div class="signals-grid" id="signals-grid">
-    <div class="signal-cell"><div class="signal-key">BOOTMS</div><div class="signal-val" id="s-boot">...</div><div class="signal-why">Time from script execution to full classification. Measured in milliseconds.</div></div>
-    <div class="signal-cell"><div class="signal-key">INTENTSTATE</div><div class="signal-val" id="s-intent">...</div><div class="signal-why">The cross-product of arrival energy, cognitive mode, and trust level.</div></div>
-    <div class="signal-cell"><div class="signal-key">ARRIVALENERGY</div><div class="signal-val" id="s-energy">...</div><div class="signal-why">How intentional this visit was. Derived from referrer + visit history.</div></div>
-    <div class="signal-cell"><div class="signal-key">COGNITIVEMODE</div><div class="signal-val" id="s-mode">...</div><div class="signal-why">What you are doing right now. Derived from scroll depth, session depth, and UTM signals.</div></div>
-    <div class="signal-cell"><div class="signal-key">TRUSTLEVEL</div><div class="signal-val" id="s-trust">...</div><div class="signal-why">Whether you know this site. Derived from days since first visit and total visit intensity.</div></div>
-    <div class="signal-cell"><div class="signal-key">RECOMMENDEDEXPERIENCE</div><div class="signal-val" id="s-exp">...</div><div class="signal-why">What this page should emphasise based on your intent state.</div></div>
-    <div class="signal-cell"><div class="signal-key">PROFILE</div><div class="signal-val" id="s-profile">...</div><div class="signal-why">Your visitor archetype based on referral source, hardware, and time signals.</div></div>
-    <div class="signal-cell"><div class="signal-key">SOURCE</div><div class="signal-val" id="s-source">...</div><div class="signal-why">Where Presence thinks you came from.</div></div>
-    <div class="signal-cell"><div class="signal-key">DEVICE</div><div class="signal-val" id="s-device">...</div><div class="signal-why">Detected from screen width and touch point count. No user-agent parsing.</div></div>
-    <div class="signal-cell"><div class="signal-key">CAPABILITYSCORE</div><div class="signal-val" id="s-capscore">...</div><div class="signal-why">Composite score 0-100 across 10 signals. The real measure of device class and user context.</div></div>
-    <div class="signal-cell"><div class="signal-key">CAPABILITYTIER</div><div class="signal-val" id="s-captier">...</div><div class="signal-why">SOVEREIGN / CAPABLE / STANDARD / CONSTRAINED. Derived from the capability score.</div></div>
-    <div class="signal-cell"><div class="signal-key">DEVICEMEMORY</div><div class="signal-val" id="s-mem">...</div><div class="signal-why">navigator.deviceMemory. RAM in GB. Strongest single hardware predictor.</div></div>
+    <div class="signal-cell"><div class="signal-key">BOOTMS</div><div class="signal-val" id="s-boot">...</div><div class="signal-why">Script execution to full classification. Milliseconds.</div></div>
+    <div class="signal-cell"><div class="signal-key">INTENTSTATE</div><div class="signal-val" id="s-intent">...</div><div class="signal-why">Cross-product of all three axes.</div></div>
+    <div class="signal-cell"><div class="signal-key">ARRIVALENERGY</div><div class="signal-val" id="s-energy">...</div><div class="signal-why">How intentional this visit was.</div></div>
+    <div class="signal-cell"><div class="signal-key">COGNITIVEMODE</div><div class="signal-val" id="s-mode">...</div><div class="signal-why">What you are doing right now.</div></div>
+    <div class="signal-cell"><div class="signal-key">TRUSTLEVEL</div><div class="signal-val" id="s-trust">...</div><div class="signal-why">Whether you know this site.</div></div>
+    <div class="signal-cell"><div class="signal-key">RECOMMENDEDEXPERIENCE</div><div class="signal-val" id="s-exp">...</div><div class="signal-why">What this page should do for you.</div></div>
+    <div class="signal-cell"><div class="signal-key">PROFILE</div><div class="signal-val" id="s-profile">...</div><div class="signal-why">Your archetype based on referral, hardware, and time.</div></div>
+    <div class="signal-cell"><div class="signal-key">SOURCE</div><div class="signal-val" id="s-source">...</div><div class="signal-why">Where you came from.</div></div>
+    <div class="signal-cell"><div class="signal-key">DEVICE</div><div class="signal-val" id="s-device">...</div><div class="signal-why">Screen width and touch points. No user-agent parsing.</div></div>
+    <div class="signal-cell"><div class="signal-key">CAPABILITYSCORE</div><div class="signal-val" id="s-capscore">...</div><div class="signal-why">Composite 0-100 across 10 signals.</div></div>
+    <div class="signal-cell"><div class="signal-key">CAPABILITYTIER</div><div class="signal-val" id="s-captier">...</div><div class="signal-why">SOVEREIGN / CAPABLE / STANDARD / CONSTRAINED.</div></div>
+    <div class="signal-cell"><div class="signal-key">DEVICEMEMORY</div><div class="signal-val" id="s-mem">...</div><div class="signal-why">navigator.deviceMemory. RAM in GB.</div></div>
     <div class="signal-cell"><div class="signal-key">CORES</div><div class="signal-val" id="s-cores">...</div><div class="signal-why"></div></div>
-    <div class="signal-cell"><div class="signal-key">PIXELRATIO</div><div class="signal-val" id="s-dpr">...</div><div class="signal-why">window.devicePixelRatio. 2x+ = retina/HiDPI = prosumer or developer display.</div></div>
-    <div class="signal-cell"><div class="signal-key">SCREENAREA</div><div class="signal-val" id="s-screen">...</div><div class="signal-why">screen.width x screen.height. Large area = workstation context.</div></div>
+    <div class="signal-cell"><div class="signal-key">PIXELRATIO</div><div class="signal-val" id="s-dpr">...</div><div class="signal-why">window.devicePixelRatio. 2x+ = retina or developer display.</div></div>
+    <div class="signal-cell"><div class="signal-key">SCREENAREA</div><div class="signal-val" id="s-screen">...</div><div class="signal-why">screen.width x screen.height.</div></div>
     <div class="signal-cell"><div class="signal-key">CONNECTION</div><div class="signal-val" id="s-conn">...</div><div class="signal-why"></div></div>
-    <div class="signal-cell"><div class="signal-key">PREFERSDARK</div><div class="signal-val" id="s-dark">...</div><div class="signal-why">~80% of developers use dark mode vs ~35% general users. (JetBrains 2023, Stack Overflow 2024)</div></div>
-    <div class="signal-cell"><div class="signal-key">POINTERPRECISION</div><div class="signal-val" id="s-pointer">...</div><div class="signal-why">fine = mouse/trackpad (creation context). coarse = finger (consumption context).</div></div>
-    <div class="signal-cell"><div class="signal-key">PREFERSREDUCEDMOTION</div><div class="signal-val" id="s-motion">...</div><div class="signal-why">System-level accessibility preference. Signals technically engaged user.</div></div>
-    <div class="signal-cell"><div class="signal-key">MARKET</div><div class="signal-val" id="s-market">...</div><div class="signal-why">Derived from your timezone offset. No IP lookup or geolocation API.</div></div>
-    <div class="signal-cell"><div class="signal-key">TIMEZONE</div><div class="signal-val" id="s-tz">...</div><div class="signal-why">Read from Intl.DateTimeFormat. Zero network calls required.</div></div>
-    <div class="signal-cell"><div class="signal-key">LANGUAGE</div><div class="signal-val" id="s-lang">...</div><div class="signal-why">Your browser language setting.</div></div>
-    <div class="signal-cell"><div class="signal-key">TIMEWINDOW</div><div class="signal-val" id="s-time">...</div><div class="signal-why">The time-of-day window you loaded this page in.</div></div>
-    <div class="signal-cell"><div class="signal-key">DAYCONTEXT</div><div class="signal-val" id="s-day">...</div><div class="signal-why">Weekday vs weekend. Visitor intent shifts significantly between the two.</div></div>
-    <div class="signal-cell"><div class="signal-key">INTENSITY</div><div class="signal-val" id="s-intensity">...</div><div class="signal-why">Total visit count bucketed into low, medium, or high.</div></div>
-    <div class="signal-cell"><div class="signal-key">ISRETURNING</div><div class="signal-val" id="s-returning">...</div><div class="signal-why">True if localStorage shows a previous visit timestamp.</div></div>
-    <div class="signal-cell"><div class="signal-key">TOTALVISITS</div><div class="signal-val" id="s-visits">...</div><div class="signal-why">Stored in localStorage. Every page load ever recorded.</div></div>
-    <div class="signal-cell"><div class="signal-key">SESSIONVISITS</div><div class="signal-val" id="s-session">...</div><div class="signal-why">Stored in sessionStorage. Resets when you close the tab.</div></div>
-    <div class="signal-cell"><div class="signal-key">SCROLLDEPTHLASTVISIT<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-scroll">...</div><div class="signal-why">How far you scrolled last visit (%). Reveals scanner vs reader.</div></div>
-    <div class="signal-cell"><div class="signal-key">TIMEONPAGELASTVISIT<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-topv">...</div><div class="signal-why">How long you spent last visit (seconds). Reveals passive drift vs intentional read.</div></div>
-    <div class="signal-cell"><div class="signal-key">UTMCONTENT<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-utmc">...</div><div class="signal-why">utm_content parameter. Carries creative or audience variant intent.</div></div>
-    <div class="signal-cell"><div class="signal-key">UTMTERM<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-utmt">...</div><div class="signal-why">utm_term parameter. Carries explicit search keyword intent.</div></div>
-    <div class="signal-cell"><div class="signal-key">REFERRER</div><div class="signal-val" id="s-ref">...</div><div class="signal-why">document.referrer. The URL you arrived from, if any.</div></div>
+    <div class="signal-cell"><div class="signal-key">PREFERSDARK</div><div class="signal-val" id="s-dark">...</div><div class="signal-why">80% of developers use dark mode. 35% of general users do.</div></div>
+    <div class="signal-cell"><div class="signal-key">POINTERPRECISION</div><div class="signal-val" id="s-pointer">...</div><div class="signal-why">fine = mouse. coarse = finger.</div></div>
+    <div class="signal-cell"><div class="signal-key">PREFERSREDUCEDMOTION</div><div class="signal-val" id="s-motion">...</div><div class="signal-why">System accessibility preference.</div></div>
+    <div class="signal-cell"><div class="signal-key">MARKET</div><div class="signal-val" id="s-market">...</div><div class="signal-why">Derived from timezone offset. No IP lookup.</div></div>
+    <div class="signal-cell"><div class="signal-key">TIMEZONE</div><div class="signal-val" id="s-tz">...</div><div class="signal-why">Intl.DateTimeFormat. Zero network calls.</div></div>
+    <div class="signal-cell"><div class="signal-key">LANGUAGE</div><div class="signal-val" id="s-lang">...</div><div class="signal-why">Browser language setting.</div></div>
+    <div class="signal-cell"><div class="signal-key">TIMEWINDOW</div><div class="signal-val" id="s-time">...</div><div class="signal-why">Time-of-day window at page load.</div></div>
+    <div class="signal-cell"><div class="signal-key">DAYCONTEXT</div><div class="signal-val" id="s-day">...</div><div class="signal-why">Weekday or weekend.</div></div>
+    <div class="signal-cell"><div class="signal-key">INTENSITY</div><div class="signal-val" id="s-intensity">...</div><div class="signal-why">Total visits. Low, medium, or high.</div></div>
+    <div class="signal-cell"><div class="signal-key">ISRETURNING</div><div class="signal-val" id="s-returning">...</div><div class="signal-why">True if a previous visit is stored.</div></div>
+    <div class="signal-cell"><div class="signal-key">TOTALVISITS</div><div class="signal-val" id="s-visits">...</div><div class="signal-why">Stored in localStorage. Every page load recorded.</div></div>
+    <div class="signal-cell"><div class="signal-key">SESSIONVISITS</div><div class="signal-val" id="s-session">...</div><div class="signal-why">Stored in sessionStorage. Resets on tab close.</div></div>
+    <div class="signal-cell"><div class="signal-key">SCROLLDEPTHLASTVISIT<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-scroll">...</div><div class="signal-why">Scroll depth last visit. Scanner vs reader.</div></div>
+    <div class="signal-cell"><div class="signal-key">TIMEONPAGELASTVISIT<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-topv">...</div><div class="signal-why">Time on page last visit. Drift vs intent.</div></div>
+    <div class="signal-cell"><div class="signal-key">UTMCONTENT<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-utmc">...</div><div class="signal-why">utm_content. Creative or audience variant.</div></div>
+    <div class="signal-cell"><div class="signal-key">UTMTERM<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-utmt">...</div><div class="signal-why">utm_term. Search keyword intent.</div></div>
+    <div class="signal-cell"><div class="signal-key">REFERRER</div><div class="signal-val" id="s-ref">...</div><div class="signal-why">document.referrer.</div></div>
   </div>
 
   <!-- 5. VERIFY -->
   <div class="verify-block">
     <div class="verify-title">// ZERO TRUST. VERIFY EVERYTHING.</div>
-    <p>Open DevTools (F12). In the console, type this exactly:</p>
+    <p>Open DevTools. F12. Console:</p>
     <code>Presence.debug()</code>
-    <p>Check the Network tab. You will see zero outbound requests. Nothing leaves your browser.</p>
-    <p>See what was written to localStorage:</p>
+    <p>Network tab. Zero outbound requests. Nothing leaves your browser.</p>
+    <p>localStorage:</p>
     <code>localStorage.getItem('_ptv')
 localStorage.getItem('_psd')
 localStorage.getItem('_ptop')</code>
-    <p>Scroll to the bottom of this page, wait 10 seconds, then close and reopen. Your scroll depth and time on page will be stored. Presence will adjust your cognitive mode accordingly on the next visit.</p>
+    <p>Scroll to the bottom. Wait 10 seconds. Close and reopen. Scroll depth and time on page are stored. Presence adjusts your state on the next visit.</p>
     <p>Reset and reload as a fresh visitor:</p>
     <code>['_ptv','_pfs','_pls','_psd','_ptop'].forEach(k=>localStorage.removeItem(k));sessionStorage.clear();location.reload();</code>
   </div>
@@ -1438,7 +1473,7 @@ localStorage.getItem('_ptop')</code>
   <div class="footer">
     <span>github</span>
     <span>archon-stack.online</span>
-    <span>presence.js v2.1.0 -- built by brainiac ltd -- mit license</span>
+    <span>presence.js v3.0.0 Â· built by brainiac ltd Â· mit license</span>
   </div>
 
 </div>
@@ -1446,13 +1481,32 @@ localStorage.getItem('_ptop')</code>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var s = Presence.signals;
+  var _presenceCert=null;
+  generateCertificate(s).then(function(cert){
+    _presenceCert=cert;
+    var cp=document.getElementById('cert-panel');
+    if(!cp)return;
+    document.getElementById('cert-issued').textContent=cert.issued;
+    document.getElementById('cert-session').textContent=cert.sessionId;
+    document.getElementById('cert-state').textContent=cert.intentState;
+    document.getElementById('cert-tag').textContent=cert.actionTag;
+    document.getElementById('cert-tier').textContent=cert.capTier;
+    document.getElementById('cert-score').textContent=cert.capScore;
+    document.getElementById('cert-cogload').textContent=cert.cogLoad;
+    document.getElementById('cert-bootms').textContent=cert.bootMs;
+    document.getElementById('cert-source').textContent=cert.source;
+    document.getElementById('cert-device').textContent=cert.device;
+    document.getElementById('cert-hash').textContent=cert.hash;
+    cp.style.opacity='1';
+  });
+
 
   // boot line
   document.getElementById('boot-line').textContent =
     '// classified in ' + s.bootMs + 'ms -- zero network calls -- nothing left your browser';
   var deviceLabel2 = { 'MOBILE': 'mobile', 'NARROW': 'narrow screen', 'DESKTOP': 'desktop', 'WIDE': 'wide monitor' }[s.device] || 'device';
   document.getElementById('banner-meta').innerHTML =
-    '<span>' + deviceLabel2 + '</span> &mdash; ' + (s.market || '') + ' market &mdash; intent: ' + (s.intentState || '').toLowerCase();
+    '<span>' + deviceLabel2 + '</span> / ' + (s.market || '') + ' market / intent: ' + (s.intentState || '').toLowerCase();
 
   // profile
   document.getElementById('profile').textContent = (s.profile || 'UNKNOWN').toUpperCase().replace(/_/g,' ');
@@ -1467,7 +1521,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'proof_first': { label: 'show your working', desc: "You opened the inspector before you read the readme. Fair. Skip the pitch -- show the numbers, the source, the edge cases. You will decide when you are ready." },
     'hook_fast': { label: 'three seconds', desc: "You are tabbing through twenty things. Presence clocked it. One sentence or nothing -- if it does not land immediately, you are already gone." },
     'thesis_first': { label: 'skip to the argument', desc: "You did not land here by accident. You already have a theory and you are checking if this matches it. Lead with the idea. The feature list can wait." },
-    'remove_objection': { label: 'you have been thinking about it', desc: "You left, came back, and the tab is still open somewhere. Something did not quite land the first time. Whatever that was -- that is the only thing worth saying now." },
+    'remove_objection': { label: 'you have been thinking about it', desc: "You left, came back, and the tab is still open somewhere. Something did not quite land the first time. Whatever that was - that is the only thing worth saying now." },
     'kill_friction': { label: 'just the button', desc: "Decision made. You are waiting for something to get out of the way. No copy, no explanation, no 'but have you considered'. Just the thing you came to do." },
     'next_level': { label: 'you are already in', desc: "Welcome back. You know what this is. Skip the intro -- here is the changelog, the API, the stuff they do not put on the landing page." },
     'reward_depth': { label: 'deep read detected', desc: "You scrolled the whole thing. Read the footnotes. Presence noticed. You are not looking for a tool -- you are looking for a point of view. Here is ours." }
@@ -1573,6 +1627,53 @@ function descMode(v) {
 function descTrust(v) {
   return v === 'insider' ? 'deeply invested' : v === 'acquaintance' ? 'returning, not yet invested' : 'first encounter';
 }
-</script>
+
+    // v3.0.0 -- certificate download buttons
+    document.getElementById('cert-dl-svg').addEventListener('click', function() {
+      if (_presenceCert) downloadCertificate(_presenceCert);
+    });
+    document.getElementById('cert-dl-pdf').addEventListener('click', function() {
+      if (!_presenceCert) return;
+      var svg=renderCertificateSVG(_presenceCert);
+      var html='<!DOCTYPE html><html><head><title>Presence Session Certificate</title><style>body{margin:0;background:#0a0c12;display:flex;justify-content:center;padding:20px;}img{max-width:100%;}@media print{body{padding:0;}@page{margin:0;}}</style></head><body><img src="data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)+'"><scr'+'ipt>window.onload=function(){window.print();}<\/scr'+'ipt></body></html>';
+      var win=window.open('','_blank');win.document.write(html);win.document.close();
+    });
+
+  </script>
 </body>
 </html>
+    <!-- SESSION CERTIFICATE PANEL - Presence v3.0.0 -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-dot" style="background:#34d399;"></div>
+        <div class="section-title">SESSION CERTIFICATE</div>
+        <div class="section-sub">SHA-256 sealed -- generated this millisecond -- not repeatable</div>
+      </div>
+      <div id="cert-panel" style="opacity:0;transition:opacity 0.4s ease;background:#0f1219;border:1px solid #1e2433;border-top:3px solid #34d399;border-radius:6px;padding:24px 28px;font-family:monospace;font-size:12px;line-height:1.9;">
+        <div style="color:#34d399;font-weight:bold;letter-spacing:3px;font-size:11px;margin-bottom:16px;">P R E S E N C E - S E S S I O N - C E R T I F I C A T E</div>
+        <div style="color:#64748b;border-bottom:1px solid #1e2433;padding-bottom:12px;margin-bottom:12px;">
+          <div><span style="color:#64748b;display:inline-block;width:180px;">ISSUED:</span><span id="cert-issued" style="color:#f59e0b;">...</span></div>
+          <div><span style="color:#64748b;display:inline-block;width:180px;">SESSION:</span><span id="cert-session" style="color:#f59e0b;">...</span></div>
+        </div>
+        <div style="border-bottom:1px solid #1e2433;padding-bottom:12px;margin-bottom:12px;">
+          <div><span style="color:#64748b;display:inline-block;width:180px;">INTENT STATE:</span><span id="cert-state" style="color:#34d399;">...</span></div>
+          <div><span style="color:#64748b;display:inline-block;width:180px;">ACTION TAG:</span><span id="cert-tag" style="color:#34d399;">...</span></div>
+          <div><span style="color:#64748b;display:inline-block;width:180px;">CAPABILITY TIER:</span><span id="cert-tier" style="color:#e2e8f0;">...</span></div>
+          <div><span style="color:#64748b;display:inline-block;width:180px;">CAPABILITY SCORE:</span><span id="cert-score" style="color:#e2e8f0;">...</span></div>
+          <div><span style="color:#64748b;display:inline-block;width:180px;">COGNITIVE LOAD:</span><span id="cert-cogload" style="color:#e2e8f0;">...</span></div>
+        </div>
+        <div style="color:#64748b;font-size:10px;letter-spacing:1px;margin-bottom:8px;">SIGNALS READ</div>
+        <div style="border-bottom:1px solid #1e2433;padding-bottom:12px;margin-bottom:16px;">
+          <div><span style="color:#64748b;display:inline-block;width:180px;">bootMs:</span><span id="cert-bootms" style="color:#34d399;">...</span></div>
+          <div><span style="color:#64748b;display:inline-block;width:180px;">source:</span><span id="cert-source" style="color:#64748b;">...</span></div>
+          <div><span style="color:#64748b;display:inline-block;width:180px;">device:</span><span id="cert-device" style="color:#64748b;">...</span></div>
+        </div>
+        <div style="color:#64748b;font-size:10px;word-break:break-all;margin-bottom:20px;">HASH: <span id="cert-hash" style="color:#64748b;">computing...</span></div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button id="cert-dl-svg" style="background:transparent;border:1px solid #34d399;color:#34d399;font-family:monospace;font-size:11px;padding:10px 20px;border-radius:4px;cursor:pointer;letter-spacing:1px;">DOWNLOAD CERTIFICATE (.svg)</button>
+          <button id="cert-dl-pdf" style="background:transparent;border:1px solid #64748b;color:#64748b;font-family:monospace;font-size:11px;padding:10px 20px;border-radius:4px;cursor:pointer;letter-spacing:1px;">DOWNLOAD AS PDF</button>
+        </div>
+        <div style="margin-top:16px;color:#64748b;font-size:10px;line-height:1.6;">This certificate was generated client-side. No data left this browser.<br>One session. One document. Not repeatable.</div>
+      </div>
+    </section>
+
