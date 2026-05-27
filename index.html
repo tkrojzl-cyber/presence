@@ -49,10 +49,18 @@
       margin-bottom: 8px;
     }
     .profile-desc {
+      font-size: 13px;
+      color: #00ff8899;
+      line-height: 1.9;
+      margin-top: 20px;
+      border-top: 1px solid #00ff8811;
+      padding-top: 20px;
+    }
+    .narrative {
       font-size: 12px;
       color: #2a6644;
-      line-height: 1.8;
-      margin-top: 16px;
+      line-height: 1.9;
+      margin-top: 12px;
     }
 
     .signals-grid {
@@ -78,6 +86,12 @@
       font-size: 13px;
       color: #00ff88;
       word-break: break-all;
+    }
+    .signal-why {
+      font-size: 10px;
+      color: #1a4433;
+      margin-top: 4px;
+      line-height: 1.5;
     }
 
     .verify-block {
@@ -129,7 +143,15 @@
       color: #000;
       background: #00ff88;
       padding: 4px 10px;
-      margin-top: 12px;
+      margin-top: 16px;
+    }
+
+    .section-header {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: #2a6644;
+      margin-bottom: 12px;
+      margin-top: 32px;
     }
 
     @media (max-width: 600px) {
@@ -142,82 +164,125 @@
 <div class="wrap">
 
   <h1>presence.js</h1>
-  <div class="sub">// LIVE SIGNAL DETECTION - YOUR BROWSER, RIGHT NOW</div>
+  <div class="sub">// THIS PAGE ALREADY KNOWS SOMETHING ABOUT YOU</div>
 
   <div class="profile-block">
-    <div class="profile-label">// DETECTED PROFILE</div>
+    <div class="profile-label">// WHO PRESENCE THINKS YOU ARE</div>
     <div class="profile-value" id="profile">...</div>
-    <div class="profile-label">// SOURCE</div>
+    <div class="profile-label">// HOW IT KNOWS</div>
     <div class="signal-val" id="source" style="font-size:14px;letter-spacing:2px;">...</div>
     <div class="profile-desc" id="profile-desc"></div>
+    <div class="narrative" id="narrative"></div>
     <div class="boot-badge" id="boot-badge"></div>
   </div>
 
+  <div class="section-header">// EVERY SIGNAL PRESENCE READ - AND WHY</div>
   <div class="signals-grid" id="signals-grid"></div>
 
   <div class="verify-block">
-    <div class="verify-title">// VERIFY IT YOURSELF</div>
-    <p>No network calls. Open DevTools console and run:</p>
+    <div class="verify-title">// VERIFY IT YOURSELF - NO TRUST REQUIRED</div>
+    <p>Open DevTools (F12) and run this in the console. You will see every signal printed:</p>
     <code>Presence.debug()</code>
-    <p>Confirm zero network calls:</p>
-    <code>grep -n "fetch\|XMLHttpRequest\|sendBeacon" presence.js</code>
-    <p>Check what localStorage keys were written:</p>
-    <code>localStorage.getItem('_ptv') // total visits
-localStorage.getItem('_pfs') // first seen
-localStorage.getItem('_pls') // last seen</code>
-    <p>Reset and simulate a new visitor:</p>
-    <code>['_ptv','_pfs','_pls'].forEach(k=>localStorage.removeItem(k));
-sessionStorage.removeItem('_pv');
-location.reload();</code>
+    <p>Check the Network tab. You will see zero outbound requests. Nothing leaves your browser.</p>
+    <p>See exactly what was written to localStorage:</p>
+    <code>localStorage.getItem('_ptv')
+localStorage.getItem('_pfs')
+localStorage.getItem('_pls')</code>
+    <p>Reset and reload as a fresh visitor:</p>
+    <code>['_ptv','_pfs','_pls'].forEach(k=>localStorage.removeItem(k));sessionStorage.clear();location.reload();</code>
   </div>
 
   <div class="footer">
-    <a href="https://github.com/tkrojzl-cyber/presence" target="_blank">→ github.com/tkrojzl-cyber/presence</a>
-    <a href="https://superchargebuilds.pro" target="_blank">→ brainiac ltd</a>
+    <a href="https://github.com/tkrojzl-cyber/presence" target="_blank">github.com/tkrojzl-cyber/presence</a>
+    <a href="https://superchargebuilds.pro" target="_blank">built by brainiac ltd</a>
   </div>
 
 </div>
 
 <script>
-  var PROFILE_DESCS = {
-    researcher: 'You arrived from an academic or professional network. Presence detected a research-oriented referral signal.',
-    founder:    'You arrived from a founder community: Product Hunt, Hacker News, Twitter/X, or IndieHackers.',
-    developer:  'You arrived from a developer source: GitHub, Stack Overflow, GitLab, dev.to, or a technical subreddit.',
-    deep_work:  'Direct traffic before 08:00, or a high-intensity returning visitor. Presence flagged this as intentional.',
-    default:    'Direct or unclassified traffic. No referral signal matched a known profile.',
-  };
-
   var s = Presence.signals;
 
-  document.getElementById('profile').textContent      = s.profile.toUpperCase().replace('_', ' ');
-  document.getElementById('source').textContent       = s.source;
-  document.getElementById('profile-desc').textContent = PROFILE_DESCS[s.profile] || '';
-  document.getElementById('boot-badge').textContent   = 'DETECTED IN ' + s.bootMs + 'ms';
+  // --- Profile descriptions ---
+  var PROFILE_DESCS = {
+    researcher: 'Presence flagged you as a researcher. Your referral source matched an academic or professional network pattern.',
+    founder:    'Presence flagged you as a founder. Your referral source matched Product Hunt, Hacker News, Twitter/X, or IndieHackers.',
+    developer:  'Presence flagged you as a developer. Your referral source matched GitHub, Stack Overflow, GitLab, dev.to, or a technical subreddit.',
+    deep_work:  'Presence flagged you as a focused, intentional visitor. You arrived direct, early in the day, or as a high-intensity returning user.',
+    default:    'Presence could not match a specific profile. You arrived direct with no referral signal.',
+  };
 
+  // --- Per-signal explanations ---
+  function getSignalWhy(key, val) {
+    var map = {
+      timeWindow:      'The hour you loaded this page. Presence uses this to detect focus sessions vs casual browsing.',
+      dayContext:      'Weekday vs weekend. Visitor intent shifts significantly between the two.',
+      device:          'Detected from screen width and touch point count. No user-agent string needed.',
+      market:          'Derived from your timezone offset. No IP lookup, no geolocation API.',
+      language:        'Your browser language setting. Used to detect locale and region.',
+      timezone:        'Read from Intl.DateTimeFormat. Zero network calls required.',
+      hardware:        'CPU core count from navigator.hardwareConcurrency. A proxy for technical sophistication.',
+      intensity:       'Calculated from total visit count across all sessions. High means repeat intentional usage.',
+      isReturning:     'True if localStorage shows a previous visit timestamp.',
+      totalVisits:     'Stored in localStorage. Counts every page load across all sessions.',
+      sessionVisits:   'Stored in sessionStorage. Resets when you close the tab.',
+      daysSinceFirst:  'Calculated from your first-seen timestamp in localStorage.',
+      referrer:        'document.referrer. The URL you came from, if any.',
+      bootMs:          'Time from script execution to classification complete. Measured in milliseconds.',
+    };
+    return map[key] || '';
+  }
+
+  // --- Build narrative sentence ---
+  function buildNarrative(s) {
+    var parts = [];
+    parts.push('You are on a ' + s.device.toLowerCase() + ' in the ' + s.market + ' market.');
+    parts.push('Your local time puts you in a ' + s.timeWindow.toLowerCase().replace('_', ' ') + ' window on a ' + s.dayContext.toLowerCase() + '.');
+    if (s.isReturning) {
+      parts.push('You have visited ' + s.totalVisits + ' times. Presence recognises you as a returning visitor.');
+    } else {
+      parts.push('This is your first visit. Presence has no prior data on you.');
+    }
+    parts.push('Your hardware suggests ' + s.hardwareProfile.toLowerCase() + ' capability (' + s.cores + ' cores detected).');
+    parts.push('All of this was determined in ' + s.bootMs + 'ms. No server was contacted.');
+    return parts.join(' ');
+  }
+
+  // --- Render profile block ---
+  document.getElementById('profile').textContent      = s.profile.toUpperCase().replace(/_/g, ' ');
+  document.getElementById('source').textContent       = s.source.toUpperCase();
+  document.getElementById('profile-desc').textContent = PROFILE_DESCS[s.profile] || '';
+  document.getElementById('narrative').textContent    = buildNarrative(s);
+  document.getElementById('boot-badge').textContent   = 'CLASSIFIED IN ' + s.bootMs + 'ms - ZERO NETWORK CALLS';
+
+  // --- Render signals grid with explanations ---
   var SHOW = [
-    ['timeWindow',     s.timeWindow],
-    ['dayContext',     s.dayContext],
+    ['bootMs',        s.bootMs + 'ms'],
+    ['profile',       s.profile],
+    ['source',        s.source],
     ['device',        s.device],
-    ['market',        s.market],
-    ['language',      s.lang],
-    ['timezone',      s.timezone || 'unavailable'],
     ['hardware',      s.hardwareProfile + ' (' + s.cores + ' cores)'],
+    ['market',        s.market],
+    ['timezone',      s.timezone || 'unavailable'],
+    ['language',      s.lang],
+    ['timeWindow',    s.timeWindow],
+    ['dayContext',    s.dayContext],
     ['intensity',     s.intensity],
     ['isReturning',   String(s.isReturning)],
     ['totalVisits',   String(s.totalVisits)],
     ['sessionVisits', String(s.sessionVisits)],
-    ['daysSinceFirst',String(s.daysSinceFirst) + ' days'],
+    ['daysSinceFirst',s.daysSinceFirst + ' days'],
     ['referrer',      s.referrer || 'none'],
-    ['bootMs',        s.bootMs + 'ms'],
   ];
 
   var grid = document.getElementById('signals-grid');
   SHOW.forEach(function(pair) {
+    var why = getSignalWhy(pair[0], pair[1]);
     var cell = document.createElement('div');
     cell.className = 'signal-cell';
     cell.innerHTML =
       '<div class="signal-key">' + pair[0] + '</div>' +
-      '<div class="signal-val">' + pair[1] + '</div>';
+      '<div class="signal-val">' + pair[1] + '</div>' +
+      (why ? '<div class="signal-why">' + why + '</div>' : '');
     grid.appendChild(cell);
   });
 </script>
