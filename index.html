@@ -413,7 +413,18 @@ localStorage.getItem('_ptop')</code>
     profile:              'Your visitor archetype based on referral source, hardware, and time signals.',
     source:               'Where Presence thinks you came from.',
     device:               'Detected from screen width and touch point count. No user-agent parsing.',
-    hardwareProfile:      'CPU core count from navigator.hardwareConcurrency. A proxy for technical sophistication.',
+    capabilityScore:      'Composite score 0-100 across 10 signals. The real measure of device class and user context.',
+      capabilityTier:       'SOVEREIGN / CAPABLE / STANDARD / CONSTRAINED. Derived from the capability score.',
+      hardwareProfile:      'Legacy tier label. Use capabilityTier for new implementations.',
+      deviceMemory:         'navigator.deviceMemory. RAM in GB. Strongest single hardware predictor.',
+      pixelRatio:           'window.devicePixelRatio. 2x+ = retina/HiDPI = prosumer or developer display.',
+      screenArea:           'screen.width x screen.height. Large area = workstation context.',
+      colorDepth:           'screen.colorDepth. 30bit+ = pro display pipeline.',
+      connectionQuality:    'navigator.connection.effectiveType. Infrastructure proxy.',
+      prefersDark:          '~80% of developers use dark mode vs ~35% general users. (JetBrains 2023, Stack Overflow 2024)',
+      pointerPrecision:     'fine = mouse/trackpad (creation context). coarse = finger (consumption context).',
+      prefersReducedMotion: 'System-level accessibility preference. Signals technically engaged user.',
+      canHover:             'hover = non-touch device = production/creation context.',
     market:               'Derived from your timezone offset. No IP lookup or geolocation API.',
     timezone:             'Read from Intl.DateTimeFormat. Zero network calls required.',
     language:             'Your browser language setting.',
@@ -438,7 +449,7 @@ localStorage.getItem('_ptop')</code>
     } else {
       parts.push('This is your first visit. No prior data exists. Presence is classifying you from live signals only.');
     }
-    parts.push('Your hardware (' + s.cores + ' cores) reads as ' + s.hardwareProfile.toLowerCase().replace('_', ' ') + '.');
+    parts.push('Capability score: ' + s.capabilityScore + '/100. Tier: ' + s.capabilityTier + '. ' + s.deviceMemory + 'GB RAM detected. ' + (s.prefersDark ? 'Dark mode on (developer signal).' : 'Light mode.') + ' Pointer: ' + s.pointerPrecision + '.');
     parts.push('All signals resolved in ' + s.bootMs + 'ms. No server contacted. No data left your browser.');
     return parts.join(' ');
   }
@@ -487,7 +498,16 @@ localStorage.getItem('_ptop')</code>
     ['profile',              s.profile,              false],
     ['source',               s.source,               false],
     ['device',               s.device,               false],
-    ['hardwareProfile',      s.hardwareProfile + ' (' + s.cores + ' cores)', false],
+    ['capabilityScore',      String(s.capabilityScore) + '/100',     false],
+    ['capabilityTier',       s.capabilityTier,                          false],
+    ['deviceMemory',         s.deviceMemory + 'GB RAM',                 false],
+    ['cores',                s.cores + ' CPU cores',                    false],
+    ['pixelRatio',           String(s.pixelRatio) + 'x DPR',           false],
+    ['screenArea',           s.screenArea.toLocaleString() + ' px',    false],
+    ['connectionQuality',    s.connectionQuality,                       false],
+    ['prefersDark',          String(s.prefersDark),                     false],
+    ['pointerPrecision',     s.pointerPrecision,                        false],
+    ['prefersReducedMotion', String(s.prefersReducedMotion),            false],
     ['market',               s.market,               false],
     ['timezone',             s.timezone || 'unavailable', false],
     ['language',             s.lang,                 false],
