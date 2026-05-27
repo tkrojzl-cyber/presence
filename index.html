@@ -442,14 +442,53 @@ localStorage.getItem('_ptop')</code>
   };
 
   function buildNarrative(s) {
+    var DEVICE_LABEL = {
+      MOBILE:  'a mobile device',
+      NARROW:  'a narrow screen',
+      DESKTOP: 'a desktop',
+      WIDE:    'a wide-screen display'
+    };
+    var TIME_LABEL = {
+      EARLY:     'early morning',
+      DEEP_WORK: 'a deep work window',
+      AFTERNOON: 'the afternoon',
+      EVENING:   'the evening',
+      LATE:      'late night'
+    };
+    var POINTER_LABEL = {
+      fine:    'mouse or trackpad',
+      coarse:  'touchscreen',
+      unknown: 'unknown input'
+    };
+
     var parts = [];
-    parts.push('You are on a ' + s.device.toLowerCase() + ' in the ' + s.market + ' market, ' + s.timeWindow.toLowerCase().replace('_', ' ') + ' on a ' + s.dayContext.toLowerCase() + '.');
+    parts.push(
+      'You are on ' + (DEVICE_LABEL[s.device] || s.device.toLowerCase()) +
+      ' in the ' + s.market + ' market, ' +
+      (TIME_LABEL[s.timeWindow] || s.timeWindow.toLowerCase().replace(/_/g, ' ')) +
+      ' on a ' + s.dayContext.toLowerCase() + '.'
+    );
     if (s.isReturning) {
-      parts.push('You have been here before. ' + s.totalVisits + ' visits recorded. Last visit you scrolled ' + s.scrollDepthLastVisit + '% of the page and spent ' + s.timeOnPageLastVisit + ' seconds reading.');
+      var scrollNote = s.scrollDepthLastVisit > 0
+        ? 'scrolled ' + s.scrollDepthLastVisit + '% of the page'
+        : 'did not scroll';
+      var timeNote = s.timeOnPageLastVisit > 0
+        ? 'spent ' + s.timeOnPageLastVisit + ' seconds'
+        : 'spent less than a second';
+      parts.push(
+        'You have been here before. ' + s.totalVisits + ' visits recorded. ' +
+        'Last visit you ' + scrollNote + ' and ' + timeNote + '.'
+      );
     } else {
       parts.push('This is your first visit. No prior data exists. Presence is classifying you from live signals only.');
     }
-    parts.push('Capability score: ' + s.capabilityScore + '/100. Tier: ' + s.capabilityTier + '. ' + s.deviceMemory + 'GB RAM detected. ' + (s.prefersDark ? 'Dark mode on (developer signal).' : 'Light mode.') + ' Pointer: ' + s.pointerPrecision + '.');
+    var memNote = s.deviceMemory > 0 ? s.deviceMemory + 'GB RAM detected.' : 'RAM unavailable (browser privacy restriction).';
+    parts.push(
+      'Capability score: ' + s.capabilityScore + '/100. Tier: ' + s.capabilityTier + '. ' +
+      memNote + ' ' +
+      (s.prefersDark ? 'Dark mode active.' : 'Light mode.') + ' ' +
+      'Input: ' + (POINTER_LABEL[s.pointerPrecision] || s.pointerPrecision) + '.'
+    );
     parts.push('All signals resolved in ' + s.bootMs + 'ms. No server contacted. No data left your browser.');
     return parts.join(' ');
   }
@@ -488,40 +527,66 @@ localStorage.getItem('_ptop')</code>
   });
 
   // Signals grid
+    var DEVICE_LABEL    = { MOBILE:'Mobile', NARROW:'Narrow screen', DESKTOP:'Desktop', WIDE:'Wide-screen display' };
+  var TIME_LABEL      = { EARLY:'Early morning', DEEP_WORK:'Deep work window', AFTERNOON:'Afternoon', EVENING:'Evening', LATE:'Late night' };
+  var POINTER_LABEL   = { fine:'Mouse / trackpad', coarse:'Touchscreen', unknown:'Unknown' };
+  var MARKET_LABEL    = { NA:'North America', EU:'Europe', APAC:'Asia-Pacific', OTHER:'Other' };
+  var TIER_LABEL      = {
+    SOVEREIGN:   'Sovereign (pro workstation)',
+    CAPABLE:     'Capable (mid-range professional)',
+    STANDARD:    'Standard (consumer device)',
+    CONSTRAINED: 'Constrained (budget / slow connection)'
+  };
+  var CONN_LABEL      = { '4g':'4G / Wi-Fi', '3g':'3G', '2g':'2G', 'slow-2g':'Slow 2G', 'unknown':'Unknown' };
+  var ENERGY_LABEL    = { passive:'Passive (arrived via link)', active:'Active (came directly)', committed:'Committed (high-intensity returning)' };
+  var MODE_LABEL      = { exploring:'Exploring (scanning)', evaluating:'Evaluating (reading)', executing:'Executing (ready to act)' };
+  var TRUST_LABEL     = { stranger:'Stranger (first impression)', acquaintance:'Acquaintance (returning, not yet invested)', insider:'Insider (long-tenure power user)' };
+  var INTENSITY_LABEL = { LOW:'Low (1-2 visits)', MEDIUM:'Medium (3-9 visits)', HIGH:'High (10+ visits)' };
+  var EXP_LABEL       = {
+    hook_fast:'Hook fast', proof_first:'Proof first', remove_doubt:'Remove doubt',
+    thesis_first:'Thesis first', reduce_friction:'Reduce friction',
+    next_level:'Next level', deepen_value:'Deepen value'
+  };
+
+  var memDisplay = s.deviceMemory > 0 ? s.deviceMemory + 'GB' : 'Not available';
+  var connDisplay = CONN_LABEL[s.connectionQuality] || s.connectionQuality;
+  var scrollDisplay = s.scrollDepthLastVisit > 0 ? s.scrollDepthLastVisit + '%' : 'No data yet';
+  var timeDisplay   = s.timeOnPageLastVisit  > 0 ? s.timeOnPageLastVisit  + 's' : 'No data yet';
+
   var SHOW = [
-    ['bootMs',               s.bootMs + 'ms',       false],
-    ['intentState',          s.intentState,          false],
-    ['arrivalEnergy',        s.arrivalEnergy,        false],
-    ['cognitiveMode',        s.cognitiveMode,        false],
-    ['trustLevel',           s.trustLevel,           false],
-    ['recommendedExperience',s.recommendedExperience,false],
-    ['profile',              s.profile,              false],
-    ['source',               s.source,               false],
-    ['device',               s.device,               false],
-    ['capabilityScore',      String(s.capabilityScore) + '/100',     false],
-    ['capabilityTier',       s.capabilityTier,                          false],
-    ['deviceMemory',         s.deviceMemory + 'GB RAM',                 false],
-    ['cores',                s.cores + ' CPU cores',                    false],
-    ['pixelRatio',           String(s.pixelRatio) + 'x DPR',           false],
-    ['screenArea',           s.screenArea.toLocaleString() + ' px',    false],
-    ['connectionQuality',    s.connectionQuality,                       false],
-    ['prefersDark',          String(s.prefersDark),                     false],
-    ['pointerPrecision',     s.pointerPrecision,                        false],
-    ['prefersReducedMotion', String(s.prefersReducedMotion),            false],
-    ['market',               s.market,               false],
-    ['timezone',             s.timezone || 'unavailable', false],
-    ['language',             s.lang,                 false],
-    ['timeWindow',           s.timeWindow,           false],
-    ['dayContext',           s.dayContext,            false],
-    ['intensity',            s.intensity,            false],
-    ['isReturning',          String(s.isReturning),  false],
-    ['totalVisits',          String(s.totalVisits),  false],
-    ['sessionVisits',        String(s.sessionVisits),false],
-    ['scrollDepthLastVisit', s.scrollDepthLastVisit + '%', true],
-    ['timeOnPageLastVisit',  s.timeOnPageLastVisit + 's',  true],
-    ['utmContent',           s.utmContent || 'none', true],
-    ['utmTerm',              s.utmTerm    || 'none', true],
-    ['referrer',             s.referrer   || 'none', false],
+    ['bootMs',               s.bootMs + 'ms',                                                   false],
+    ['intentState',          s.intentState.replace(/_/g, ' / '),                                false],
+    ['arrivalEnergy',        ENERGY_LABEL[s.arrivalEnergy]    || s.arrivalEnergy,               false],
+    ['cognitiveMode',        MODE_LABEL[s.cognitiveMode]      || s.cognitiveMode,               false],
+    ['trustLevel',           TRUST_LABEL[s.trustLevel]        || s.trustLevel,                  false],
+    ['recommendedExperience',EXP_LABEL[s.recommendedExperience] || s.recommendedExperience,     false],
+    ['profile',              s.profile,                                                          false],
+    ['source',               s.source,                                                          false],
+    ['device',               DEVICE_LABEL[s.device]           || s.device,                      false],
+    ['capabilityScore',      s.capabilityScore + ' / 100',                                      false],
+    ['capabilityTier',       TIER_LABEL[s.capabilityTier]     || s.capabilityTier,              false],
+    ['deviceMemory',         memDisplay,                                                         false],
+    ['cores',                s.cores + ' CPU cores',                                             false],
+    ['pixelRatio',           s.pixelRatio + 'x  (DPR)',                                         false],
+    ['screenArea',           s.screenArea.toLocaleString() + ' px',                             false],
+    ['connection',           connDisplay,                                                        false],
+    ['prefersDark',          s.prefersDark ? 'Yes (developer signal)' : 'No',                   false],
+    ['pointerPrecision',     POINTER_LABEL[s.pointerPrecision] || s.pointerPrecision,           false],
+    ['prefersReducedMotion', s.prefersReducedMotion ? 'Yes' : 'No',                             false],
+    ['market',               MARKET_LABEL[s.market] || s.market,                                false],
+    ['timezone',             s.timezone || 'Unavailable',                                        false],
+    ['language',             s.lang,                                                             false],
+    ['timeWindow',           TIME_LABEL[s.timeWindow] || s.timeWindow,                          false],
+    ['dayContext',           s.dayContext === 'WEEKDAY' ? 'Weekday' : 'Weekend',                false],
+    ['intensity',            INTENSITY_LABEL[s.intensity] || s.intensity,                       false],
+    ['isReturning',          s.isReturning ? 'Yes' : 'No',                                      false],
+    ['totalVisits',          s.totalVisits + ' visits',                                         false],
+    ['sessionVisits',        s.sessionVisits + ' this session',                                 false],
+    ['scrollDepthLastVisit', scrollDisplay,                                                      true],
+    ['timeOnPageLastVisit',  timeDisplay,                                                        true],
+    ['utmContent',           s.utmContent || 'None',                                            true],
+    ['utmTerm',              s.utmTerm    || 'None',                                            true],
+    ['referrer',             s.referrer   || 'None (direct)',                                   false],
   ];
 
   var grid = document.getElementById('signals-grid');
