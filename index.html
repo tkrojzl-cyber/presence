@@ -14,55 +14,153 @@
       min-height: 100vh;
       padding: 48px 24px;
     }
-    .wrap { max-width: 720px; margin: 0 auto; }
+    .wrap { max-width: 760px; margin: 0 auto; }
 
-    h1 {
-      font-size: 13px;
-      letter-spacing: 6px;
-      color: #00ff88;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-    .sub {
-      font-size: 12px;
-      color: #2a6644;
-      letter-spacing: 3px;
+    h1 { font-size: 13px; letter-spacing: 6px; color: #00ff88; text-transform: uppercase; margin-bottom: 8px; }
+    .sub { font-size: 12px; color: #2a6644; letter-spacing: 3px; margin-bottom: 40px; }
+
+    /* ── MANIFESTO ── */
+    .manifesto {
+      border-left: 2px solid #00ff88;
+      padding: 0 0 0 24px;
       margin-bottom: 48px;
     }
+    .manifesto p {
+      font-size: 14px;
+      color: #00ff8899;
+      line-height: 2;
+      margin-bottom: 12px;
+    }
+    .manifesto p:last-child { margin-bottom: 0; }
+    .manifesto strong { color: #00ff88; }
 
+    /* ── PROFILE BLOCK ── */
     .profile-block {
       border: 1px solid #00ff8822;
       padding: 32px;
       margin-bottom: 32px;
       background: #00ff8805;
     }
-    .profile-label {
+    .label {
       font-size: 10px;
       letter-spacing: 4px;
       color: #2a6644;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
     }
     .profile-value {
       font-size: 32px;
       letter-spacing: 4px;
       color: #00ff88;
-      margin-bottom: 8px;
+      margin-bottom: 20px;
     }
-    .profile-desc {
-      font-size: 13px;
-      color: #00ff8899;
-      line-height: 1.9;
-      margin-top: 20px;
-      border-top: 1px solid #00ff8811;
-      padding-top: 20px;
+    .intent-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: #00ff8811;
+      margin-bottom: 20px;
+    }
+    .intent-cell {
+      background: #000;
+      padding: 14px 16px;
+    }
+    .intent-cell .label { margin-bottom: 6px; }
+    .intent-val { font-size: 12px; color: #00ff88; letter-spacing: 2px; }
+    .experience-block {
+      background: #00ff8808;
+      border: 1px solid #00ff8833;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .experience-val {
+      font-size: 18px;
+      letter-spacing: 3px;
+      color: #00ff88;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .experience-desc {
+      font-size: 12px;
+      color: #00ff8877;
+      line-height: 1.8;
     }
     .narrative {
       font-size: 12px;
       color: #2a6644;
-      line-height: 1.9;
-      margin-top: 12px;
+      line-height: 2;
+      border-top: 1px solid #00ff8811;
+      padding-top: 20px;
+      margin-top: 4px;
+    }
+    .boot-badge {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #000;
+      background: #00ff88;
+      padding: 4px 10px;
+      margin-top: 16px;
     }
 
+    /* ── MODEL EXPLANATION ── */
+    .model-block {
+      border: 1px solid #00ff8822;
+      padding: 28px 32px;
+      margin-bottom: 32px;
+    }
+    .model-block h2 {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: #2a6644;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+    .axes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: #00ff8811;
+      margin-bottom: 24px;
+    }
+    .axis-cell {
+      background: #000;
+      padding: 16px;
+    }
+    .axis-name { font-size: 10px; letter-spacing: 3px; color: #2a6644; margin-bottom: 10px; }
+    .axis-vals { font-size: 11px; color: #00ff8877; line-height: 2; }
+    .axis-vals span { display: block; }
+    .axis-vals .active-val { color: #00ff88; font-weight: bold; }
+
+    .states-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+    .states-table th {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #2a6644;
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid #00ff8822;
+      font-weight: normal;
+    }
+    .states-table td {
+      font-size: 11px;
+      color: #00ff8877;
+      padding: 8px 12px;
+      border-bottom: 1px solid #00ff8808;
+      line-height: 1.6;
+    }
+    .states-table tr.current-state td { color: #00ff88; background: #00ff8808; }
+    .states-table td:first-child { color: #00ff88; font-size: 10px; letter-spacing: 1px; }
+    .states-table tr.current-state td:first-child { color: #000; background: #00ff88; }
+
+    /* ── SIGNALS GRID ── */
+    .section-header {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: #2a6644;
+      margin-bottom: 12px;
+      margin-top: 32px;
+    }
     .signals-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -71,46 +169,15 @@
       border: 1px solid #00ff8822;
       margin-bottom: 32px;
     }
-    .signal-cell {
-      background: #000;
-      padding: 16px 20px;
-    }
-    .signal-key {
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: #2a6644;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-    .signal-val {
-      font-size: 13px;
-      color: #00ff88;
-      word-break: break-all;
-    }
-    .signal-why {
-      font-size: 10px;
-      color: #1a4433;
-      margin-top: 4px;
-      line-height: 1.5;
-    }
+    .signal-cell { background: #000; padding: 14px 18px; }
+    .signal-key { font-size: 10px; letter-spacing: 3px; color: #2a6644; margin-bottom: 5px; text-transform: uppercase; }
+    .signal-val { font-size: 13px; color: #00ff88; word-break: break-all; }
+    .signal-why { font-size: 10px; color: #1a4433; margin-top: 4px; line-height: 1.5; }
+    .signal-new { font-size: 9px; letter-spacing: 2px; color: #00ff8844; margin-top: 3px; }
 
-    .verify-block {
-      border: 1px solid #00ff8822;
-      padding: 24px 28px;
-      margin-bottom: 32px;
-    }
-    .verify-title {
-      font-size: 10px;
-      letter-spacing: 4px;
-      color: #2a6644;
-      margin-bottom: 16px;
-    }
-    .verify-block p {
-      font-size: 12px;
-      color: #2a6644;
-      line-height: 1.8;
-      margin-bottom: 12px;
-    }
+    /* ── VERIFY ── */
+    .verify-block { border: 1px solid #00ff8822; padding: 24px 28px; margin-bottom: 32px; }
+    .verify-block p { font-size: 12px; color: #2a6644; line-height: 1.8; margin-bottom: 10px; }
     code {
       display: block;
       background: #0a0a0a;
@@ -118,7 +185,7 @@
       padding: 12px 16px;
       font-size: 12px;
       color: #00ff88;
-      margin: 8px 0 16px;
+      margin: 6px 0 14px;
       white-space: pre-wrap;
       word-break: break-all;
     }
@@ -136,26 +203,8 @@
     .footer a { color: #00ff8866; text-decoration: none; }
     .footer a:hover { color: #00ff88; }
 
-    .boot-badge {
-      display: inline-block;
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: #000;
-      background: #00ff88;
-      padding: 4px 10px;
-      margin-top: 16px;
-    }
-
-    .section-header {
-      font-size: 10px;
-      letter-spacing: 4px;
-      color: #2a6644;
-      margin-bottom: 12px;
-      margin-top: 32px;
-    }
-
     @media (max-width: 600px) {
-      .signals-grid { grid-template-columns: 1fr; }
+      .signals-grid, .axes-grid, .intent-row { grid-template-columns: 1fr; }
       .profile-value { font-size: 22px; }
     }
   </style>
@@ -166,30 +215,172 @@
   <h1>presence.js</h1>
   <div class="sub">// THIS PAGE ALREADY KNOWS SOMETHING ABOUT YOU</div>
 
+  <!-- MANIFESTO -->
+  <div class="manifesto">
+    <p>
+      Large companies have spent billions building systems that figure out who you are before you speak.
+      They call it personalisation. What they mean is: <strong>serve the right thing to the right person at the right moment.</strong>
+    </p>
+    <p>
+      That capability used to cost a data warehouse, a CDP, an ML team, and a cookie consent banner.
+      It was locked behind enterprise contracts. It belonged to companies, not builders.
+    </p>
+    <p>
+      <strong>Presence changes that.</strong> One 12KB script. No backend. No cookies. No network calls.
+      It reads ten browser signals that were always there, classifies your visitor into one of nine intent states,
+      and tells your page exactly what to show and what to suppress.
+      In under 2 milliseconds. Before your first component renders.
+    </p>
+    <p>
+      This is what <strong>democratising the internet</strong> looks like.
+      Not another SaaS dashboard at $500/month. A file. That anyone can drop into any page.
+      And suddenly their site knows the difference between someone who just arrived and someone who is ready to act.
+    </p>
+  </div>
+
+  <!-- DETECTED PROFILE + INTENT STATE -->
   <div class="profile-block">
-    <div class="profile-label">// WHO PRESENCE THINKS YOU ARE</div>
+    <div class="label">// WHO YOU ARE</div>
     <div class="profile-value" id="profile">...</div>
-    <div class="profile-label">// HOW IT KNOWS</div>
-    <div class="signal-val" id="source" style="font-size:14px;letter-spacing:2px;">...</div>
-    <div class="profile-desc" id="profile-desc"></div>
+
+    <div class="label">// YOUR INTENT STATE RIGHT NOW - 3 AXES</div>
+    <div class="intent-row">
+      <div class="intent-cell">
+        <div class="label">ARRIVAL ENERGY</div>
+        <div class="intent-val" id="axis-energy">...</div>
+      </div>
+      <div class="intent-cell">
+        <div class="label">COGNITIVE MODE</div>
+        <div class="intent-val" id="axis-mode">...</div>
+      </div>
+      <div class="intent-cell">
+        <div class="label">TRUST LEVEL</div>
+        <div class="intent-val" id="axis-trust">...</div>
+      </div>
+    </div>
+
+    <div class="label">// WHAT THIS PAGE SHOULD DO FOR YOU</div>
+    <div class="experience-block">
+      <div class="experience-val" id="experience">...</div>
+      <div class="experience-desc" id="experience-desc"></div>
+    </div>
+
+    <div class="label">// HOW IT KNOWS</div>
+    <div class="intent-val" id="source" style="font-size:14px;letter-spacing:2px;margin-bottom:12px;">...</div>
+
     <div class="narrative" id="narrative"></div>
     <div class="boot-badge" id="boot-badge"></div>
   </div>
 
-  <div class="section-header">// EVERY SIGNAL PRESENCE READ - AND WHY</div>
+  <!-- THE MODEL -->
+  <div class="model-block">
+    <h2>// THE MODEL - 3 AXES, 9 INTENT STATES</h2>
+
+    <div class="axes-grid">
+      <div class="axis-cell">
+        <div class="axis-name">AXIS 1 - ARRIVAL ENERGY</div>
+        <div class="axis-vals" id="axis1-vals">
+          <span>passive</span>
+          <span>active</span>
+          <span>committed</span>
+        </div>
+        <div class="axis-name" style="margin-top:10px;">HOW: referrer + visit history</div>
+      </div>
+      <div class="axis-cell">
+        <div class="axis-name">AXIS 2 - COGNITIVE MODE</div>
+        <div class="axis-vals" id="axis2-vals">
+          <span>exploring</span>
+          <span>evaluating</span>
+          <span>executing</span>
+        </div>
+        <div class="axis-name" style="margin-top:10px;">HOW: scroll depth + session depth + UTM</div>
+      </div>
+      <div class="axis-cell">
+        <div class="axis-name">AXIS 3 - TRUST LEVEL</div>
+        <div class="axis-vals" id="axis3-vals">
+          <span>stranger</span>
+          <span>acquaintance</span>
+          <span>insider</span>
+        </div>
+        <div class="axis-name" style="margin-top:10px;">HOW: days since first visit + intensity</div>
+      </div>
+    </div>
+
+    <table class="states-table" id="states-table">
+      <thead>
+        <tr>
+          <th>INTENT STATE</th>
+          <th>WHO THEY ARE</th>
+          <th>WHAT THEY NEED</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-state="passive_exploring_stranger">
+          <td>PASSIVE / EXPLORING / STRANGER</td>
+          <td>Random discovery. Decided in 3 seconds.</td>
+          <td>Hook fast. One sentence. One CTA.</td>
+        </tr>
+        <tr data-state="passive_evaluating_stranger">
+          <td>PASSIVE / EVALUATING / STRANGER</td>
+          <td>Arrived via link, reading carefully.</td>
+          <td>Social proof first. Specifics. No noise.</td>
+        </tr>
+        <tr data-state="passive_evaluating_acquaintance">
+          <td>PASSIVE / EVALUATING / ACQUAINTANCE</td>
+          <td>Drifted back. Still deciding.</td>
+          <td>The one thing that removes doubt.</td>
+        </tr>
+        <tr data-state="active_exploring_stranger">
+          <td>ACTIVE / EXPLORING / STRANGER</td>
+          <td>Came looking. First time here.</td>
+          <td>Lead with the thesis, not features.</td>
+        </tr>
+        <tr data-state="active_evaluating_stranger">
+          <td>ACTIVE / EVALUATING / STRANGER</td>
+          <td>Researching you specifically.</td>
+          <td>Evidence. Depth. Code over copy.</td>
+        </tr>
+        <tr data-state="active_evaluating_acquaintance">
+          <td>ACTIVE / EVALUATING / ACQUAINTANCE</td>
+          <td>Coming back to decide.</td>
+          <td>Remove the last objection.</td>
+        </tr>
+        <tr data-state="committed_executing_acquaintance">
+          <td>COMMITTED / EXECUTING / ACQUAINTANCE</td>
+          <td>Ready to act. Nearly there.</td>
+          <td>Kill friction. Just the button.</td>
+        </tr>
+        <tr data-state="committed_executing_insider">
+          <td>COMMITTED / EXECUTING / INSIDER</td>
+          <td>Power user. Already sold.</td>
+          <td>Give them the next level.</td>
+        </tr>
+        <tr data-state="committed_evaluating_insider">
+          <td>COMMITTED / EVALUATING / INSIDER</td>
+          <td>Deep engagement. Invested.</td>
+          <td>Reward them. Case studies, depth, community.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SIGNALS GRID -->
+  <div class="section-header">// EVERY SIGNAL READ - AND HOW</div>
   <div class="signals-grid" id="signals-grid"></div>
 
+  <!-- VERIFY -->
   <div class="verify-block">
-    <div class="verify-title">// VERIFY IT YOURSELF - NO TRUST REQUIRED</div>
-    <p>Open DevTools (F12) and run this in the console. You will see every signal printed:</p>
+    <div class="label" style="margin-bottom:16px;">// VERIFY IT YOURSELF</div>
+    <p>Open DevTools (F12). In the console, type this exactly:</p>
     <code>Presence.debug()</code>
     <p>Check the Network tab. You will see zero outbound requests. Nothing leaves your browser.</p>
-    <p>See exactly what was written to localStorage:</p>
+    <p>See what was written to localStorage:</p>
     <code>localStorage.getItem('_ptv')
-localStorage.getItem('_pfs')
-localStorage.getItem('_pls')</code>
+localStorage.getItem('_psd')
+localStorage.getItem('_ptop')</code>
+    <p>Scroll to the bottom of this page, wait 10 seconds, then close and reopen. Your scroll depth and time on page will be stored. Presence will adjust your cognitive mode accordingly on the next visit.</p>
     <p>Reset and reload as a fresh visitor:</p>
-    <code>['_ptv','_pfs','_pls'].forEach(k=>localStorage.removeItem(k));sessionStorage.clear();location.reload();</code>
+    <code>['_ptv','_pfs','_pls','_psd','_ptop'].forEach(k=>localStorage.removeItem(k));sessionStorage.clear();location.reload();</code>
   </div>
 
   <div class="footer">
@@ -202,87 +393,130 @@ localStorage.getItem('_pls')</code>
 <script>
   var s = Presence.signals;
 
-  // --- Profile descriptions ---
-  var PROFILE_DESCS = {
-    researcher: 'Presence flagged you as a researcher. Your referral source matched an academic or professional network pattern.',
-    founder:    'Presence flagged you as a founder. Your referral source matched Product Hunt, Hacker News, Twitter/X, or IndieHackers.',
-    developer:  'Presence flagged you as a developer. Your referral source matched GitHub, Stack Overflow, GitLab, dev.to, or a technical subreddit.',
-    deep_work:  'Presence flagged you as a focused, intentional visitor. You arrived direct, early in the day, or as a high-intensity returning user.',
-    default:    'Presence could not match a specific profile. You arrived direct with no referral signal.',
+  var EXPERIENCE_DESC = {
+    hook_fast:       'You just arrived. Presence recommends: one headline, one CTA. You have 3 seconds.',
+    proof_first:     'You are evaluating. Presence recommends: lead with evidence, suppress the pitch.',
+    remove_doubt:    'You have been here before and have not committed. Presence recommends: surface the thing blocking conversion.',
+    thesis_first:    'You came with intent. Presence recommends: lead with the idea, not the features.',
+    reduce_friction: 'You are ready to act. Presence recommends: remove everything except the action.',
+    next_level:      'You are a power user. Presence recommends: show depth, advanced docs, what comes next.',
+    deepen_value:    'You are invested. Presence recommends: community, case studies, advanced configuration.',
   };
 
-  // --- Per-signal explanations ---
-  function getSignalWhy(key, val) {
-    var map = {
-      timeWindow:      'The hour you loaded this page. Presence uses this to detect focus sessions vs casual browsing.',
-      dayContext:      'Weekday vs weekend. Visitor intent shifts significantly between the two.',
-      device:          'Detected from screen width and touch point count. No user-agent string needed.',
-      market:          'Derived from your timezone offset. No IP lookup, no geolocation API.',
-      language:        'Your browser language setting. Used to detect locale and region.',
-      timezone:        'Read from Intl.DateTimeFormat. Zero network calls required.',
-      hardware:        'CPU core count from navigator.hardwareConcurrency. A proxy for technical sophistication.',
-      intensity:       'Calculated from total visit count across all sessions. High means repeat intentional usage.',
-      isReturning:     'True if localStorage shows a previous visit timestamp.',
-      totalVisits:     'Stored in localStorage. Counts every page load across all sessions.',
-      sessionVisits:   'Stored in sessionStorage. Resets when you close the tab.',
-      daysSinceFirst:  'Calculated from your first-seen timestamp in localStorage.',
-      referrer:        'document.referrer. The URL you came from, if any.',
-      bootMs:          'Time from script execution to classification complete. Measured in milliseconds.',
-    };
-    return map[key] || '';
-  }
+  var SIGNAL_WHY = {
+    bootMs:               'Time from script execution to full classification. Measured in milliseconds.',
+    intentState:          'The cross-product of arrival energy, cognitive mode, and trust level.',
+    arrivalEnergy:        'How intentional this visit was. Derived from referrer + visit history.',
+    cognitiveMode:        'What you are doing right now. Derived from scroll depth, session depth, and UTM signals.',
+    trustLevel:           'Whether you know this site. Derived from days since first visit and total visit intensity.',
+    recommendedExperience:'What this page should emphasise based on your intent state.',
+    profile:              'Your visitor archetype based on referral source, hardware, and time signals.',
+    source:               'Where Presence thinks you came from.',
+    device:               'Detected from screen width and touch point count. No user-agent parsing.',
+    hardwareProfile:      'CPU core count from navigator.hardwareConcurrency. A proxy for technical sophistication.',
+    market:               'Derived from your timezone offset. No IP lookup or geolocation API.',
+    timezone:             'Read from Intl.DateTimeFormat. Zero network calls required.',
+    language:             'Your browser language setting.',
+    timeWindow:           'The time-of-day window you loaded this page in.',
+    dayContext:           'Weekday vs weekend. Visitor intent shifts significantly between the two.',
+    intensity:            'Total visit count bucketed into low, medium, or high.',
+    isReturning:          'True if localStorage shows a previous visit timestamp.',
+    totalVisits:          'Stored in localStorage. Every page load ever recorded.',
+    sessionVisits:        'Stored in sessionStorage. Resets when you close the tab.',
+    scrollDepthLastVisit: 'NEW v2 - How far you scrolled last visit (%). Reveals scanner vs reader.',
+    timeOnPageLastVisit:  'NEW v2 - How long you spent last visit (seconds). Reveals passive drift vs intentional read.',
+    utmContent:           'NEW v2 - utm_content parameter. Carries creative or audience variant intent.',
+    utmTerm:              'NEW v2 - utm_term parameter. Carries explicit search keyword intent.',
+    referrer:             'document.referrer. The URL you arrived from, if any.',
+  };
 
-  // --- Build narrative sentence ---
   function buildNarrative(s) {
     var parts = [];
-    parts.push('You are on a ' + s.device.toLowerCase() + ' in the ' + s.market + ' market.');
-    parts.push('Your local time puts you in a ' + s.timeWindow.toLowerCase().replace('_', ' ') + ' window on a ' + s.dayContext.toLowerCase() + '.');
+    parts.push('You are on a ' + s.device.toLowerCase() + ' in the ' + s.market + ' market, ' + s.timeWindow.toLowerCase().replace('_', ' ') + ' on a ' + s.dayContext.toLowerCase() + '.');
     if (s.isReturning) {
-      parts.push('You have visited ' + s.totalVisits + ' times. Presence recognises you as a returning visitor.');
+      parts.push('You have been here before. ' + s.totalVisits + ' visits recorded. Last visit you scrolled ' + s.scrollDepthLastVisit + '% of the page and spent ' + s.timeOnPageLastVisit + ' seconds reading.');
     } else {
-      parts.push('This is your first visit. Presence has no prior data on you.');
+      parts.push('This is your first visit. No prior data exists. Presence is classifying you from live signals only.');
     }
-    parts.push('Your hardware suggests ' + s.hardwareProfile.toLowerCase() + ' capability (' + s.cores + ' cores detected).');
-    parts.push('All of this was determined in ' + s.bootMs + 'ms. No server was contacted.');
+    parts.push('Your hardware (' + s.cores + ' cores) reads as ' + s.hardwareProfile.toLowerCase().replace('_', ' ') + '.');
+    parts.push('All signals resolved in ' + s.bootMs + 'ms. No server contacted. No data left your browser.');
     return parts.join(' ');
   }
 
-  // --- Render profile block ---
-  document.getElementById('profile').textContent      = s.profile.toUpperCase().replace(/_/g, ' ');
-  document.getElementById('source').textContent       = s.source.toUpperCase();
-  document.getElementById('profile-desc').textContent = PROFILE_DESCS[s.profile] || '';
-  document.getElementById('narrative').textContent    = buildNarrative(s);
-  document.getElementById('boot-badge').textContent   = 'CLASSIFIED IN ' + s.bootMs + 'ms - ZERO NETWORK CALLS';
+  // Render profile
+  document.getElementById('profile').textContent       = s.profile.toUpperCase().replace(/_/g, ' ');
+  document.getElementById('source').textContent        = s.source.toUpperCase();
+  document.getElementById('axis-energy').textContent   = s.arrivalEnergy.toUpperCase();
+  document.getElementById('axis-mode').textContent     = s.cognitiveMode.toUpperCase();
+  document.getElementById('axis-trust').textContent    = s.trustLevel.toUpperCase();
+  document.getElementById('experience').textContent    = s.recommendedExperience.toUpperCase().replace(/_/g, ' ');
+  document.getElementById('experience-desc').textContent = EXPERIENCE_DESC[s.recommendedExperience] || '';
+  document.getElementById('narrative').textContent     = buildNarrative(s);
+  document.getElementById('boot-badge').textContent    = 'CLASSIFIED IN ' + s.bootMs + 'ms - ZERO NETWORK CALLS';
 
-  // --- Render signals grid with explanations ---
+  // Highlight current axis values
+  ['passive','active','committed'].forEach(function(v) {
+    var el = document.querySelector('#axis1-vals span:nth-child(' + ({'passive':1,'active':2,'committed':3}[v]) + ')');
+    if (el && s.arrivalEnergy === v) el.className = 'active-val';
+  });
+  ['exploring','evaluating','executing'].forEach(function(v) {
+    var el = document.querySelector('#axis2-vals span:nth-child(' + ({'exploring':1,'evaluating':2,'executing':3}[v]) + ')');
+    if (el && s.cognitiveMode === v) el.className = 'active-val';
+  });
+  ['stranger','acquaintance','insider'].forEach(function(v) {
+    var el = document.querySelector('#axis3-vals span:nth-child(' + ({'stranger':1,'acquaintance':2,'insider':3}[v]) + ')');
+    if (el && s.trustLevel === v) el.className = 'active-val';
+  });
+
+  // Highlight current state row
+  var rows = document.querySelectorAll('.states-table tbody tr');
+  rows.forEach(function(row) {
+    if (row.getAttribute('data-state') === s.intentState) {
+      row.className = 'current-state';
+    }
+  });
+
+  // Signals grid
   var SHOW = [
-    ['bootMs',        s.bootMs + 'ms'],
-    ['profile',       s.profile],
-    ['source',        s.source],
-    ['device',        s.device],
-    ['hardware',      s.hardwareProfile + ' (' + s.cores + ' cores)'],
-    ['market',        s.market],
-    ['timezone',      s.timezone || 'unavailable'],
-    ['language',      s.lang],
-    ['timeWindow',    s.timeWindow],
-    ['dayContext',    s.dayContext],
-    ['intensity',     s.intensity],
-    ['isReturning',   String(s.isReturning)],
-    ['totalVisits',   String(s.totalVisits)],
-    ['sessionVisits', String(s.sessionVisits)],
-    ['daysSinceFirst',s.daysSinceFirst + ' days'],
-    ['referrer',      s.referrer || 'none'],
+    ['bootMs',               s.bootMs + 'ms',       false],
+    ['intentState',          s.intentState,          false],
+    ['arrivalEnergy',        s.arrivalEnergy,        false],
+    ['cognitiveMode',        s.cognitiveMode,        false],
+    ['trustLevel',           s.trustLevel,           false],
+    ['recommendedExperience',s.recommendedExperience,false],
+    ['profile',              s.profile,              false],
+    ['source',               s.source,               false],
+    ['device',               s.device,               false],
+    ['hardwareProfile',      s.hardwareProfile + ' (' + s.cores + ' cores)', false],
+    ['market',               s.market,               false],
+    ['timezone',             s.timezone || 'unavailable', false],
+    ['language',             s.lang,                 false],
+    ['timeWindow',           s.timeWindow,           false],
+    ['dayContext',           s.dayContext,            false],
+    ['intensity',            s.intensity,            false],
+    ['isReturning',          String(s.isReturning),  false],
+    ['totalVisits',          String(s.totalVisits),  false],
+    ['sessionVisits',        String(s.sessionVisits),false],
+    ['scrollDepthLastVisit', s.scrollDepthLastVisit + '%', true],
+    ['timeOnPageLastVisit',  s.timeOnPageLastVisit + 's',  true],
+    ['utmContent',           s.utmContent || 'none', true],
+    ['utmTerm',              s.utmTerm    || 'none', true],
+    ['referrer',             s.referrer   || 'none', false],
   ];
 
   var grid = document.getElementById('signals-grid');
-  SHOW.forEach(function(pair) {
-    var why = getSignalWhy(pair[0], pair[1]);
+  SHOW.forEach(function(item) {
+    var key  = item[0];
+    var val  = item[1];
+    var isNew = item[2];
+    var why  = SIGNAL_WHY[key] || '';
     var cell = document.createElement('div');
     cell.className = 'signal-cell';
     cell.innerHTML =
-      '<div class="signal-key">' + pair[0] + '</div>' +
-      '<div class="signal-val">' + pair[1] + '</div>' +
-      (why ? '<div class="signal-why">' + why + '</div>' : '');
+      '<div class="signal-key">' + key + '</div>' +
+      '<div class="signal-val">' + val + '</div>' +
+      (why  ? '<div class="signal-why">' + why + '</div>' : '') +
+      (isNew ? '<div class="signal-new">NEW IN V2.0.0</div>' : '');
     grid.appendChild(cell);
   });
 </script>
