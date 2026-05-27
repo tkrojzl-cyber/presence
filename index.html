@@ -57,7 +57,7 @@
     }
     .intent-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 1px;
       background: #00ff8811;
       margin-bottom: 20px;
@@ -119,7 +119,7 @@
     }
     .axes-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 1px;
       background: #00ff8811;
       margin-bottom: 24px;
@@ -205,7 +205,7 @@
     }
     .links-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 1px;
       background: #00ff8811;
     }
@@ -466,28 +466,17 @@ localStorage.getItem('_ptop')</code>
   <!-- LINKS SECTION -->
   <div class="links-section">
     <div class="links-header">// BUILT BY BRAINIAC LTD</div>
-    <div class="links-grid">
+    <div class="links-grid links-grid--two">
 
       <div class="link-card">
         <div class="link-card-top">
-          <div class="link-label">PRESENCE.JS</div>
+          <div class="link-label">GITHUB</div>
           <div class="link-url">github.com/tkrojzl-cyber/presence</div>
-          <div class="link-desc">This library. MIT. Zero dependencies. Drop it in.</div>
-          <a href="https://tkrojzl-cyber.github.io/presence" target="_blank" class="link-btn">OPEN DEMO</a>
+          <div class="link-desc">Source code. MIT. Read it, fork it, ship it. Zero dependencies confirmed.</div>
+          <a href="https://github.com/tkrojzl-cyber/presence" target="_blank" class="link-btn">VIEW SOURCE</a>
         </div>
-        <div class="qr-wrap" id="qr-presence"></div>
-        <div class="qr-caption">Scan to open demo</div>
-      </div>
-
-      <div class="link-card">
-        <div class="link-card-top">
-          <div class="link-label">VOID</div>
-          <div class="link-url">refreshing-void-market-pulse.base44.app</div>
-          <div class="link-desc">Signal filtering. Cut through market noise. Built on the same zero-infrastructure philosophy.</div>
-          <a href="https://refreshing-void-market-pulse.base44.app" target="_blank" class="link-btn">OPEN VOID</a>
-        </div>
-        <div class="qr-wrap" id="qr-void"></div>
-        <div class="qr-caption">Scan to open VOID</div>
+        <div class="qr-wrap" id="qr-github"></div>
+        <div class="qr-caption">Scan to open repo</div>
       </div>
 
       <div class="link-card">
@@ -507,8 +496,7 @@ localStorage.getItem('_ptop')</code>
   <div class="footer">
     <a href="https://github.com/tkrojzl-cyber/presence" target="_blank">github</a>
     <a href="https://superchargebuilds.pro" target="_blank">superchargebuilds.pro</a>
-    <a href="https://refreshing-void-market-pulse.base44.app" target="_blank">void</a>
-    <span style="color:#1a4433">presence.js v<span id="footer-version"></span> &mdash; built by brainiac ltd &mdash; mit license</span>
+    <span style="color:#1a4433">presence.js v<span id="footer-version"></span> -- built by brainiac ltd -- mit license</span>
   </div>
 
 </div>
@@ -733,8 +721,7 @@ localStorage.getItem('_ptop')</code>
     document.getElementById('footer-version').textContent = Presence.version;
 
     var QR_URLS = {
-      'qr-presence': 'https://tkrojzl-cyber.github.io/presence',
-      'qr-void':     'https://refreshing-void-market-pulse.base44.app',
+      'qr-github':   'https://github.com/tkrojzl-cyber/presence',
       'qr-brainiac': 'https://superchargebuilds.pro'
     };
     Object.keys(QR_URLS).forEach(function(id) {
