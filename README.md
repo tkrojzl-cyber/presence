@@ -227,15 +227,14 @@ To watch it yourself:
 3. Type: `Presence.get('bootMs')`
 4. Type: `Presence.debug()` to see the full signal table
 
-To stress-test it yourself:
+To confirm it yourself — open any page with presence.js and run in console:
 
 ```js
-var t0 = performance.now();
-// Reload the detect logic manually in console — or just note that
-// Presence.signals is already populated synchronously by the time
-// your console opens. bootMs is stamped at script execution time.
 console.log('Boot time:', Presence.get('bootMs'), 'ms');
 ```
+
+`bootMs` is stamped at script execution time — before your console opens.
+It is a measurement, not a promise. On any modern machine it will be 0 or 1.
 
 ### No cookies written
 
