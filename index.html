@@ -4,326 +4,1265 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>presence.js - live demo</title>
-  <script src="presence.js"></script>
+  <script>
+/**
+ * presence.js v2.1.0
+ * Zero-dependency visitor intelligence layer.
+ * No cookies. No backend. No network calls.
+ *
+ * Classifies every visitor into one of 9 intent states across three axes:
+ *   Axis 1 - Arrival Energy:   passive / active / committed
+ *   Axis 2 - Cognitive Mode:   exploring / evaluating / executing
+ *   Axis 3 - Trust Level:      stranger / acquaintance / insider
+ *
+ * Built by Brainiac Ltd - https://superchargebuilds.pro
+ * MIT License
+ */
+
+(function (global) {
+  'use strict';
+
+  var _BOOT = typeof performance !== 'undefined' ? performance.now() : 0;
+
+  // â”€â”€ PERSIST SCROLL DEPTH + TIME ON PAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Written to localStorage on beforeunload so next visit can read them
+  var _pageStart = Date.now();
+  try {
+    window.addEventListener('beforeunload', function () {
+      var scrollDepth = 0;
+      try {
+        var scrolled   = window.scrollY || document.documentElement.scrollTop || 0;
+        var docHeight  = Math.max(
+          document.body.scrollHeight, document.documentElement.scrollHeight,
+          document.body.offsetHeight, document.documentElement.offsetHeight
+        ) - window.innerHeight;
+        scrollDepth = docHeight > 0 ? Math.round((scrolled / docHeight) * 100) : 100;
+      } catch (e) {}
+      var timeOnPage = Math.round((Date.now() - _pageStart) / 1000); // seconds
+      try {
+        localStorage.setItem('_psd', scrollDepth);     // scroll depth last visit (%)
+        localStorage.setItem('_ptop', timeOnPage);     // time on page last visit (seconds)
+      } catch (e) {}
+    });
+  } catch (e) {}
+
+  function detect() {
+    var now      = new Date();
+    var referrer = document.referrer || '';
+    var params   = new URLSearchParams(window.location.search);
+    var ref      = (params.get('ref') || '').toLowerCase();
+    var path     = window.location.pathname;
+    var src      = (referrer + ' ' + ref).toLowerCase();
+
+    // â”€â”€ SIGNAL 1 â€” REFERRAL SOURCE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // document.referrer + URLSearchParams ref/utm_source
+
+    // â”€â”€ SIGNAL 2 â€” TIME OF DAY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    var hour = now.getHours();
+    var timeWindow =
+      (hour >= 5  && hour < 8)  ? 'EARLY'     :
+      (hour >= 8  && hour < 12) ? 'DEEP_WORK' :
+      (hour >= 12 && hour < 17) ? 'AFTERNOON' :
+      (hour >= 17 && hour < 22) ? 'EVENING'   : 'LATE';
+
+    // â”€â”€ SIGNAL 3 â€” DAY OF WEEK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    var dayOfWeek  = now.getDay();
+    var isWeekend  = dayOfWeek === 0 || dayOfWeek === 6;
+    var dayContext = isWeekend ? 'WEEKEND' : 'WEEKDAY';
+
+    // â”€â”€ SIGNAL 4 â€” DEVICE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    var width       = window.innerWidth;
+    var touchPoints = navigator.maxTouchPoints || 0;
+    var isTouch     = touchPoints > 0;
+    var device      =
+      (width < 768 && isTouch)  ? 'MOBILE'  :
+      (width < 768 && !isTouch) ? 'NARROW'  :
+      (width >= 1440)           ? 'WIDE'    : 'DESKTOP';
+
+// â”€â”€ CAPABILITY MODEL â€” MULTI-SIGNAL COMPOSITE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //
+    // Research basis:
+    // - Cores alone is a weak proxy. Buckets cap at 8 for privacy reasons (spec).
+    // - deviceMemory is the strongest single hardware signal. Correlates directly
+    //   with RAM, which predicts whether someone is on a budget device or a workstation.
+    // - devicePixelRatio separates retina/4K displays (prosumer/developer) from
+    //   standard displays. 2x+ = Apple, high-end Windows. 1x = budget/office.
+    // - Network quality (navigator.connection) reveals infrastructure context.
+    //   4g/wifi with low rtt = urban professional. slow-2g/3g = mobile-first market.
+    // - Dark mode preference correlates with developer/power user identity.
+    //   Research: ~80% of developers use dark mode vs ~35% of general users.
+    //   (JetBrains Developer Survey 2023, Stack Overflow Developer Survey 2024)
+    // - Font smoothing / subpixel rendering presence = non-default OS config =
+    //   technically engaged user who customises their environment.
+    // - prefers-reduced-motion = accessibility-aware user = likely more technically
+    //   or professionally engaged (knows system preferences exist).
+    // - Pointer precision: 'fine' (mouse/trackpad) vs 'coarse' (finger) separates
+    //   production/creation contexts from consumption contexts.
+    // - Screen area (width x height) is a stronger signal than width alone.
+    //   >2M pixels = large external monitor = workstation = professional context.
+    // - Color depth: 30bit+ = pro display pipeline. 24bit = standard. <24 = low end.
+    // - Timezone UTC offset precision: non-round offsets (UTC+5:30, UTC+5:45)
+    //   identify specific emerging markets (India, Nepal) with distinct behaviour patterns.
+
+    // Raw capability signals
+    var cores       = navigator.hardwareConcurrency || 0;
+    var deviceMemory = 0;
+    try { deviceMemory = navigator.deviceMemory || 0; } catch(e) {}
+
+    var pixelRatio  = window.devicePixelRatio || 1;
+    var screenArea  = (screen.width || 0) * (screen.height || 0);
+    var colorDepth  = screen.colorDepth || 24;
+
+    // Network quality
+    var connectionQuality = 'unknown';
+    var downlink          = 0;
+    var rtt               = 999;
+    try {
+      var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (conn) {
+        connectionQuality = conn.effectiveType || 'unknown'; // slow-2g | 2g | 3g | 4g
+        downlink          = conn.downlink || 0;   // Mbps
+        rtt               = conn.rtt     || 999;  // ms
+      }
+    } catch(e) {}
+
+    // Dark mode â€” strongest non-hardware sophistication signal
+    var prefersDark = false;
+    try {
+      prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } catch(e) {}
+
+    // Pointer precision â€” mouse/trackpad vs touch finger
+    var pointerPrecision = 'unknown';
+    try {
+      if (window.matchMedia('(pointer: fine)').matches)   pointerPrecision = 'fine';
+      else if (window.matchMedia('(pointer: coarse)').matches) pointerPrecision = 'coarse';
+    } catch(e) {}
+
+    // Reduced motion â€” accessibility-aware = technically engaged
+    var prefersReducedMotion = false;
+    try {
+      prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch(e) {}
+
+    // Hover capability â€” non-hover = pure touch = consumption context
+    var canHover = false;
+    try { canHover = window.matchMedia('(hover: hover)').matches; } catch(e) {}
+
+    // â”€â”€ CAPABILITY SCORE â€” 0 to 100 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //
+    // Weighted composite. Weights derived from signal reliability and
+    // psychological/market research on what actually predicts technical sophistication:
+    //
+    // deviceMemory    (25pts) â€” strongest single predictor of device class
+    // cores           (15pts) â€” useful but capped at 8 by spec (privacy noise)
+    // pixelRatio      (15pts) â€” retina/4K = prosumer or developer environment
+    // screenArea      (10pts) â€” large monitor = workstation context
+    // connectionQuality(10pts)â€” infrastructure proxy
+    // prefersDark     (10pts) â€” developer identity marker (80% vs 35% base rate)
+    // pointerPrecision(8pts)  â€” fine = creation context, coarse = consumption
+    // colorDepth      (4pts)  â€” pro display pipeline
+    // prefersReducedMotion(2pts) â€” system-level awareness
+    // canHover        (1pt)   â€” hover = non-touch production context
+
+    var capScore = 0;
+
+    // deviceMemory: 0.25=5pts, 0.5=10pts, 1=15pts, 2=18pts, 4+=25pts
+    if      (deviceMemory >= 4) capScore += 25;
+    else if (deviceMemory >= 2) capScore += 18;
+    else if (deviceMemory >= 1) capScore += 15;
+    else if (deviceMemory > 0)  capScore += 8;
+    // if deviceMemory unavailable (Firefox, Safari) â€” neutral, score from other signals
+
+    // cores: capped at 8 by spec, so max signal is 8+
+    if      (cores >= 8) capScore += 15;
+    else if (cores >= 4) capScore += 10;
+    else if (cores >= 2) capScore += 5;
+
+    // pixelRatio: 3+ = high-end Apple/4K, 2 = retina/standard HiDPI, 1 = standard
+    if      (pixelRatio >= 3) capScore += 15;
+    else if (pixelRatio >= 2) capScore += 10;
+    else if (pixelRatio >= 1.5) capScore += 5;
+
+    // screenArea: >2M = large external monitor, >1M = standard large display
+    if      (screenArea >= 2073600) capScore += 10; // 1920x1080+
+    else if (screenArea >= 1228800) capScore += 7;  // 1280x960+
+    else if (screenArea >= 786432)  capScore += 3;  // 1024x768+
+
+    // connection: 4g with good downlink = high infrastructure
+    if (connectionQuality === '4g' && downlink >= 10) capScore += 10;
+    else if (connectionQuality === '4g')               capScore += 7;
+    else if (connectionQuality === '3g')               capScore += 3;
+    else if (connectionQuality === 'unknown')          capScore += 5; // neutral
+
+    // dark mode: strongest behaviour signal
+    if (prefersDark) capScore += 10;
+
+    // pointer precision
+    if (pointerPrecision === 'fine') capScore += 8;
+
+    // color depth
+    if (colorDepth >= 30)     capScore += 4;
+    else if (colorDepth >= 24) capScore += 2;
+
+    // accessibility awareness
+    if (prefersReducedMotion) capScore += 2;
+
+    // hover
+    if (canHover) capScore += 1;
+
+    // Cap at 100
+    capScore = Math.min(capScore, 100);
+
+    // â”€â”€ CAPABILITY TIER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Maps to psychological segment:
+    // SOVEREIGN  (75-100): Pro workstation. Dark mode. Retina. High RAM. Fine pointer.
+    //                       Likely: developer, designer, researcher, power user.
+    //                       Serve: density, depth, no hand-holding.
+    // CAPABLE    (45-74):  Mid-range professional. Decent RAM. Standard display.
+    //                       Likely: knowledge worker, manager, intermediate user.
+    //                       Serve: clarity with depth available.
+    // STANDARD   (20-44):  Average consumer device. Touch likely. Standard display.
+    //                       Likely: general public, mobile-first user.
+    //                       Serve: simplicity, one action at a time.
+    // CONSTRAINED (0-19):  Low RAM, slow connection, or heavily restricted device.
+    //                       Likely: budget device, emerging market, old hardware.
+    //                       Serve: speed, minimal assets, zero friction.
+    var capabilityTier =
+      capScore >= 75 ? 'SOVEREIGN'   :
+      capScore >= 45 ? 'CAPABLE'     :
+      capScore >= 20 ? 'STANDARD'    : 'CONSTRAINED';
+
+    // Legacy alias for backwards compatibility
+    var hardwareProfile =
+      capScore >= 75 ? 'HIGH_END' :
+      capScore >= 45 ? 'MID'      :
+      capScore >= 20 ? 'STANDARD' : 'LOW';
+
+    // â”€â”€ SIGNAL 6 â€” LOCALE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    var lang        = (navigator.language || 'en').toLowerCase();
+    var langPrimary = lang.split('-')[0];
+    var langRegion  = lang.includes('-') ? lang.split('-')[1].toUpperCase() : '';
+
+    // â”€â”€ SIGNAL 7 â€” TIMEZONE / MARKET â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    var timezone = '';
+    try { timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    var market =
+      timezone.includes('America')   ? 'NA'   :
+      timezone.includes('Europe')    ? 'EU'   :
+      timezone.includes('Asia')      ? 'APAC' :
+      timezone.includes('Pacific')   ? 'APAC' :
+      timezone.includes('Australia') ? 'APAC' : 'OTHER';
+
+    // â”€â”€ SIGNAL 8 â€” SESSION HISTORY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    var sessionVisits = 1;
+    try {
+      sessionVisits = parseInt(sessionStorage.getItem('_pv') || '0', 10) + 1;
+      sessionStorage.setItem('_pv', sessionVisits);
+    } catch (e) {}
+
+    // â”€â”€ SIGNAL 9 â€” VISIT INTENSITY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    var totalVisits = 1;
+    try {
+      totalVisits = parseInt(localStorage.getItem('_ptv') || '0', 10) + 1;
+      localStorage.setItem('_ptv', totalVisits);
+    } catch (e) {}
+
+    // â”€â”€ SIGNAL 10 â€” RETURNING VISITOR + RECENCY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    var firstSeen      = null;
+    var lastSeen       = null;
+    var isReturning    = false;
+    var daysSinceFirst = 0;
+    var daysSinceLast  = 0;
+    try {
+      firstSeen = localStorage.getItem('_pfs');
+      lastSeen  = localStorage.getItem('_pls');
+      var nowTs = Date.now().toString();
+      if (!firstSeen) {
+        localStorage.setItem('_pfs', nowTs);
+        firstSeen = nowTs;
+      } else {
+        isReturning    = true;
+        daysSinceFirst = Math.floor((Date.now() - parseInt(firstSeen, 10)) / 86400000);
+      }
+      if (lastSeen) {
+        daysSinceLast = Math.floor((Date.now() - parseInt(lastSeen, 10)) / 86400000);
+      }
+      localStorage.setItem('_pls', nowTs);
+    } catch (e) {}
+
+    // â”€â”€ SIGNAL 11 â€” SCROLL DEPTH (last visit) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Persisted on beforeunload. Reveals scanner vs reader.
+    var scrollDepthLastVisit = 0;
+    try {
+      scrollDepthLastVisit = parseInt(localStorage.getItem('_psd') || '0', 10);
+    } catch (e) {}
+
+    // â”€â”€ SIGNAL 12 â€” TIME ON PAGE (last visit) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Persisted on beforeunload. Reveals passive drift vs intentional read.
+    var timeOnPageLastVisit = 0;
+    try {
+      timeOnPageLastVisit = parseInt(localStorage.getItem('_ptop') || '0', 10);
+    } catch (e) {}
+
+    // â”€â”€ SIGNAL 13 â€” UTM CONTENT + TERM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // utm_content = creative/audience variant. utm_term = keyword/search intent.
+    var utmSource   = (params.get('utm_source')   || '').toLowerCase();
+    var utmMedium   = (params.get('utm_medium')   || '').toLowerCase();
+    var utmCampaign = (params.get('utm_campaign') || '').toLowerCase();
+    var utmContent  = (params.get('utm_content')  || '').toLowerCase();
+    var utmTerm     = (params.get('utm_term')     || '').toLowerCase();
+
+    // Fold utm_source into the src string for profile resolution
+    if (utmSource) src = src + ' ' + utmSource;
+
+    // Derive intensity from all signals
+    var intensity =
+      totalVisits >= 10 ? 'HIGH'   :
+      totalVisits >= 3  ? 'MEDIUM' : 'LOW';
+
+    // â”€â”€ PROFILE RESOLUTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    var source  = 'DIRECT';
+    var profile = 'default';
+
+    if (
+      src.includes('linkedin')       ||
+      src.includes('academia.edu')   ||
+      src.includes('researchgate')   ||
+      src.includes('scholar.google') ||
+      referrer.includes('.edu')
+    ) {
+      source  = src.includes('linkedin') ? 'LINKEDIN' : 'ACADEMIC';
+      profile = 'researcher';
+    } else if (
+      src.includes('producthunt')  ||
+      src.includes('indiehackers') ||
+      src.includes('ycombinator')  ||
+      src.includes('news.yc')      ||
+      src.includes('twitter.com')  ||
+      src.includes('x.com')        ||
+      ref === 'ph'
+    ) {
+      source =
+        src.includes('producthunt')                        ? 'PRODUCTHUNT' :
+        (src.includes('twitter') || src.includes('x.com')) ? 'TWITTER/X'   : 'INDIEHACKERS';
+      profile = 'founder';
+    } else if (
+      src.includes('github.com')              ||
+      src.includes('dev.to')                  ||
+      src.includes('stackoverflow')           ||
+      src.includes('gitlab.com')              ||
+      src.includes('npmjs.com')               ||
+      src.includes('reddit.com/r/programming')||
+      src.includes('reddit.com/r/webdev')     ||
+      src.includes('reddit.com/r/netsec')     ||
+      ref === 'dev' || ref === 'gh'
+    ) {
+      source =
+        src.includes('github')        ? 'GITHUB'        :
+        src.includes('stackoverflow') ? 'STACKOVERFLOW' :
+        src.includes('reddit')        ? 'REDDIT'        : 'DEV.TO';
+      profile = 'developer';
+    } else if (!referrer && hour >= 5 && hour < 8) {
+      profile = 'deep_work';
+    }
+
+    if (profile === 'default' && capScore >= 65 && !referrer) {
+      profile = 'developer';
+      source  = 'DIRECT';
+    }
+    if (isReturning && intensity === 'HIGH' && profile === 'default') {
+      profile = 'deep_work';
+    }
+
+    // Path and param overrides
+    if (path === '/r') profile = 'researcher';
+    if (path === '/f') profile = 'founder';
+    if (path === '/d') profile = 'developer';
+    var fp = params.get('profile');
+    var allowed = ['researcher', 'founder', 'developer', 'deep_work', 'default'];
+    if (fp && allowed.indexOf(fp) !== -1) profile = fp;
+
+    // â”€â”€ INTENT STATE ENGINE â€” 3 AXES, 9 STATES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    // AXIS 1 â€” ARRIVAL ENERGY
+    // How intentional was this visit?
+    var arrivalEnergy =
+      (isReturning && intensity === 'HIGH')                      ? 'committed' :
+      (!referrer && !utmSource && totalVisits > 1)               ? 'active'    :
+      (referrer || utmSource)                                    ? 'passive'   : 'active';
+
+    // AXIS 2 â€” COGNITIVE MODE
+    // What are they trying to do right now?
+    // Reader behaviour: >60% scroll depth, >90s on page last visit = evaluating
+    // High session visits this session = executing (deep in the product)
+    var cognitiveMode =
+      (sessionVisits >= 3)                                                          ? 'executing'  :
+      (isReturning && scrollDepthLastVisit >= 60 && timeOnPageLastVisit >= 90)      ? 'evaluating' :
+      (isReturning && (scrollDepthLastVisit >= 30 || timeOnPageLastVisit >= 30))    ? 'evaluating' :
+      (utmTerm || utmContent)                                                       ? 'evaluating' :
+      'exploring';
+
+    // AXIS 3 â€” TRUST LEVEL
+    // Do they know you yet?
+    var trustLevel =
+      (isReturning && daysSinceFirst >= 7  && intensity === 'HIGH')   ? 'insider'      :
+      (isReturning && totalVisits >= 3)                                ? 'acquaintance' :
+      'stranger';
+
+    // INTENT STATE â€” one of 9 canonical states
+    // Maps axes to a recommended experience strategy
+    var intentState = arrivalEnergy + '_' + cognitiveMode + '_' + trustLevel;
+
+    // RECOMMENDED EXPERIENCE
+    // What should the page emphasise for this visitor?
+    var experienceMap = {
+      'passive_exploring_stranger':      'hook_fast',         // 3 seconds or gone
+      'passive_evaluating_stranger':     'proof_first',       // social proof, specifics
+      'passive_evaluating_acquaintance': 'remove_doubt',      // the one thing blocking conversion
+      'active_exploring_stranger':       'thesis_first',      // lead with the idea, not features
+      'active_evaluating_stranger':      'proof_first',       // came looking - show evidence
+      'active_evaluating_acquaintance':  'remove_doubt',      // coming back to decide
+      'committed_executing_acquaintance':'reduce_friction',   // nearly there - just the action
+      'committed_executing_insider':     'next_level',        // already sold - give them depth
+      'committed_evaluating_insider':    'deepen_value',      // power user - reward engagement
+    };
+
+    var recommendedExperience = experienceMap[intentState] || 'proof_first';
+
+    // SUPPRESS / EMPHASISE HINTS
+    var suppressMap = {
+      'hook_fast':        ['long_copy', 'pricing_detail', 'faq'],
+      'proof_first':      ['hero_video', 'feature_list'],
+      'remove_doubt':     ['hero', 'intro_copy'],
+      'thesis_first':     ['pricing_cta', 'sign_up_prompt'],
+      'reduce_friction':  ['hero', 'intro_copy', 'social_proof'],
+      'next_level':       ['intro_copy', 'basic_features'],
+      'deepen_value':     ['cta_primary'],
+    };
+    var emphasiseMap = {
+      'hook_fast':        ['headline', 'single_cta'],
+      'proof_first':      ['social_proof', 'code_example', 'github_link'],
+      'remove_doubt':     ['objection_handler', 'comparison', 'guarantee'],
+      'thesis_first':     ['core_idea', 'founder_voice'],
+      'reduce_friction':  ['primary_cta', 'one_click_action'],
+      'next_level':       ['advanced_docs', 'api_reference', 'changelog'],
+      'deepen_value':     ['case_study', 'advanced_config', 'community'],
+    };
+
+    return {
+      // Core profile
+      profile:               profile,
+      source:                source,
+
+      // Intent state (v2 - the 3-axis model)
+      intentState:           intentState,
+      arrivalEnergy:         arrivalEnergy,
+      cognitiveMode:         cognitiveMode,
+      trustLevel:            trustLevel,
+      recommendedExperience: recommendedExperience,
+      suppressElements:      suppressMap[recommendedExperience] || [],
+      emphasiseElements:     emphasiseMap[recommendedExperience] || [],
+
+      // Time signals
+      timeWindow:     timeWindow,
+      dayContext:     dayContext,
+      hour:           hour,
+      isWeekend:      isWeekend,
+
+      // Device signals
+      device:         device,
+      width:          width,
+      isTouch:        isTouch,
+      touchPoints:    touchPoints,
+
+      // Capability model (v2.1 - multi-signal composite)
+      capabilityScore:      capScore,
+      capabilityTier:       capabilityTier,
+      hardwareProfile:      hardwareProfile,  // legacy alias
+      cores:                cores,
+      deviceMemory:         deviceMemory,
+      pixelRatio:           pixelRatio,
+      screenArea:           screenArea,
+      colorDepth:           colorDepth,
+      connectionQuality:    connectionQuality,
+      downlink:             downlink,
+      rtt:                  rtt,
+      prefersDark:          prefersDark,
+      pointerPrecision:     pointerPrecision,
+      prefersReducedMotion: prefersReducedMotion,
+      canHover:             canHover,
+
+      // Locale signals
+      lang:           lang,
+      langPrimary:    langPrimary,
+      langRegion:     langRegion,
+      timezone:       timezone,
+      market:         market,
+
+      // Visit signals
+      intensity:           intensity,
+      isReturning:         isReturning,
+      sessionVisits:       sessionVisits,
+      totalVisits:         totalVisits,
+      daysSinceFirst:      daysSinceFirst,
+      daysSinceLast:       daysSinceLast,
+
+      // New v2 signals
+      scrollDepthLastVisit: scrollDepthLastVisit,
+      timeOnPageLastVisit:  timeOnPageLastVisit,
+      utmSource:            utmSource,
+      utmMedium:            utmMedium,
+      utmCampaign:          utmCampaign,
+      utmContent:           utmContent,
+      utmTerm:              utmTerm,
+
+      // Raw
+      referrer: referrer,
+      bootMs:   Math.round((typeof performance !== 'undefined' ? performance.now() : 0) - _BOOT),
+    };
+  }
+
+  // â”€â”€ PUBLIC API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  var signals = detect();
+
+  var Presence = {
+    version: '2.1.0',
+    signals: signals,
+
+    /** Returns current profile string */
+    getProfile: function () { return signals.profile; },
+
+    /** Returns current intent state string */
+    getIntentState: function () { return signals.intentState; },
+
+    /** Returns recommended experience key */
+    getExperience: function () { return signals.recommendedExperience; },
+
+    /** Get any signal value by key */
+    get: function (key) { return signals[key]; },
+
+    /** Run fn only if profile matches */
+    when: function (profiles, fn) {
+      var list = Array.isArray(profiles) ? profiles : [profiles];
+      if (list.indexOf(signals.profile) !== -1) fn(signals);
+      return this;
+    },
+
+    /** Run fn if intent state matches */
+    whenState: function (states, fn) {
+      var list = Array.isArray(states) ? states : [states];
+      if (list.indexOf(signals.intentState) !== -1) fn(signals);
+      return this;
+    },
+
+    /** Run fn based on recommended experience */
+    whenExperience: function (experiences, fn) {
+      var list = Array.isArray(experiences) ? experiences : [experiences];
+      if (list.indexOf(signals.recommendedExperience) !== -1) fn(signals);
+      return this;
+    },
+
+    /** Swap element text content per profile */
+    adapt: function (selector, map) {
+      var el = document.querySelector(selector);
+      if (!el) return this;
+      var text = map[signals.profile] || map['default'];
+      if (text !== undefined) el.textContent = text;
+      return this;
+    },
+
+    /** Show element only for listed profiles */
+    showFor: function (selector, profiles) {
+      var el = document.querySelector(selector);
+      if (!el) return this;
+      var list = Array.isArray(profiles) ? profiles : [profiles];
+      el.style.display = list.indexOf(signals.profile) !== -1 ? '' : 'none';
+      return this;
+    },
+
+    /** Log all signals to console */
+    debug: function () {
+      console.group('[presence.js v' + this.version + ']');
+      console.log('Intent State:', signals.intentState);
+      console.log('Experience:  ', signals.recommendedExperience);
+      console.log('Axes:', {
+        arrivalEnergy: signals.arrivalEnergy,
+        cognitiveMode: signals.cognitiveMode,
+        trustLevel:    signals.trustLevel
+      });
+      console.log('Suppress:', signals.suppressElements);
+      console.log('Emphasise:', signals.emphasiseElements);
+      console.table(signals);
+      console.groupEnd();
+      return this;
+    },
+  };
+
+  global.Presence = Presence;
+
+  // Set data attributes on body for CSS targeting
+  document.addEventListener('DOMContentLoaded', function () {
+    var b = document.body;
+    b.setAttribute('data-presence',            signals.profile);
+    b.setAttribute('data-presence-source',     signals.source);
+    b.setAttribute('data-presence-device',     signals.device);
+    b.setAttribute('data-presence-market',     signals.market);
+    b.setAttribute('data-presence-intensity',  signals.intensity);
+    b.setAttribute('data-presence-returning',  signals.isReturning ? 'true' : 'false');
+    b.setAttribute('data-presence-lang',       signals.langPrimary);
+    b.setAttribute('data-presence-hardware',    signals.hardwareProfile);
+    b.setAttribute('data-presence-capability',  signals.capabilityTier);
+    b.setAttribute('data-presence-cap-score',   String(signals.capabilityScore));
+    b.setAttribute('data-presence-dark',        signals.prefersDark ? 'true' : 'false');
+    b.setAttribute('data-presence-pointer',     signals.pointerPrecision);
+    b.setAttribute('data-presence-dayctx',     signals.dayContext);
+    b.setAttribute('data-presence-intent',     signals.intentState);
+    b.setAttribute('data-presence-experience', signals.recommendedExperience);
+    b.setAttribute('data-presence-energy',     signals.arrivalEnergy);
+    b.setAttribute('data-presence-mode',       signals.cognitiveMode);
+    b.setAttribute('data-presence-trust',      signals.trustLevel);
+  });
+
+})(window);
+
+</script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --border:   #30363d;
+      --muted:    #484f58;
+      --subtle:   #6e7681;
+      --text:     #c9d1d9;
+      --bright:   #e6edf3;
+      --blue:     #58a6ff;
+      --green:    #3fb950;
+      --purple:   #bc8cff;
+      --orange:   #ffa657;
+      --red:      #ff7b72;
+      --teal:     #39d353;
+      --dim-blue: #1f6feb33;
+    }
+
     body {
-      background: #000;
-      color: #00ff88;
-      font-family: 'Courier New', Courier, monospace;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
       min-height: 100vh;
-      padding: 48px 24px;
-    }
-    .wrap { max-width: 760px; margin: 0 auto; }
-
-    h1 { font-size: 13px; letter-spacing: 6px; color: #00ff88; text-transform: uppercase; margin-bottom: 8px; }
-    .sub { font-size: 12px; color: #2a6644; letter-spacing: 3px; margin-bottom: 40px; }
-
-    /* ── MANIFESTO ── */
-    .manifesto {
-      border-left: 2px solid #00ff88;
-      padding: 0 0 0 24px;
-      margin-bottom: 48px;
-    }
-    .manifesto p {
+      padding: 40px 24px;
       font-size: 14px;
-      color: #00ff8899;
-      line-height: 2;
-      margin-bottom: 12px;
+      line-height: 1.6;
     }
-    .manifesto p:last-child { margin-bottom: 0; }
-    .manifesto strong { color: #00ff88; }
 
-    /* ── PROFILE BLOCK ── */
-    .profile-block {
-      border: 1px solid #00ff8822;
-      padding: 32px;
+    .wrap { max-width: 780px; margin: 0 auto; }
+
+    /* â”€â”€ TOP BANNER â”€â”€ */
+    .top-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      padding: 16px 20px;
       margin-bottom: 32px;
-      background: #00ff8805;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .label {
-      font-size: 10px;
-      letter-spacing: 4px;
-      color: #2a6644;
-      margin-bottom: 10px;
+    .banner-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--blue);
+      letter-spacing: 1px;
       text-transform: uppercase;
     }
+    .banner-classified {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--bright);
+    }
+    .banner-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--subtle);
+    }
+    .banner-meta span { color: var(--green); }
+
+    h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: var(--subtle);
+      text-transform: lowercase;
+      margin-bottom: 4px;
+    }
+    .sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    /* â”€â”€ PROFILE BLOCK â”€â”€ */
+    .profile-block {
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin-bottom: 40px;
+      background: var(--surface);
+    }
+    .reading-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--subtle);
+      margin-bottom: 4px;
+    }
+    .boot-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
     .profile-value {
-      font-size: 32px;
-      letter-spacing: 4px;
-      color: #00ff88;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--blue);
       margin-bottom: 20px;
+      letter-spacing: 1px;
     }
     .intent-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1px;
-      background: #00ff8811;
+      background: var(--border);
       margin-bottom: 20px;
     }
     .intent-cell {
-      background: #000;
-      padding: 14px 16px;
+      background: var(--bg);
+      padding: 12px 16px;
     }
-    .intent-cell .label { margin-bottom: 6px; }
-    .intent-val { font-size: 12px; color: #00ff88; letter-spacing: 2px; }
+    .intent-cell .label { margin-bottom: 4px; }
+    .intent-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--green);
+    }
     .experience-block {
-      background: #00ff8808;
-      border: 1px solid #00ff8833;
-      padding: 16px 20px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--purple);
+      padding: 14px 18px;
       margin-bottom: 20px;
     }
     .experience-val {
-      font-size: 18px;
-      letter-spacing: 3px;
-      color: #00ff88;
-      margin-bottom: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--purple);
+      margin-bottom: 6px;
       text-transform: uppercase;
     }
     .experience-desc {
-      font-size: 12px;
-      color: #00ff8877;
-      line-height: 1.8;
+      font-size: 13px;
+      color: var(--subtle);
+      line-height: 1.7;
     }
     .narrative {
-      font-size: 12px;
-      color: #2a6644;
-      line-height: 2;
-      border-top: 1px solid #00ff8811;
-      padding-top: 20px;
+      font-size: 13px;
+      color: var(--subtle);
+      line-height: 1.8;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
       margin-top: 4px;
-    }
-    .boot-badge {
-      display: inline-block;
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: #000;
-      background: #00ff88;
-      padding: 4px 10px;
-      margin-top: 16px;
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    /* ── MODEL EXPLANATION ── */
+    /* â”€â”€ MANIFESTO â”€â”€ */
+    .manifesto {
+      border-left: 2px solid var(--border);
+      padding: 0 0 0 20px;
+      margin-bottom: 40px;
+    }
+    .manifesto p {
+      font-size: 14px;
+      color: var(--subtle);
+      line-height: 1.9;
+      margin-bottom: 12px;
+    }
+    .manifesto p:last-child { margin-bottom: 0; }
+    .manifesto strong { color: var(--bright); font-weight: 500; }
+
+    /* â”€â”€ MODEL BLOCK â”€â”€ */
     .model-block {
-      border: 1px solid #00ff8822;
-      padding: 28px 32px;
-      margin-bottom: 32px;
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin-bottom: 28px;
+      background: var(--surface);
     }
     .model-block h2 {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
-      letter-spacing: 4px;
-      color: #2a6644;
-      margin-bottom: 20px;
-      font-weight: normal;
+      color: var(--muted);
+      margin-bottom: 18px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .axes-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1px;
-      background: #00ff8811;
-      margin-bottom: 24px;
+      background: var(--border);
+      margin-bottom: 20px;
     }
     .axis-cell {
-      background: #000;
-      padding: 16px;
+      background: var(--bg);
+      padding: 14px;
     }
-    .axis-name { font-size: 10px; letter-spacing: 3px; color: #2a6644; margin-bottom: 10px; }
-    .axis-vals { font-size: 11px; color: #00ff8877; line-height: 2; }
-    .axis-vals span { display: block; }
-    .axis-vals .active-val { color: #00ff88; font-weight: bold; }
-
-    .states-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
-    .states-table th {
+    .axis-name {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
-      letter-spacing: 3px;
-      color: #2a6644;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .axis-vals { font-size: 12px; color: var(--subtle); line-height: 2; font-family: 'JetBrains Mono', monospace; }
+    .axis-vals span { display: block; }
+    .axis-vals .active-val { color: var(--orange); font-weight: 500; }
+
+    .states-table { width: 100%; border-collapse: collapse; }
+    .states-table th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
       padding: 8px 12px;
       text-align: left;
-      border-bottom: 1px solid #00ff8822;
-      font-weight: normal;
+      border-bottom: 1px solid var(--border);
+      font-weight: 400;
+      text-transform: uppercase;
     }
     .states-table td {
-      font-size: 11px;
-      color: #00ff8877;
+      font-size: 12px;
+      color: var(--subtle);
       padding: 8px 12px;
-      border-bottom: 1px solid #00ff8808;
-      line-height: 1.6;
+      border-bottom: 1px solid #21262d;
+      line-height: 1.5;
     }
-    .states-table tr.current-state td { color: #00ff88; background: #00ff8808; }
-    .states-table td:first-child { color: #00ff88; font-size: 10px; letter-spacing: 1px; }
-    .states-table tr.current-state td:first-child { color: #000; background: #00ff88; }
+    .states-table td:first-child {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text);
+    }
+    .states-table tr.current-state td { color: var(--bright); background: var(--dim-blue); }
+    .states-table tr.current-state td:first-child { color: var(--blue); font-weight: 500; }
 
-    /* ── SIGNALS GRID ── */
+    /* â”€â”€ SECTION HEADER â”€â”€ */
     .section-header {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
-      letter-spacing: 4px;
-      color: #2a6644;
-      margin-bottom: 12px;
-      margin-top: 32px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      margin-top: 28px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
+
+    /* â”€â”€ SIGNALS GRID â”€â”€ */
     .signals-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1px;
-      background: #00ff8811;
-      border: 1px solid #00ff8822;
-      margin-bottom: 32px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 28px;
     }
-    .signal-cell { background: #000; padding: 14px 18px; }
-    .signal-key { font-size: 10px; letter-spacing: 3px; color: #2a6644; margin-bottom: 5px; text-transform: uppercase; }
-    .signal-val { font-size: 13px; color: #00ff88; word-break: break-all; }
-    .signal-why { font-size: 10px; color: #1a4433; margin-top: 4px; line-height: 1.5; }
-    .signal-new { font-size: 9px; letter-spacing: 2px; color: #00ff8844; margin-top: 3px; }
+    .signal-cell { background: var(--surface); padding: 12px 16px; }
+    .signal-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .signal-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--teal);
+      word-break: break-all;
+    }
+    .signal-why { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+    .signal-new {
+      font-size: 9px;
+      color: var(--orange);
+      display: inline;
+      margin-left: 6px;
+      font-weight: 500;
+    }
 
-    /* ── VERIFY ── */
-    .verify-block { border: 1px solid #00ff8822; padding: 24px 28px; margin-bottom: 32px; }
-    .verify-block p { font-size: 12px; color: #2a6644; line-height: 1.8; margin-bottom: 10px; }
+    /* â”€â”€ CAP BAR â”€â”€ */
+    .cap-bar {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--teal);
+      margin-bottom: 2px;
+    }
+
+    /* â”€â”€ VERIFY â”€â”€ */
+    .verify-block {
+      border: 1px solid var(--border);
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      background: var(--surface);
+    }
+    .verify-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--bright);
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+    .verify-block p { font-size: 13px; color: var(--subtle); line-height: 1.7; margin-bottom: 8px; }
     code {
       display: block;
-      background: #0a0a0a;
-      border: 1px solid #00ff8822;
-      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
-      color: #00ff88;
-      margin: 6px 0 14px;
+      color: var(--green);
+      margin: 6px 0 12px;
       white-space: pre-wrap;
       word-break: break-all;
     }
 
-    /* ── LINKS SECTION ── */
+    /* â”€â”€ LINKS â”€â”€ */
     .links-section {
-      border: 1px solid #00ff8822;
-      padding: 28px 32px;
-      margin-bottom: 32px;
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin-bottom: 28px;
+      background: var(--surface);
     }
     .links-header {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
-      letter-spacing: 4px;
-      color: #2a6644;
-      margin-bottom: 20px;
+      color: var(--muted);
+      margin-bottom: 18px;
+      text-transform: uppercase;
     }
     .links-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1px;
-      background: #00ff8811;
+      background: var(--border);
     }
     .link-card {
-      background: #000;
-      padding: 20px;
+      background: var(--bg);
+      padding: 18px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
     }
     .link-card-top { flex: 1; width: 100%; }
     .link-label {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
-      letter-spacing: 4px;
-      color: #00ff88;
-      margin-bottom: 6px;
+      color: var(--blue);
+      margin-bottom: 4px;
+      font-weight: 500;
     }
     .link-url {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
-      color: #2a6644;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
+      color: var(--muted);
+      margin-bottom: 8px;
       word-break: break-all;
     }
     .link-desc {
-      font-size: 12px;
-      color: #00ff8877;
-      line-height: 1.7;
+      font-size: 13px;
+      color: var(--subtle);
+      line-height: 1.6;
       margin-bottom: 14px;
     }
     .link-btn {
       display: inline-block;
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: #000;
-      background: #00ff88;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--bg);
+      background: var(--blue);
       padding: 6px 14px;
       text-decoration: none;
-      margin-bottom: 20px;
-      font-family: inherit;
+      margin-bottom: 16px;
+      border: none;
+      font-weight: 500;
     }
-    .link-btn:hover { background: #00cc66; }
+    .link-btn:hover { background: #79c0ff; }
     .qr-wrap {
       width: 100%;
       display: flex;
       justify-content: flex-start;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .qr-wrap canvas, .qr-wrap img {
-      border: 2px solid #00ff8833;
-      padding: 6px;
+      border: 1px solid var(--border);
+      padding: 4px;
       background: #fff;
     }
     .qr-caption {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
-      letter-spacing: 2px;
-      color: #1a4433;
+      color: var(--muted);
     }
 
+    /* â”€â”€ FOOTER â”€â”€ */
     .footer {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
-      color: #2a6644;
-      letter-spacing: 2px;
-      border-top: 1px solid #00ff8811;
-      padding-top: 24px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
       display: flex;
-      gap: 24px;
+      gap: 20px;
       flex-wrap: wrap;
       align-items: center;
     }
-    .footer a { color: #00ff8866; text-decoration: none; }
-    .footer a:hover { color: #00ff88; }
+    .footer a { color: var(--subtle); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
 
     @media (max-width: 700px) {
       .links-grid { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 600px) {
       .signals-grid, .axes-grid, .intent-row { grid-template-columns: 1fr; }
-      .profile-value { font-size: 22px; }
+      .profile-value { font-size: 20px; }
+      .banner-classified { font-size: 15px; }
     }
-  </style>
+
+    /* â”€â”€ VISITOR DEMO PANEL â”€â”€ */
+    .demo-panel {
+      margin-bottom: 40px;
+    }
+    .demo-header {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .demo-visitor {
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+    }
+    .demo-chrome {
+      background: #21262d;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .chrome-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .chrome-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .demo-body {
+      padding: 14px;
+      flex: 1;
+    }
+    .demo-who {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #21262d;
+    }
+    .demo-who strong {
+      color: var(--subtle);
+      display: block;
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+    .demo-classified {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      margin-bottom: 10px;
+    }
+    .demo-classified .d-label {
+      color: var(--muted);
+      font-size: 8px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .demo-classified .d-state { font-weight: 500; }
+    .demo-what {
+      font-size: 11px;
+      color: var(--subtle);
+      line-height: 1.6;
+      border-left: 2px solid var(--border);
+      padding-left: 8px;
+    }
+    .demo-what strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+    .demo-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px;
+      padding: 2px 6px;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+    .tag-v1 { background: #1f6feb33; color: var(--blue); }
+    .tag-v2 { background: #388bfd26; color: var(--purple); }
+    .tag-v3 { background: #2ea04326; color: var(--green); }
+
+    @media (max-width: 650px) {
+      .demo-grid { grid-template-columns: 1fr; }
+    }
+
+    </style>
 </head>
 <body>
 <div class="wrap">
 
   <h1>presence.js</h1>
-  <div class="sub">// THIS PAGE ALREADY KNOWS SOMETHING ABOUT YOU</div>
+  <div class="sub">// this page already knows something about you</div>
 
-  <!-- MANIFESTO -->
-  <div class="manifesto">
-    <p>
-      Large companies have spent billions building systems that figure out who you are before you speak.
-      They call it personalisation. What they mean is: <strong>serve the right thing to the right person at the right moment.</strong>
-    </p>
-    <p>
-      That capability used to cost a data warehouse, a CDP, an ML team, and a cookie consent banner.
-      It was locked behind enterprise contracts. It belonged to companies, not builders.
-    </p>
-    <p>
-      <strong>Presence changes that.</strong> One 12KB script. No backend. No cookies. No network calls.
-      It reads ten browser signals that were always there, classifies your visitor into one of nine intent states,
-      and tells your page exactly what to show and what to suppress.
-      In under 2 milliseconds. Before your first component renders.
-    </p>
-    <p>
-      This is what <strong>democratising the internet</strong> looks like.
-      Not another SaaS dashboard at $500/month. A file. That anyone can drop into any page.
-      And suddenly their site knows the difference between someone who just arrived and someone who is ready to act.
-    </p>
+  <!-- TOP BANNER -->
+  <div class="top-banner">
+    <div class="banner-title">// presence is reading this session right now</div>
+    <div class="banner-classified" id="boot-line">// classifying...</div>
+    <div class="banner-meta" id="banner-meta">device &mdash; market &mdash; intent</div>
+
+  <!-- VISITOR DEMO PANEL -->
+  <div class="demo-panel">
+    <div class="demo-header">// same url â€” three different people â€” three different pages</div>
+    <div class="demo-grid">
+
+      <!-- Visitor 1: Developer, first visit, direct -->
+      <div class="demo-visitor">
+        <div class="demo-chrome">
+          <div class="chrome-dot"></div>
+          <div class="chrome-dot"></div>
+          <div class="chrome-dot"></div>
+          <div class="chrome-url">github.com &rarr; presence.js</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-who">
+            <strong>Dev, first visit</strong>
+            came from GitHub &bull; dark mode &bull; 16GB RAM &bull; fine pointer
+          </div>
+          <div class="demo-classified">
+            <div class="d-label">classified as</div>
+            <div class="d-state" style="color:var(--blue)">active / exploring / stranger</div>
+          </div>
+          <div class="demo-what">
+            <strong>skip to the argument</strong>
+            Lead with the idea. You already have a theory -- you are checking if this matches it. No feature list. No pricing. Just the thesis.
+            <div><span class="demo-tag tag-v1">thesis_first</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visitor 2: Mobile, returning, evaluating -->
+      <div class="demo-visitor">
+        <div class="demo-chrome">
+          <div class="chrome-dot"></div>
+          <div class="chrome-dot"></div>
+          <div class="chrome-dot"></div>
+          <div class="chrome-url">presence.js &bull; visit 3</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-who">
+            <strong>Returning evaluator</strong>
+            direct return &bull; light mode &bull; coarse pointer &bull; 3rd visit
+          </div>
+          <div class="demo-classified">
+            <div class="d-label">classified as</div>
+            <div class="d-state" style="color:var(--purple)">active / evaluating / acquaintance</div>
+          </div>
+          <div class="demo-what">
+            <strong>you have been thinking about it</strong>
+            You left, came back. The tab is still open somewhere. Whatever did not land the first time -- that is the only thing worth saying now.
+            <div><span class="demo-tag tag-v2">remove_objection</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visitor 3: Power user, committed, insider -->
+      <div class="demo-visitor">
+        <div class="demo-chrome">
+          <div class="chrome-dot"></div>
+          <div class="chrome-dot"></div>
+          <div class="chrome-dot"></div>
+          <div class="chrome-url">npm &rarr; presence.js &bull; visit 9</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-who">
+            <strong>Power user, 9 visits</strong>
+            came from npm &bull; dark mode &bull; 32GB RAM &bull; high DPR
+          </div>
+          <div class="demo-classified">
+            <div class="d-label">classified as</div>
+            <div class="d-state" style="color:var(--green)">committed / executing / insider</div>
+          </div>
+          <div class="demo-what">
+            <strong>you are already in</strong>
+            Skip the intro. Here is the changelog, the API, the stuff they do not put on the landing page.
+            <div><span class="demo-tag tag-v3">next_level</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <!-- DETECTED PROFILE + INTENT STATE -->
+  <!-- 1. LIVE CLASSIFICATION -->
   <div class="profile-block">
-    <div class="label">// WHO YOU ARE</div>
+    <div class="label">// who you are</div>
     <div class="profile-value" id="profile">...</div>
 
-    <div class="label">// YOUR INTENT STATE RIGHT NOW - 3 AXES</div>
+    <div class="label">// your intent state right now</div>
     <div class="intent-row">
       <div class="intent-cell">
         <div class="label">ARRIVAL ENERGY</div>
@@ -339,54 +1278,62 @@
       </div>
     </div>
 
-    <div class="label">// WHAT THIS PAGE SHOULD DO FOR YOU</div>
+    <div class="label">// what this page should do for you</div>
     <div class="experience-block">
       <div class="experience-val" id="experience">...</div>
-      <div class="experience-desc" id="experience-desc"></div>
+      <div class="experience-desc" id="experience-desc">...</div>
     </div>
 
-    <div class="label">// HOW IT KNOWS</div>
-    <div class="intent-val" id="source" style="font-size:14px;letter-spacing:2px;margin-bottom:12px;">...</div>
-
-    <div class="narrative" id="narrative"></div>
-    <div class="boot-badge" id="boot-badge"></div>
+    <div class="narrative" id="narrative">...</div>
   </div>
 
-  <!-- THE MODEL -->
+  <!-- 2. THESIS - TWO PARAGRAPHS ONLY -->
+  <div class="manifesto">
+    <p>
+      Large companies have spent billions on systems that know who you are before you speak.
+      That capability used to cost a data warehouse, a CDP, an ML team, and a cookie consent banner.
+      It belonged to companies, not builders.
+    </p>
+    <p>
+      <strong>Presence changes that.</strong> One 12KB file. No backend. No cookies. No network calls.
+      Ten browser signals. Nine intent states. Classification in under 2 milliseconds -
+      before your first component renders.
+    </p>
+  </div>
+
+  <!-- 3. THE MODEL -->
   <div class="model-block">
     <h2>// THE MODEL - 3 AXES, 9 INTENT STATES</h2>
-
     <div class="axes-grid">
       <div class="axis-cell">
         <div class="axis-name">AXIS 1 - ARRIVAL ENERGY</div>
-        <div class="axis-vals" id="axis1-vals">
-          <span>passive</span>
-          <span>active</span>
-          <span>committed</span>
+        <div class="axis-vals">
+          <span id="ae-passive">passive</span>
+          <span id="ae-active">active</span>
+          <span id="ae-committed">committed</span>
         </div>
         <div class="axis-name" style="margin-top:10px;">HOW: referrer + visit history</div>
       </div>
       <div class="axis-cell">
         <div class="axis-name">AXIS 2 - COGNITIVE MODE</div>
-        <div class="axis-vals" id="axis2-vals">
-          <span>exploring</span>
-          <span>evaluating</span>
-          <span>executing</span>
+        <div class="axis-vals">
+          <span id="cm-exploring">exploring</span>
+          <span id="cm-evaluating">evaluating</span>
+          <span id="cm-executing">executing</span>
         </div>
         <div class="axis-name" style="margin-top:10px;">HOW: scroll depth + session depth + UTM</div>
       </div>
       <div class="axis-cell">
         <div class="axis-name">AXIS 3 - TRUST LEVEL</div>
-        <div class="axis-vals" id="axis3-vals">
-          <span>stranger</span>
-          <span>acquaintance</span>
-          <span>insider</span>
+        <div class="axis-vals">
+          <span id="tl-stranger">stranger</span>
+          <span id="tl-acquaintance">acquaintance</span>
+          <span id="tl-insider">insider</span>
         </div>
         <div class="axis-name" style="margin-top:10px;">HOW: days since first visit + intensity</div>
       </div>
     </div>
-
-    <table class="states-table" id="states-table">
+    <table class="states-table">
       <thead>
         <tr>
           <th>INTENT STATE</th>
@@ -394,63 +1341,61 @@
           <th>WHAT THEY NEED</th>
         </tr>
       </thead>
-      <tbody>
-        <tr data-state="passive_exploring_stranger">
-          <td>PASSIVE / EXPLORING / STRANGER</td>
-          <td>Random discovery. Decided in 3 seconds.</td>
-          <td>Hook fast. One sentence. One CTA.</td>
-        </tr>
-        <tr data-state="passive_evaluating_stranger">
-          <td>PASSIVE / EVALUATING / STRANGER</td>
-          <td>Arrived via link, reading carefully.</td>
-          <td>Social proof first. Specifics. No noise.</td>
-        </tr>
-        <tr data-state="passive_evaluating_acquaintance">
-          <td>PASSIVE / EVALUATING / ACQUAINTANCE</td>
-          <td>Drifted back. Still deciding.</td>
-          <td>The one thing that removes doubt.</td>
-        </tr>
-        <tr data-state="active_exploring_stranger">
-          <td>ACTIVE / EXPLORING / STRANGER</td>
-          <td>Came looking. First time here.</td>
-          <td>Lead with the thesis, not features.</td>
-        </tr>
-        <tr data-state="active_evaluating_stranger">
-          <td>ACTIVE / EVALUATING / STRANGER</td>
-          <td>Researching you specifically.</td>
-          <td>Evidence. Depth. Code over copy.</td>
-        </tr>
-        <tr data-state="active_evaluating_acquaintance">
-          <td>ACTIVE / EVALUATING / ACQUAINTANCE</td>
-          <td>Coming back to decide.</td>
-          <td>Remove the last objection.</td>
-        </tr>
-        <tr data-state="committed_executing_acquaintance">
-          <td>COMMITTED / EXECUTING / ACQUAINTANCE</td>
-          <td>Ready to act. Nearly there.</td>
-          <td>Kill friction. Just the button.</td>
-        </tr>
-        <tr data-state="committed_executing_insider">
-          <td>COMMITTED / EXECUTING / INSIDER</td>
-          <td>Power user. Already sold.</td>
-          <td>Give them the next level.</td>
-        </tr>
-        <tr data-state="committed_evaluating_insider">
-          <td>COMMITTED / EVALUATING / INSIDER</td>
-          <td>Deep engagement. Invested.</td>
-          <td>Reward them. Case studies, depth, community.</td>
-        </tr>
+      <tbody id="states-body">
+        <tr data-state="passive/exploring/stranger"><td>PASSIVE / EXPLORING / STRANGER</td><td>Random discovery. Decided in 3 seconds.</td><td>Hook fast. One sentence. One CTA.</td></tr>
+        <tr data-state="passive/evaluating/stranger"><td>PASSIVE / EVALUATING / STRANGER</td><td>Arrived via link, reading carefully.</td><td>Social proof first. Specifics. No noise.</td></tr>
+        <tr data-state="passive/evaluating/acquaintance"><td>PASSIVE / EVALUATING / ACQUAINTANCE</td><td>Drifted back. Still deciding.</td><td>The one thing that removes doubt.</td></tr>
+        <tr data-state="active/exploring/stranger"><td>ACTIVE / EXPLORING / STRANGER</td><td>Came looking. First time here.</td><td>Lead with the thesis, not features.</td></tr>
+        <tr data-state="active/evaluating/stranger"><td>ACTIVE / EVALUATING / STRANGER</td><td>Researching you specifically.</td><td>Evidence. Depth. Code over copy.</td></tr>
+        <tr data-state="active/evaluating/acquaintance"><td>ACTIVE / EVALUATING / ACQUAINTANCE</td><td>Coming back to decide.</td><td>Remove the last objection.</td></tr>
+        <tr data-state="committed/executing/acquaintance"><td>COMMITTED / EXECUTING / ACQUAINTANCE</td><td>Ready to act. Nearly there.</td><td>Kill friction. Just the button.</td></tr>
+        <tr data-state="committed/executing/insider"><td>COMMITTED / EXECUTING / INSIDER</td><td>Power user. Already sold.</td><td>Give them the next level.</td></tr>
+        <tr data-state="committed/evaluating/insider"><td>COMMITTED / EVALUATING / INSIDER</td><td>Deep engagement. Invested.</td><td>Reward them. Case studies, depth, community.</td></tr>
       </tbody>
     </table>
   </div>
 
-  <!-- SIGNALS GRID -->
+  <!-- 4. EVERY SIGNAL -->
   <div class="section-header">// EVERY SIGNAL READ - AND HOW</div>
-  <div class="signals-grid" id="signals-grid"></div>
+  <div class="signals-grid" id="signals-grid">
+    <div class="signal-cell"><div class="signal-key">BOOTMS</div><div class="signal-val" id="s-boot">...</div><div class="signal-why">Time from script execution to full classification. Measured in milliseconds.</div></div>
+    <div class="signal-cell"><div class="signal-key">INTENTSTATE</div><div class="signal-val" id="s-intent">...</div><div class="signal-why">The cross-product of arrival energy, cognitive mode, and trust level.</div></div>
+    <div class="signal-cell"><div class="signal-key">ARRIVALENERGY</div><div class="signal-val" id="s-energy">...</div><div class="signal-why">How intentional this visit was. Derived from referrer + visit history.</div></div>
+    <div class="signal-cell"><div class="signal-key">COGNITIVEMODE</div><div class="signal-val" id="s-mode">...</div><div class="signal-why">What you are doing right now. Derived from scroll depth, session depth, and UTM signals.</div></div>
+    <div class="signal-cell"><div class="signal-key">TRUSTLEVEL</div><div class="signal-val" id="s-trust">...</div><div class="signal-why">Whether you know this site. Derived from days since first visit and total visit intensity.</div></div>
+    <div class="signal-cell"><div class="signal-key">RECOMMENDEDEXPERIENCE</div><div class="signal-val" id="s-exp">...</div><div class="signal-why">What this page should emphasise based on your intent state.</div></div>
+    <div class="signal-cell"><div class="signal-key">PROFILE</div><div class="signal-val" id="s-profile">...</div><div class="signal-why">Your visitor archetype based on referral source, hardware, and time signals.</div></div>
+    <div class="signal-cell"><div class="signal-key">SOURCE</div><div class="signal-val" id="s-source">...</div><div class="signal-why">Where Presence thinks you came from.</div></div>
+    <div class="signal-cell"><div class="signal-key">DEVICE</div><div class="signal-val" id="s-device">...</div><div class="signal-why">Detected from screen width and touch point count. No user-agent parsing.</div></div>
+    <div class="signal-cell"><div class="signal-key">CAPABILITYSCORE</div><div class="signal-val" id="s-capscore">...</div><div class="signal-why">Composite score 0-100 across 10 signals. The real measure of device class and user context.</div></div>
+    <div class="signal-cell"><div class="signal-key">CAPABILITYTIER</div><div class="signal-val" id="s-captier">...</div><div class="signal-why">SOVEREIGN / CAPABLE / STANDARD / CONSTRAINED. Derived from the capability score.</div></div>
+    <div class="signal-cell"><div class="signal-key">DEVICEMEMORY</div><div class="signal-val" id="s-mem">...</div><div class="signal-why">navigator.deviceMemory. RAM in GB. Strongest single hardware predictor.</div></div>
+    <div class="signal-cell"><div class="signal-key">CORES</div><div class="signal-val" id="s-cores">...</div><div class="signal-why"></div></div>
+    <div class="signal-cell"><div class="signal-key">PIXELRATIO</div><div class="signal-val" id="s-dpr">...</div><div class="signal-why">window.devicePixelRatio. 2x+ = retina/HiDPI = prosumer or developer display.</div></div>
+    <div class="signal-cell"><div class="signal-key">SCREENAREA</div><div class="signal-val" id="s-screen">...</div><div class="signal-why">screen.width x screen.height. Large area = workstation context.</div></div>
+    <div class="signal-cell"><div class="signal-key">CONNECTION</div><div class="signal-val" id="s-conn">...</div><div class="signal-why"></div></div>
+    <div class="signal-cell"><div class="signal-key">PREFERSDARK</div><div class="signal-val" id="s-dark">...</div><div class="signal-why">~80% of developers use dark mode vs ~35% general users. (JetBrains 2023, Stack Overflow 2024)</div></div>
+    <div class="signal-cell"><div class="signal-key">POINTERPRECISION</div><div class="signal-val" id="s-pointer">...</div><div class="signal-why">fine = mouse/trackpad (creation context). coarse = finger (consumption context).</div></div>
+    <div class="signal-cell"><div class="signal-key">PREFERSREDUCEDMOTION</div><div class="signal-val" id="s-motion">...</div><div class="signal-why">System-level accessibility preference. Signals technically engaged user.</div></div>
+    <div class="signal-cell"><div class="signal-key">MARKET</div><div class="signal-val" id="s-market">...</div><div class="signal-why">Derived from your timezone offset. No IP lookup or geolocation API.</div></div>
+    <div class="signal-cell"><div class="signal-key">TIMEZONE</div><div class="signal-val" id="s-tz">...</div><div class="signal-why">Read from Intl.DateTimeFormat. Zero network calls required.</div></div>
+    <div class="signal-cell"><div class="signal-key">LANGUAGE</div><div class="signal-val" id="s-lang">...</div><div class="signal-why">Your browser language setting.</div></div>
+    <div class="signal-cell"><div class="signal-key">TIMEWINDOW</div><div class="signal-val" id="s-time">...</div><div class="signal-why">The time-of-day window you loaded this page in.</div></div>
+    <div class="signal-cell"><div class="signal-key">DAYCONTEXT</div><div class="signal-val" id="s-day">...</div><div class="signal-why">Weekday vs weekend. Visitor intent shifts significantly between the two.</div></div>
+    <div class="signal-cell"><div class="signal-key">INTENSITY</div><div class="signal-val" id="s-intensity">...</div><div class="signal-why">Total visit count bucketed into low, medium, or high.</div></div>
+    <div class="signal-cell"><div class="signal-key">ISRETURNING</div><div class="signal-val" id="s-returning">...</div><div class="signal-why">True if localStorage shows a previous visit timestamp.</div></div>
+    <div class="signal-cell"><div class="signal-key">TOTALVISITS</div><div class="signal-val" id="s-visits">...</div><div class="signal-why">Stored in localStorage. Every page load ever recorded.</div></div>
+    <div class="signal-cell"><div class="signal-key">SESSIONVISITS</div><div class="signal-val" id="s-session">...</div><div class="signal-why">Stored in sessionStorage. Resets when you close the tab.</div></div>
+    <div class="signal-cell"><div class="signal-key">SCROLLDEPTHLASTVISIT<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-scroll">...</div><div class="signal-why">How far you scrolled last visit (%). Reveals scanner vs reader.</div></div>
+    <div class="signal-cell"><div class="signal-key">TIMEONPAGELASTVISIT<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-topv">...</div><div class="signal-why">How long you spent last visit (seconds). Reveals passive drift vs intentional read.</div></div>
+    <div class="signal-cell"><div class="signal-key">UTMCONTENT<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-utmc">...</div><div class="signal-why">utm_content parameter. Carries creative or audience variant intent.</div></div>
+    <div class="signal-cell"><div class="signal-key">UTMTERM<div class="signal-new">NEW IN V2.0.0</div></div><div class="signal-val" id="s-utmt">...</div><div class="signal-why">utm_term parameter. Carries explicit search keyword intent.</div></div>
+    <div class="signal-cell"><div class="signal-key">REFERRER</div><div class="signal-val" id="s-ref">...</div><div class="signal-why">document.referrer. The URL you arrived from, if any.</div></div>
+  </div>
 
-  <!-- VERIFY -->
+  <!-- 5. VERIFY -->
   <div class="verify-block">
-    <div class="label" style="margin-bottom:16px;">// VERIFY IT YOURSELF</div>
+    <div class="verify-title">// ZERO TRUST. VERIFY EVERYTHING.</div>
     <p>Open DevTools (F12). In the console, type this exactly:</p>
     <code>Presence.debug()</code>
     <p>Check the Network tab. You will see zero outbound requests. Nothing leaves your browser.</p>
@@ -463,285 +1408,171 @@ localStorage.getItem('_ptop')</code>
     <code>['_ptv','_pfs','_pls','_psd','_ptop'].forEach(k=>localStorage.removeItem(k));sessionStorage.clear();location.reload();</code>
   </div>
 
-  <!-- LINKS SECTION -->
+  <!-- 6. FOOTER LINKS -->
   <div class="links-section">
-    <div style="text-align:center;margin-bottom:16px;">
-      <img src="https://raw.githubusercontent.com/tkrojzl-cyber/presence/main/logo.png" alt="Brainiac Ltd" style="width:72px;height:72px;border-radius:50%;object-fit:cover;opacity:0.9;border:1px solid #1a4433;" />
-    </div>
     <div class="links-header">// BUILT BY BRAINIAC LTD</div>
-    <div class="links-grid links-grid--two">
-
+    <div class="links-grid">
       <div class="link-card">
         <div class="link-card-top">
           <div class="link-label">GITHUB</div>
           <div class="link-url">github.com/tkrojzl-cyber/presence</div>
           <div class="link-desc">Source code. MIT. Read it, fork it, ship it. Zero dependencies confirmed.</div>
-          <a href="https://github.com/tkrojzl-cyber/presence" target="_blank" class="link-btn">VIEW SOURCE</a>
+          <a class="link-btn" href="https://github.com/tkrojzl-cyber/presence" target="_blank">VIEW SOURCE</a>
         </div>
-        <div class="qr-wrap" id="qr-github"></div>
+        <div class="qr-wrap"><div id="qr-github"></div></div>
         <div class="qr-caption">Scan to open repo</div>
       </div>
-
       <div class="link-card">
         <div class="link-card-top">
           <div class="link-label">ARCHON STACK</div>
           <div class="link-url">archon-stack.online</div>
-          <div class="link-desc">Your product portfolio runs itself while you build the next one. Three local AI models. Zero ongoing cost.</div>
-          <a href="https://archon-stack.online" target="_blank" class="link-btn">SEE ARCHON STACK</a>
+          <div class="link-desc">Presence is one tool. Archon Stack is what it was built inside - a self-hosted AI system that designs, ships, and maintains software without external API costs.</div>
+          <a class="link-btn" href="https://archon-stack.online" target="_blank">SEE WHAT BUILT THIS</a>
         </div>
-        <div class="qr-wrap" id="qr-brainiac"></div>
+        <div class="qr-wrap"><div id="qr-archon"></div></div>
         <div class="qr-caption">Scan to open Archon Stack</div>
       </div>
-
     </div>
   </div>
 
   <div class="footer">
-    <img src="https://raw.githubusercontent.com/tkrojzl-cyber/presence/main/logo.png" alt="Brainiac Ltd" style="width:48px;height:48px;border-radius:50%;object-fit:cover;opacity:0.85;vertical-align:middle;margin-right:12px;" />
-    <a href="https://github.com/tkrojzl-cyber/presence" target="_blank">github</a>
-    <a href="https://archon-stack.online" target="_blank">archon-stack.online</a>
-    <span style="color:#1a4433">presence.js v<span id="footer-version"></span> -- built by brainiac ltd -- mit license</span>
+    <span>github</span>
+    <span>archon-stack.online</span>
+    <span>presence.js v2.1.0 -- built by brainiac ltd -- mit license</span>
   </div>
 
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
   var s = Presence.signals;
 
-  var EXPERIENCE_DESC = {
-    hook_fast:       'You just arrived. Presence recommends: one headline, one CTA. You have 3 seconds.',
-    proof_first:     'You are evaluating. Presence recommends: lead with evidence, suppress the pitch.',
-    remove_doubt:    'You have been here before and have not committed. Presence recommends: surface the thing blocking conversion.',
-    thesis_first:    'You came with intent. Presence recommends: lead with the idea, not the features.',
-    reduce_friction: 'You are ready to act. Presence recommends: remove everything except the action.',
-    next_level:      'You are a power user. Presence recommends: show depth, advanced docs, what comes next.',
-    deepen_value:    'You are invested. Presence recommends: community, case studies, advanced configuration.',
+  // boot line
+  document.getElementById('boot-line').textContent =
+    '// classified in ' + s.bootMs + 'ms -- zero network calls -- nothing left your browser';
+  var deviceLabel2 = { 'MOBILE': 'mobile', 'NARROW': 'narrow screen', 'DESKTOP': 'desktop', 'WIDE': 'wide monitor' }[s.device] || 'device';
+  document.getElementById('banner-meta').innerHTML =
+    '<span>' + deviceLabel2 + '</span> &mdash; ' + (s.market || '') + ' market &mdash; intent: ' + (s.intentState || '').toLowerCase();
+
+  // profile
+  document.getElementById('profile').textContent = (s.profile || 'UNKNOWN').toUpperCase().replace(/_/g,' ');
+
+  // axes
+  document.getElementById('axis-energy').textContent = (s.arrivalEnergy || '').toUpperCase();
+  document.getElementById('axis-mode').textContent = (s.cognitiveMode || '').toUpperCase();
+  document.getElementById('axis-trust').textContent = (s.trustLevel || '').toUpperCase();
+
+  // experience
+  var expMap = {
+    'proof_first': { label: 'show your working', desc: "You opened the inspector before you read the readme. Fair. Skip the pitch -- show the numbers, the source, the edge cases. You will decide when you are ready." },
+    'hook_fast': { label: 'three seconds', desc: "You are tabbing through twenty things. Presence clocked it. One sentence or nothing -- if it does not land immediately, you are already gone." },
+    'thesis_first': { label: 'skip to the argument', desc: "You did not land here by accident. You already have a theory and you are checking if this matches it. Lead with the idea. The feature list can wait." },
+    'remove_objection': { label: 'you have been thinking about it', desc: "You left, came back, and the tab is still open somewhere. Something did not quite land the first time. Whatever that was -- that is the only thing worth saying now." },
+    'kill_friction': { label: 'just the button', desc: "Decision made. You are waiting for something to get out of the way. No copy, no explanation, no 'but have you considered'. Just the thing you came to do." },
+    'next_level': { label: 'you are already in', desc: "Welcome back. You know what this is. Skip the intro -- here is the changelog, the API, the stuff they do not put on the landing page." },
+    'reward_depth': { label: 'deep read detected', desc: "You scrolled the whole thing. Read the footnotes. Presence noticed. You are not looking for a tool -- you are looking for a point of view. Here is ours." }
   };
+  var expKey = (s.recommendedExperience || '').toLowerCase().replace(/ /g, '_');
+  var exp = expMap[expKey] || { label: (s.recommendedExperience || 'UNKNOWN').toUpperCase(), desc: 'Experience recommendation based on your intent state.' };
+  document.getElementById('experience').textContent = exp.label;
+  document.getElementById('experience-desc').textContent = exp.desc;
 
-  var SIGNAL_WHY = {
-    bootMs:               'Time from script execution to full classification. Measured in milliseconds.',
-    intentState:          'The cross-product of arrival energy, cognitive mode, and trust level.',
-    arrivalEnergy:        'How intentional this visit was. Derived from referrer + visit history.',
-    cognitiveMode:        'What you are doing right now. Derived from scroll depth, session depth, and UTM signals.',
-    trustLevel:           'Whether you know this site. Derived from days since first visit and total visit intensity.',
-    recommendedExperience:'What this page should emphasise based on your intent state.',
-    profile:              'Your visitor archetype based on referral source, hardware, and time signals.',
-    source:               'Where Presence thinks you came from.',
-    device:               'Detected from screen width and touch point count. No user-agent parsing.',
-    capabilityScore:      'Composite score 0-100 across 10 signals. The real measure of device class and user context.',
-      capabilityTier:       'SOVEREIGN / CAPABLE / STANDARD / CONSTRAINED. Derived from the capability score.',
-      hardwareProfile:      'Legacy tier label. Use capabilityTier for new implementations.',
-      deviceMemory:         'navigator.deviceMemory. RAM in GB. Strongest single hardware predictor.',
-      pixelRatio:           'window.devicePixelRatio. 2x+ = retina/HiDPI = prosumer or developer display.',
-      screenArea:           'screen.width x screen.height. Large area = workstation context.',
-      colorDepth:           'screen.colorDepth. 30bit+ = pro display pipeline.',
-      connectionQuality:    'navigator.connection.effectiveType. Infrastructure proxy.',
-      prefersDark:          '~80% of developers use dark mode vs ~35% general users. (JetBrains 2023, Stack Overflow 2024)',
-      pointerPrecision:     'fine = mouse/trackpad (creation context). coarse = finger (consumption context).',
-      prefersReducedMotion: 'System-level accessibility preference. Signals technically engaged user.',
-      canHover:             'hover = non-touch device = production/creation context.',
-    market:               'Derived from your timezone offset. No IP lookup or geolocation API.',
-    timezone:             'Read from Intl.DateTimeFormat. Zero network calls required.',
-    language:             'Your browser language setting.',
-    timeWindow:           'The time-of-day window you loaded this page in.',
-    dayContext:           'Weekday vs weekend. Visitor intent shifts significantly between the two.',
-    intensity:            'Total visit count bucketed into low, medium, or high.',
-    isReturning:          'True if localStorage shows a previous visit timestamp.',
-    totalVisits:          'Stored in localStorage. Every page load ever recorded.',
-    sessionVisits:        'Stored in sessionStorage. Resets when you close the tab.',
-    scrollDepthLastVisit: 'NEW v2 - How far you scrolled last visit (%). Reveals scanner vs reader.',
-    timeOnPageLastVisit:  'NEW v2 - How long you spent last visit (seconds). Reveals passive drift vs intentional read.',
-    utmContent:           'NEW v2 - utm_content parameter. Carries creative or audience variant intent.',
-    utmTerm:              'NEW v2 - utm_term parameter. Carries explicit search keyword intent.',
-    referrer:             'document.referrer. The URL you arrived from, if any.',
-  };
-
-  function buildNarrative(s) {
-    var DEVICE_LABEL = {
-      MOBILE:  'a mobile device',
-      NARROW:  'a narrow screen',
-      DESKTOP: 'a desktop',
-      WIDE:    'a wide-screen display'
-    };
-    var TIME_LABEL = {
-      EARLY:     'early morning',
-      DEEP_WORK: 'a deep work window',
-      AFTERNOON: 'the afternoon',
-      EVENING:   'the evening',
-      LATE:      'late night'
-    };
-    var POINTER_LABEL = {
-      fine:    'mouse or trackpad',
-      coarse:  'touchscreen',
-      unknown: 'unknown input'
-    };
-
-    var parts = [];
-    parts.push(
-      'You are on ' + (DEVICE_LABEL[s.device] || s.device.toLowerCase()) +
-      ' in the ' + s.market + ' market, ' +
-      (TIME_LABEL[s.timeWindow] || s.timeWindow.toLowerCase().replace(/_/g, ' ')) +
-      ' on a ' + s.dayContext.toLowerCase() + '.'
-    );
-    if (s.isReturning) {
-      var scrollNote = s.scrollDepthLastVisit > 0
-        ? 'scrolled ' + s.scrollDepthLastVisit + '% of the page'
-        : 'did not scroll';
-      var timeNote = s.timeOnPageLastVisit > 0
-        ? 'spent ' + s.timeOnPageLastVisit + ' seconds'
-        : 'spent less than a second';
-      parts.push(
-        'You have been here before. ' + s.totalVisits + ' visits recorded. ' +
-        'Last visit you ' + scrollNote + ' and ' + timeNote + '.'
-      );
-    } else {
-      parts.push('This is your first visit. No prior data exists. Presence is classifying you from live signals only.');
-    }
-    var memNote = s.deviceMemory > 0 ? s.deviceMemory + 'GB RAM detected.' : 'RAM unavailable (browser privacy restriction).';
-    parts.push(
-      'Capability score: ' + s.capabilityScore + '/100. Tier: ' + s.capabilityTier + '. ' +
-      memNote + ' ' +
-      (s.prefersDark ? 'Dark mode active.' : 'Light mode.') + ' ' +
-      'Input: ' + (POINTER_LABEL[s.pointerPrecision] || s.pointerPrecision) + '.'
-    );
-    parts.push('All signals resolved in ' + s.bootMs + 'ms. No server contacted. No data left your browser.');
-    return parts.join(' ');
+  // narrative
+  var narr = [];
+  var deviceLabel = { 'MOBILE': 'mobile', 'NARROW': 'narrow screen', 'DESKTOP': 'desktop', 'WIDE': 'wide monitor' }[s.device] || 'device';
+  narr.push('You are on a ' + deviceLabel + ' in the ' + (s.market || '') + ' market, ' + (s.timeWindow || '').toLowerCase().replace('_',' ') + ' on a ' + (s.dayContext || '').toLowerCase() + '.');
+  if (s.isReturning) {
+    narr.push('You have been here before. ' + s.totalVisits + ' visits recorded. Last visit you scrolled ' + s.scrollDepthLastVisit + '% of the page and spent ' + s.timeOnPageLastVisit + ' seconds reading.');
+  } else {
+    narr.push('This is your first visit. No prior data exists. Presence is classifying you from live signals only.');
   }
+  var ramStr = s.deviceMemory ? s.deviceMemory + 'GB RAM' : 'RAM not exposed (Firefox/Safari -- they guard this)';
+  var inputStr = s.pointerPrecision === 'fine' ? 'mouse or trackpad' : s.pointerPrecision === 'coarse' ? 'touchscreen' : 'input unknown';
+  var modeStr = s.prefersDark ? 'dark mode' : 'light mode';
+  narr.push(ramStr + '. ' + modeStr + '. ' + inputStr + '.');
+  document.getElementById('narrative').textContent = narr.join(' ');
 
-  // Render profile
-  document.getElementById('profile').textContent       = s.profile.toUpperCase().replace(/_/g, ' ');
-  document.getElementById('source').textContent        = s.source.toUpperCase();
-  document.getElementById('axis-energy').textContent   = s.arrivalEnergy.toUpperCase();
-  document.getElementById('axis-mode').textContent     = s.cognitiveMode.toUpperCase();
-  document.getElementById('axis-trust').textContent    = s.trustLevel.toUpperCase();
-  document.getElementById('experience').textContent    = s.recommendedExperience.toUpperCase().replace(/_/g, ' ');
-  document.getElementById('experience-desc').textContent = EXPERIENCE_DESC[s.recommendedExperience] || '';
-  document.getElementById('narrative').textContent     = buildNarrative(s);
-  document.getElementById('boot-badge').textContent    = 'CLASSIFIED IN ' + s.bootMs + 'ms - ZERO NETWORK CALLS';
-
-  // Highlight current axis values
+  // highlight active axes in model table
+  var ae = (s.arrivalEnergy || '').toLowerCase();
+  var cm = (s.cognitiveMode || '').toLowerCase();
+  var tl = (s.trustLevel || '').toLowerCase();
   ['passive','active','committed'].forEach(function(v) {
-    var el = document.querySelector('#axis1-vals span:nth-child(' + ({'passive':1,'active':2,'committed':3}[v]) + ')');
-    if (el && s.arrivalEnergy === v) el.className = 'active-val';
+    var el = document.getElementById('ae-' + v);
+    if (el) el.className = (ae === v) ? 'active-val' : '';
   });
   ['exploring','evaluating','executing'].forEach(function(v) {
-    var el = document.querySelector('#axis2-vals span:nth-child(' + ({'exploring':1,'evaluating':2,'executing':3}[v]) + ')');
-    if (el && s.cognitiveMode === v) el.className = 'active-val';
+    var el = document.getElementById('cm-' + v);
+    if (el) el.className = (cm === v) ? 'active-val' : '';
   });
   ['stranger','acquaintance','insider'].forEach(function(v) {
-    var el = document.querySelector('#axis3-vals span:nth-child(' + ({'stranger':1,'acquaintance':2,'insider':3}[v]) + ')');
-    if (el && s.trustLevel === v) el.className = 'active-val';
+    var el = document.getElementById('tl-' + v);
+    if (el) el.className = (tl === v) ? 'active-val' : '';
   });
 
-  // Highlight current state row
-  var rows = document.querySelectorAll('.states-table tbody tr');
+  // highlight current state row
+  var stateKey = ae + '/' + cm + '/' + tl;
+  var rows = document.querySelectorAll('#states-body tr');
   rows.forEach(function(row) {
-    if (row.getAttribute('data-state') === s.intentState) {
-      row.className = 'current-state';
-    }
+    if (row.getAttribute('data-state') === stateKey) row.classList.add('current-state');
   });
 
-  // Signals grid
-    var DEVICE_LABEL    = { MOBILE:'Mobile', NARROW:'Narrow screen', DESKTOP:'Desktop', WIDE:'Wide-screen display' };
-  var TIME_LABEL      = { EARLY:'Early morning', DEEP_WORK:'Deep work window', AFTERNOON:'Afternoon', EVENING:'Evening', LATE:'Late night' };
-  var POINTER_LABEL   = { fine:'Mouse / trackpad', coarse:'Touchscreen', unknown:'Unknown' };
-  var MARKET_LABEL    = { NA:'North America', EU:'Europe', APAC:'Asia-Pacific', OTHER:'Other' };
-  var TIER_LABEL      = {
-    SOVEREIGN:   'Sovereign (pro workstation)',
-    CAPABLE:     'Capable (mid-range professional)',
-    STANDARD:    'Standard (consumer device)',
-    CONSTRAINED: 'Constrained (budget / slow connection)'
-  };
-  var CONN_LABEL      = { '4g':'4G / Wi-Fi', '3g':'3G', '2g':'2G', 'slow-2g':'Slow 2G', 'unknown':'Unknown' };
-  var ENERGY_LABEL    = { passive:'Passive (arrived via link)', active:'Active (came directly)', committed:'Committed (high-intensity returning)' };
-  var MODE_LABEL      = { exploring:'Exploring (scanning)', evaluating:'Evaluating (reading)', executing:'Executing (ready to act)' };
-  var TRUST_LABEL     = { stranger:'Stranger (first impression)', acquaintance:'Acquaintance (returning, not yet invested)', insider:'Insider (long-tenure power user)' };
-  var INTENSITY_LABEL = { LOW:'Low (1-2 visits)', MEDIUM:'Medium (3-9 visits)', HIGH:'High (10+ visits)' };
-  var EXP_LABEL       = {
-    hook_fast:'Hook fast', proof_first:'Proof first', remove_doubt:'Remove doubt',
-    thesis_first:'Thesis first', reduce_friction:'Reduce friction',
-    next_level:'Next level', deepen_value:'Deepen value'
-  };
+  // capability score bar
+  var score = s.capabilityScore || 0;
+  var filled = Math.round(score / 5);
+  var empty = 20 - filled;
+  var bar = '[' + '='.repeat(filled) + '.'.repeat(empty) + '] ' + score + '/100';
+  document.getElementById('s-capscore').innerHTML = '<div class="cap-bar">' + bar + '</div>';
 
-  var memDisplay = s.deviceMemory > 0 ? s.deviceMemory + 'GB' : 'Not available';
-  var connDisplay = CONN_LABEL[s.connectionQuality] || s.connectionQuality;
-  var scrollDisplay = s.scrollDepthLastVisit > 0 ? s.scrollDepthLastVisit + '%' : 'No data yet';
-  var timeDisplay   = s.timeOnPageLastVisit  > 0 ? s.timeOnPageLastVisit  + 's' : 'No data yet';
-
-  var SHOW = [
-    ['bootMs',               s.bootMs + 'ms',                                                   false],
-    ['intentState',          s.intentState.replace(/_/g, ' / '),                                false],
-    ['arrivalEnergy',        ENERGY_LABEL[s.arrivalEnergy]    || s.arrivalEnergy,               false],
-    ['cognitiveMode',        MODE_LABEL[s.cognitiveMode]      || s.cognitiveMode,               false],
-    ['trustLevel',           TRUST_LABEL[s.trustLevel]        || s.trustLevel,                  false],
-    ['recommendedExperience',EXP_LABEL[s.recommendedExperience] || s.recommendedExperience,     false],
-    ['profile',              s.profile,                                                          false],
-    ['source',               s.source,                                                          false],
-    ['device',               DEVICE_LABEL[s.device]           || s.device,                      false],
-    ['capabilityScore',      s.capabilityScore + ' / 100',                                      false],
-    ['capabilityTier',       TIER_LABEL[s.capabilityTier]     || s.capabilityTier,              false],
-    ['deviceMemory',         memDisplay,                                                         false],
-    ['cores',                s.cores + ' CPU cores',                                             false],
-    ['pixelRatio',           s.pixelRatio + 'x  (DPR)',                                         false],
-    ['screenArea',           s.screenArea.toLocaleString() + ' px',                             false],
-    ['connection',           connDisplay,                                                        false],
-    ['prefersDark',          s.prefersDark ? 'Yes (developer signal)' : 'No',                   false],
-    ['pointerPrecision',     POINTER_LABEL[s.pointerPrecision] || s.pointerPrecision,           false],
-    ['prefersReducedMotion', s.prefersReducedMotion ? 'Yes' : 'No',                             false],
-    ['market',               MARKET_LABEL[s.market] || s.market,                                false],
-    ['timezone',             s.timezone || 'Unavailable',                                        false],
-    ['language',             s.lang,                                                             false],
-    ['timeWindow',           TIME_LABEL[s.timeWindow] || s.timeWindow,                          false],
-    ['dayContext',           s.dayContext === 'WEEKDAY' ? 'Weekday' : 'Weekend',                false],
-    ['intensity',            INTENSITY_LABEL[s.intensity] || s.intensity,                       false],
-    ['isReturning',          s.isReturning ? 'Yes' : 'No',                                      false],
-    ['totalVisits',          s.totalVisits + ' visits',                                         false],
-    ['sessionVisits',        s.sessionVisits + ' this session',                                 false],
-    ['scrollDepthLastVisit', scrollDisplay,                                                      true],
-    ['timeOnPageLastVisit',  timeDisplay,                                                        true],
-    ['utmContent',           s.utmContent || 'None',                                            true],
-    ['utmTerm',              s.utmTerm    || 'None',                                            true],
-    ['referrer',             s.referrer   || 'None (direct)',                                   false],
-  ];
-
-  var grid = document.getElementById('signals-grid');
-  SHOW.forEach(function(item) {
-    var key  = item[0];
-    var val  = item[1];
-    var isNew = item[2];
-    var why  = SIGNAL_WHY[key] || '';
-    var cell = document.createElement('div');
-    cell.className = 'signal-cell';
-    cell.innerHTML =
-      '<div class="signal-key">' + key + '</div>' +
-      '<div class="signal-val">' + val + '</div>' +
-      (why  ? '<div class="signal-why">' + why + '</div>' : '') +
-      (isNew ? '<div class="signal-new">NEW IN V2.0.0</div>' : '');
-    grid.appendChild(cell);
-  });
+  // all signals
+  document.getElementById('s-boot').textContent = s.bootMs + 'ms';
+  document.getElementById('s-intent').textContent = (s.intentState || '').toLowerCase();
+  document.getElementById('s-energy').textContent = (s.arrivalEnergy || '').charAt(0).toUpperCase() + (s.arrivalEnergy || '').slice(1) + ' (' + descEnergy(s.arrivalEnergy) + ')';
+  document.getElementById('s-mode').textContent = (s.cognitiveMode || '').charAt(0).toUpperCase() + (s.cognitiveMode || '').slice(1) + ' (' + descMode(s.cognitiveMode) + ')';
+  document.getElementById('s-trust').textContent = (s.trustLevel || '').charAt(0).toUpperCase() + (s.trustLevel || '').slice(1) + ' (' + descTrust(s.trustLevel) + ')';
+  document.getElementById('s-exp').textContent = s.recommendedExperience || 'unknown';
+  document.getElementById('s-profile').textContent = (s.profile || 'unknown').replace(/_/g,' ');
+  document.getElementById('s-source').textContent = (s.referralSource || 'direct').toUpperCase();
+  document.getElementById('s-device').textContent = s.device || 'unknown';
+  document.getElementById('s-captier').textContent = (s.capabilityTier || 'unknown').toUpperCase().replace(/_/g,' ');
+  document.getElementById('s-mem').textContent = (s.deviceMemory || '?') + 'GB';
+  document.getElementById('s-cores').textContent = (s.cores || '?') + ' CPU cores';
+  document.getElementById('s-dpr').textContent = (s.pixelRatio || '?') + 'x (DPR)';
+  document.getElementById('s-screen').textContent = s.screenArea ? s.screenArea.toLocaleString() + ' px' : 'unknown';
+  document.getElementById('s-conn').textContent = s.connectionType || 'unknown';
+  document.getElementById('s-dark').textContent = s.prefersDark ? 'Yes (developer signal)' : 'No';
+  document.getElementById('s-pointer').textContent = s.pointerPrecision || 'unknown';
+  document.getElementById('s-motion').textContent = s.prefersReducedMotion ? 'Yes' : 'No';
+  document.getElementById('s-market').textContent = s.market || 'unknown';
+  document.getElementById('s-tz').textContent = s.timezone || 'unknown';
+  document.getElementById('s-lang').textContent = s.language || 'unknown';
+  document.getElementById('s-time').textContent = (s.timeWindow || 'unknown').charAt(0).toUpperCase() + (s.timeWindow || 'unknown').slice(1);
+  document.getElementById('s-day').textContent = s.dayContext || 'unknown';
+  document.getElementById('s-intensity').textContent = (s.intensity || 'unknown').charAt(0).toUpperCase() + (s.intensity || 'unknown').slice(1) + ' (' + (s.totalVisits || 0) + '+ visits)';
+  document.getElementById('s-returning').textContent = s.isReturning ? 'Yes' : 'No';
+  document.getElementById('s-visits').textContent = (s.totalVisits || 0) + ' visits';
+  document.getElementById('s-session').textContent = (s.sessionVisits || 1) + ' this session';
+  document.getElementById('s-scroll').textContent = (s.scrollDepthLastVisit != null ? s.scrollDepthLastVisit + '%' : 'No data yet');
+  document.getElementById('s-topv').textContent = (s.timeOnPageLastVisit != null ? s.timeOnPageLastVisit + 's' : 'No data yet');
+  document.getElementById('s-utmc').textContent = s.utmContent || 'None';
+  document.getElementById('s-utmt').textContent = s.utmTerm || 'None';
+  document.getElementById('s-ref').textContent = s.referrer || 'None (direct)';
 
   // QR codes
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('footer-version').textContent = Presence.version;
+  if (typeof QRCode !== 'undefined') {
+    new QRCode(document.getElementById('qr-github'), { text: 'https://github.com/tkrojzl-cyber/presence', width: 80, height: 80, colorDark: '#000000', colorLight: '#ffffff' });
+    new QRCode(document.getElementById('qr-archon'), { text: 'https://archon-stack.online', width: 80, height: 80, colorDark: '#000000', colorLight: '#ffffff' });
+  }
+});
 
-    var QR_URLS = {
-      'qr-github':   'https://github.com/tkrojzl-cyber/presence',
-      'qr-brainiac': 'https://archon-stack.online'
-    };
-    Object.keys(QR_URLS).forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el && typeof QRCode !== 'undefined') {
-        new QRCode(el, {
-          text:         QR_URLS[id],
-          width:        96,
-          height:       96,
-          colorDark:    '#000000',
-          colorLight:   '#ffffff',
-          correctLevel: QRCode.CorrectLevel.M
-        });
-      }
-    });
-  });
+function descEnergy(v) {
+  return v === 'committed' ? 'high-intensity returning' : v === 'active' ? 'intentional arrival' : 'passive drift';
+}
+function descMode(v) {
+  return v === 'executing' ? 'ready to act' : v === 'evaluating' ? 'reading' : 'browsing';
+}
+function descTrust(v) {
+  return v === 'insider' ? 'deeply invested' : v === 'acquaintance' ? 'returning, not yet invested' : 'first encounter';
+}
 </script>
 </body>
 </html>
