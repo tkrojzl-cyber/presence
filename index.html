@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>presence.js - live demo</title>
   <script src="presence.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -190,6 +191,80 @@
       word-break: break-all;
     }
 
+    /* ── LINKS SECTION ── */
+    .links-section {
+      border: 1px solid #00ff8822;
+      padding: 28px 32px;
+      margin-bottom: 32px;
+    }
+    .links-header {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: #2a6644;
+      margin-bottom: 20px;
+    }
+    .links-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: #00ff8811;
+    }
+    .link-card {
+      background: #000;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .link-card-top { flex: 1; width: 100%; }
+    .link-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #00ff88;
+      margin-bottom: 6px;
+    }
+    .link-url {
+      font-size: 10px;
+      color: #2a6644;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      word-break: break-all;
+    }
+    .link-desc {
+      font-size: 12px;
+      color: #00ff8877;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+    .link-btn {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #000;
+      background: #00ff88;
+      padding: 6px 14px;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-family: inherit;
+    }
+    .link-btn:hover { background: #00cc66; }
+    .qr-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 8px;
+    }
+    .qr-wrap canvas, .qr-wrap img {
+      border: 2px solid #00ff8833;
+      padding: 6px;
+      background: #fff;
+    }
+    .qr-caption {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #1a4433;
+    }
+
     .footer {
       font-size: 11px;
       color: #2a6644;
@@ -199,9 +274,14 @@
       display: flex;
       gap: 24px;
       flex-wrap: wrap;
+      align-items: center;
     }
     .footer a { color: #00ff8866; text-decoration: none; }
     .footer a:hover { color: #00ff88; }
+
+    @media (max-width: 700px) {
+      .links-grid { grid-template-columns: 1fr; }
+    }
 
     @media (max-width: 600px) {
       .signals-grid, .axes-grid, .intent-row { grid-template-columns: 1fr; }
@@ -383,9 +463,52 @@ localStorage.getItem('_ptop')</code>
     <code>['_ptv','_pfs','_pls','_psd','_ptop'].forEach(k=>localStorage.removeItem(k));sessionStorage.clear();location.reload();</code>
   </div>
 
+  <!-- LINKS SECTION -->
+  <div class="links-section">
+    <div class="links-header">// BUILT BY BRAINIAC LTD</div>
+    <div class="links-grid">
+
+      <div class="link-card">
+        <div class="link-card-top">
+          <div class="link-label">PRESENCE.JS</div>
+          <div class="link-url">github.com/tkrojzl-cyber/presence</div>
+          <div class="link-desc">This library. MIT. Zero dependencies. Drop it in.</div>
+          <a href="https://tkrojzl-cyber.github.io/presence" target="_blank" class="link-btn">OPEN DEMO</a>
+        </div>
+        <div class="qr-wrap" id="qr-presence"></div>
+        <div class="qr-caption">Scan to open demo</div>
+      </div>
+
+      <div class="link-card">
+        <div class="link-card-top">
+          <div class="link-label">VOID</div>
+          <div class="link-url">refreshing-void-market-pulse.base44.app</div>
+          <div class="link-desc">Signal filtering. Cut through market noise. Built on the same zero-infrastructure philosophy.</div>
+          <a href="https://refreshing-void-market-pulse.base44.app" target="_blank" class="link-btn">OPEN VOID</a>
+        </div>
+        <div class="qr-wrap" id="qr-void"></div>
+        <div class="qr-caption">Scan to open VOID</div>
+      </div>
+
+      <div class="link-card">
+        <div class="link-card-top">
+          <div class="link-label">BRAINIAC LTD</div>
+          <div class="link-url">superchargebuilds.pro</div>
+          <div class="link-desc">20 production-grade AI tools. Solo built. Everything above came from here.</div>
+          <a href="https://superchargebuilds.pro" target="_blank" class="link-btn">SEE ALL BUILDS</a>
+        </div>
+        <div class="qr-wrap" id="qr-brainiac"></div>
+        <div class="qr-caption">Scan to see full portfolio</div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="footer">
-    <a href="https://github.com/tkrojzl-cyber/presence" target="_blank">github.com/tkrojzl-cyber/presence</a>
-    <a href="https://superchargebuilds.pro" target="_blank">built by brainiac ltd</a>
+    <a href="https://github.com/tkrojzl-cyber/presence" target="_blank">github</a>
+    <a href="https://superchargebuilds.pro" target="_blank">superchargebuilds.pro</a>
+    <a href="https://refreshing-void-market-pulse.base44.app" target="_blank">void</a>
+    <span style="color:#1a4433">presence.js v<span id="footer-version"></span> &mdash; built by brainiac ltd &mdash; mit license</span>
   </div>
 
 </div>
@@ -603,6 +726,30 @@ localStorage.getItem('_ptop')</code>
       (why  ? '<div class="signal-why">' + why + '</div>' : '') +
       (isNew ? '<div class="signal-new">NEW IN V2.0.0</div>' : '');
     grid.appendChild(cell);
+  });
+
+  // QR codes
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('footer-version').textContent = Presence.version;
+
+    var QR_URLS = {
+      'qr-presence': 'https://tkrojzl-cyber.github.io/presence',
+      'qr-void':     'https://refreshing-void-market-pulse.base44.app',
+      'qr-brainiac': 'https://superchargebuilds.pro'
+    };
+    Object.keys(QR_URLS).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && typeof QRCode !== 'undefined') {
+        new QRCode(el, {
+          text:         QR_URLS[id],
+          width:        96,
+          height:       96,
+          colorDark:    '#000000',
+          colorLight:   '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+    });
   });
 </script>
 </body>
