@@ -24,7 +24,7 @@
 
   var _BOOT = typeof performance !== 'undefined' ? performance.now() : 0;
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ PERSIST SCROLL DEPTH + TIME ON PAGE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // "Â-"Â- PERSIST SCROLL DEPTH + TIME ON PAGE "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
   // Written to localStorage on beforeunload so next visit can read them
   var _pageStart = Date.now();
   try {
@@ -54,10 +54,10 @@
     var path     = window.location.pathname;
     var src      = (referrer + ' ' + ref).toLowerCase();
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 1 Ã¢â‚¬â€ REFERRAL SOURCE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 1 -"Â REFERRAL SOURCE "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     // document.referrer + URLSearchParams ref/utm_source
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 2 Ã¢â‚¬â€ TIME OF DAY Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 2 -"Â TIME OF DAY "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     var hour = now.getHours();
     var timeWindow =
       (hour >= 5  && hour < 8)  ? 'EARLY'     :
@@ -65,12 +65,12 @@
       (hour >= 12 && hour < 17) ? 'AFTERNOON' :
       (hour >= 17 && hour < 22) ? 'EVENING'   : 'LATE';
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 3 Ã¢â‚¬â€ DAY OF WEEK Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 3 -"Â DAY OF WEEK "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     var dayOfWeek  = now.getDay();
     var isWeekend  = dayOfWeek === 0 || dayOfWeek === 6;
     var dayContext = isWeekend ? 'WEEKEND' : 'WEEKDAY';
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 4 Ã¢â‚¬â€ DEVICE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 4 -"Â DEVICE "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     var width       = window.innerWidth;
     var touchPoints = navigator.maxTouchPoints || 0;
     var isTouch     = touchPoints > 0;
@@ -79,7 +79,7 @@
       (width < 768 && !isTouch) ? 'NARROW'  :
       (width >= 1440)           ? 'WIDE'    : 'DESKTOP';
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ CAPABILITY MODEL Ã¢â‚¬â€ MULTI-SIGNAL COMPOSITE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// "Â-"Â- CAPABILITY MODEL -"Â MULTI-SIGNAL COMPOSITE "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     //
     // Research basis:
     // - Cores alone is a weak proxy. Buckets cap at 8 for privacy reasons (spec).
@@ -126,44 +126,44 @@
       }
     } catch(e) {}
 
-    // Dark mode Ã¢â‚¬â€ strongest non-hardware sophistication signal
+    // Dark mode -"Â strongest non-hardware sophistication signal
     var prefersDark = false;
     try {
       prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     } catch(e) {}
 
-    // Pointer precision Ã¢â‚¬â€ mouse/trackpad vs touch finger
+    // Pointer precision -"Â mouse/trackpad vs touch finger
     var pointerPrecision = 'unknown';
     try {
       if (window.matchMedia('(pointer: fine)').matches)   pointerPrecision = 'fine';
       else if (window.matchMedia('(pointer: coarse)').matches) pointerPrecision = 'coarse';
     } catch(e) {}
 
-    // Reduced motion Ã¢â‚¬â€ accessibility-aware = technically engaged
+    // Reduced motion -"Â accessibility-aware = technically engaged
     var prefersReducedMotion = false;
     try {
       prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     } catch(e) {}
 
-    // Hover capability Ã¢â‚¬â€ non-hover = pure touch = consumption context
+    // Hover capability -"Â non-hover = pure touch = consumption context
     var canHover = false;
     try { canHover = window.matchMedia('(hover: hover)').matches; } catch(e) {}
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ CAPABILITY SCORE Ã¢â‚¬â€ 0 to 100 Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- CAPABILITY SCORE -"Â 0 to 100 "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     //
     // Weighted composite. Weights derived from signal reliability and
     // psychological/market research on what actually predicts technical sophistication:
     //
-    // deviceMemory    (25pts) Ã¢â‚¬â€ strongest single predictor of device class
-    // cores           (15pts) Ã¢â‚¬â€ useful but capped at 8 by spec (privacy noise)
-    // pixelRatio      (15pts) Ã¢â‚¬â€ retina/4K = prosumer or developer environment
-    // screenArea      (10pts) Ã¢â‚¬â€ large monitor = workstation context
-    // connectionQuality(10pts)Ã¢â‚¬â€ infrastructure proxy
-    // prefersDark     (10pts) Ã¢â‚¬â€ developer identity marker (80% vs 35% base rate)
-    // pointerPrecision(8pts)  Ã¢â‚¬â€ fine = creation context, coarse = consumption
-    // colorDepth      (4pts)  Ã¢â‚¬â€ pro display pipeline
-    // prefersReducedMotion(2pts) Ã¢â‚¬â€ system-level awareness
-    // canHover        (1pt)   Ã¢â‚¬â€ hover = non-touch production context
+    // deviceMemory    (25pts) -"Â strongest single predictor of device class
+    // cores           (15pts) -"Â useful but capped at 8 by spec (privacy noise)
+    // pixelRatio      (15pts) -"Â retina/4K = prosumer or developer environment
+    // screenArea      (10pts) -"Â large monitor = workstation context
+    // connectionQuality(10pts)-"Â infrastructure proxy
+    // prefersDark     (10pts) -"Â developer identity marker (80% vs 35% base rate)
+    // pointerPrecision(8pts)  -"Â fine = creation context, coarse = consumption
+    // colorDepth      (4pts)  -"Â pro display pipeline
+    // prefersReducedMotion(2pts) -"Â system-level awareness
+    // canHover        (1pt)   -"Â hover = non-touch production context
 
     var capScore = 0;
 
@@ -172,7 +172,7 @@
     else if (deviceMemory >= 2) capScore += 18;
     else if (deviceMemory >= 1) capScore += 15;
     else if (deviceMemory > 0)  capScore += 8;
-    // if deviceMemory unavailable (Firefox, Safari) Ã¢â‚¬â€ neutral, score from other signals
+    // if deviceMemory unavailable (Firefox, Safari) -"Â neutral, score from other signals
 
     // cores: capped at 8 by spec, so max signal is 8+
     if      (cores >= 8) capScore += 15;
@@ -214,7 +214,7 @@
     // Cap at 100
     capScore = Math.min(capScore, 100);
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ CAPABILITY TIER Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- CAPABILITY TIER "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     // Maps to psychological segment:
     // SOVEREIGN  (75-100): Pro workstation. Dark mode. Retina. High RAM. Fine pointer.
     //                       Likely: developer, designer, researcher, power user.
@@ -239,12 +239,12 @@
       capScore >= 45 ? 'MID'      :
       capScore >= 20 ? 'STANDARD' : 'LOW';
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 6 Ã¢â‚¬â€ LOCALE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 6 -"Â LOCALE "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     var lang        = (navigator.language || 'en').toLowerCase();
     var langPrimary = lang.split('-')[0];
     var langRegion  = lang.includes('-') ? lang.split('-')[1].toUpperCase() : '';
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 7 Ã¢â‚¬â€ TIMEZONE / MARKET Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 7 -"Â TIMEZONE / MARKET "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     var timezone = '';
     try { timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
     var market =
@@ -254,21 +254,21 @@
       timezone.includes('Pacific')   ? 'APAC' :
       timezone.includes('Australia') ? 'APAC' : 'OTHER';
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 8 Ã¢â‚¬â€ SESSION HISTORY Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 8 -"Â SESSION HISTORY "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     var sessionVisits = 1;
     try {
       sessionVisits = parseInt(sessionStorage.getItem('_pv') || '0', 10) + 1;
       sessionStorage.setItem('_pv', sessionVisits);
     } catch (e) {}
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 9 Ã¢â‚¬â€ VISIT INTENSITY Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 9 -"Â VISIT INTENSITY "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     var totalVisits = 1;
     try {
       totalVisits = parseInt(localStorage.getItem('_ptv') || '0', 10) + 1;
       localStorage.setItem('_ptv', totalVisits);
     } catch (e) {}
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 10 Ã¢â‚¬â€ RETURNING VISITOR + RECENCY Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 10 -"Â RETURNING VISITOR + RECENCY "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     var firstSeen      = null;
     var lastSeen       = null;
     var isReturning    = false;
@@ -291,21 +291,21 @@
       localStorage.setItem('_pls', nowTs);
     } catch (e) {}
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 11 Ã¢â‚¬â€ SCROLL DEPTH (last visit) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 11 -"Â SCROLL DEPTH (last visit) "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     // Persisted on beforeunload. Reveals scanner vs reader.
     var scrollDepthLastVisit = 0;
     try {
       scrollDepthLastVisit = parseInt(localStorage.getItem('_psd') || '0', 10);
     } catch (e) {}
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 12 Ã¢â‚¬â€ TIME ON PAGE (last visit) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 12 -"Â TIME ON PAGE (last visit) "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     // Persisted on beforeunload. Reveals passive drift vs intentional read.
     var timeOnPageLastVisit = 0;
     try {
       timeOnPageLastVisit = parseInt(localStorage.getItem('_ptop') || '0', 10);
     } catch (e) {}
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ SIGNAL 13 Ã¢â‚¬â€ UTM CONTENT + TERM Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- SIGNAL 13 -"Â UTM CONTENT + TERM "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     // utm_content = creative/audience variant. utm_term = keyword/search intent.
     var utmSource   = (params.get('utm_source')   || '').toLowerCase();
     var utmMedium   = (params.get('utm_medium')   || '').toLowerCase();
@@ -321,7 +321,7 @@
       totalVisits >= 10 ? 'HIGH'   :
       totalVisits >= 3  ? 'MEDIUM' : 'LOW';
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ PROFILE RESOLUTION Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- PROFILE RESOLUTION "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
     var source  = 'DIRECT';
     var profile = 'default';
 
@@ -383,16 +383,16 @@
     var allowed = ['researcher', 'founder', 'developer', 'deep_work', 'default'];
     if (fp && allowed.indexOf(fp) !== -1) profile = fp;
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ INTENT STATE ENGINE Ã¢â‚¬â€ 3 AXES, 9 STATES Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // "Â-"Â- INTENT STATE ENGINE -"Â 3 AXES, 9 STATES "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
 
-    // AXIS 1 Ã¢â‚¬â€ ARRIVAL ENERGY
+    // AXIS 1 -"Â ARRIVAL ENERGY
     // How intentional was this visit?
     var arrivalEnergy =
       (isReturning && intensity === 'HIGH')                      ? 'committed' :
       (!referrer && !utmSource && totalVisits > 1)               ? 'active'    :
       (referrer || utmSource)                                    ? 'passive'   : 'active';
 
-    // AXIS 2 Ã¢â‚¬â€ COGNITIVE MODE
+    // AXIS 2 -"Â COGNITIVE MODE
     // What are they trying to do right now?
     // Reader behaviour: >60% scroll depth, >90s on page last visit = evaluating
     // High session visits this session = executing (deep in the product)
@@ -403,14 +403,14 @@
       (utmTerm || utmContent)                                                       ? 'evaluating' :
       'exploring';
 
-    // AXIS 3 Ã¢â‚¬â€ TRUST LEVEL
+    // AXIS 3 -"Â TRUST LEVEL
     // Do they know you yet?
     var trustLevel =
       (isReturning && daysSinceFirst >= 7  && intensity === 'HIGH')   ? 'insider'      :
       (isReturning && totalVisits >= 3)                                ? 'acquaintance' :
       'stranger';
 
-    // INTENT STATE Ã¢â‚¬â€ one of 9 canonical states
+    // INTENT STATE -"Â one of 9 canonical states
     // Maps axes to a recommended experience strategy
     var intentState = arrivalEnergy + '_' + cognitiveMode + '_' + trustLevel;
 
@@ -523,11 +523,11 @@
     };
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ PUBLIC API Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // "Â-"Â- PUBLIC API "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
   var signals = detect();
 
 
-  // â”€â”€ SESSION CERTIFICATE GENERATOR v3.0.0 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ SESSION CERTIFICATE GENERATOR v3.0.0 Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   async function generateCertificate(signals) {
     var issued    = new Date().toISOString();
     var sessionId = Math.abs(
@@ -629,19 +629,68 @@
 
     /** Log all signals to console */
     debug: function () {
-      console.group('[presence.js v' + this.version + ']');
-      console.log('Intent State:', signals.intentState);
-      console.log('Experience:  ', signals.recommendedExperience);
-      console.log('Axes:', {
-        arrivalEnergy: signals.arrivalEnergy,
-        cognitiveMode: signals.cognitiveMode,
-        trustLevel:    signals.trustLevel
-      });
-      console.log('Suppress:', signals.suppressElements);
-      console.log('Emphasise:', signals.emphasiseElements);
-      console.table(signals);
-      console.groupEnd();
+      var s   = signals;
+      var bm  = s.bootMs != null ? s.bootMs + 'ms' : '<2ms';
+      var ts  = new Date().toISOString();
+      var sid = Math.abs(
+        Math.round((s.bootMs || 0) * 1000) ^ (new Date().getTime() % 0xFFFFFF)
+      ).toString(16).padStart(16, '0').slice(0, 16);
+
+      var G  = 'color:#3fb950;font-family:monospace;font-size:11px;font-weight:bold;';
+      var DM = 'color:#484f58;font-family:monospace;font-size:11px;';
+      var TT = 'color:#c9d1d9;font-family:monospace;font-size:11px;font-weight:bold;';
+      var AM = 'color:#ffa657;font-family:monospace;font-size:11px;font-weight:bold;';
+
+      var row = function(label, value, valStyle) {
+        console.log('%c  ' + (label + ':').padEnd(24) + '%c' + value, DM, valStyle || TT);
+      };
+      var div = function() { console.log('%c  ' + '-'.repeat(52), DM); };
+      var hd  = function(txt) { console.log('%c  ' + txt, 'color:#30363d;font-family:monospace;font-size:9px;letter-spacing:0.2em;'); };
+
+      console.log('%c\n  PRESENCE SESSION CERTIFICATE\n  presence.js v3.0.0  --  Brainiac Ltd  --  MIT\n', G);
+      div(); hd('IDENTITY'); div();
+      row('issued',     ts,  AM);
+      row('session id', sid, AM);
+      div(); hd('CLASSIFICATION'); div();
+      row('profile',      (s.profile      || 'unknown').toUpperCase(), G);
+      row('intent state', (s.intentState  || 'unknown'),               G);
+      row('source',       (s.source       || s.referralSource || 'DIRECT').toUpperCase(), TT);
+      row('experience',   (s.recommendedExperience || 'unknown').toUpperCase());
+      div(); hd('AXES'); div();
+      row('arrival energy', (s.arrivalEnergy || 'unknown').toUpperCase(), G);
+      row('cognitive mode', (s.cognitiveMode || 'unknown').toUpperCase(), G);
+      row('trust level',    (s.trustLevel    || 'unknown').toUpperCase(), G);
+      div(); hd('HARDWARE + CONTEXT'); div();
+      row('bootMs',       bm,                                            G);
+      row('device',       (s.device         || 'unknown').toUpperCase());
+      row('capability',   (s.capabilityTier || 'unknown') + ' (' + (s.capabilityScore || 0) + '/100)');
+      row('RAM',          (s.deviceMemory   ? s.deviceMemory + 'GB' : 'not exposed (Firefox/Safari)'));
+      row('cores',        String(s.cores    || 'unknown'));
+      row('pixel ratio',  (s.pixelRatio     || 1) + 'x');
+      row('dark mode',    String(s.prefersDark));
+      row('pointer',      s.pointerPrecision || 'unknown');
+      row('market',       s.market           || 'unknown');
+      row('time window',  s.timeWindow       || 'unknown');
+      row('returning',    String(s.isReturning));
+      row('total visits', String(s.totalVisits || 1));
+      row('scroll depth', (s.scrollDepthLastVisit != null ? s.scrollDepthLastVisit + '% last visit' : 'no prior data'));
+      row('time on page', (s.timeOnPageLastVisit  != null ? s.timeOnPageLastVisit  + 's last visit'  : 'no prior data'));
+      div();
+      console.log('%c  All signals read client-side. Nothing stored. Nothing transmitted.\n  One session. Not repeatable.\n', DM);
+      console.log('%c  Presence.signals  -- full object', DM);
+      console.log('%c  Presence.reset()  -- clear localStorage + reload as first visit', DM);
+      console.log('');
+      console.table(s);
       return this;
+    },
+    /** Clear all localStorage keys and reload as a fresh first visit */
+    reset: function() {
+      ['_ptv','_pfs','_pls','_psd','_ptop'].forEach(function(k) {
+        localStorage.removeItem(k);
+      });
+      sessionStorage.clear();
+      console.log('%cPresence: cleared. Reloading as first visit...', 'color:#ffa657;font-family:monospace;');
+      setTimeout(function() { location.reload(); }, 400);
     },
   };
 
@@ -708,7 +757,7 @@
 
     .wrap { max-width: 780px; margin: 0 auto; }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ TOP BANNER Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- TOP BANNER "Â-"Â- */
     .top-banner {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -756,7 +805,7 @@
       margin-bottom: 32px;
     }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ PROFILE BLOCK Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- PROFILE BLOCK "Â-"Â- */
     .profile-block {
       border: 1px solid var(--border);
       padding: 24px;
@@ -839,7 +888,7 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ MANIFESTO Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- MANIFESTO "Â-"Â- */
     .manifesto {
       border-left: 2px solid var(--border);
       padding: 0 0 0 20px;
@@ -854,7 +903,7 @@
     .manifesto p:last-child { margin-bottom: 0; }
     .manifesto strong { color: var(--bright); font-weight: 500; }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ MODEL BLOCK Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- MODEL BLOCK "Â-"Â- */
     .model-block {
       border: 1px solid var(--border);
       padding: 24px;
@@ -918,7 +967,7 @@
     .states-table tr.current-state td { color: var(--bright); background: var(--dim-blue); }
     .states-table tr.current-state td:first-child { color: var(--blue); font-weight: 500; }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ SECTION HEADER Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- SECTION HEADER "Â-"Â- */
     .section-header {
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
@@ -929,7 +978,7 @@
       letter-spacing: 0.5px;
     }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ SIGNALS GRID Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- SIGNALS GRID "Â-"Â- */
     .signals-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -961,7 +1010,7 @@
       font-weight: 500;
     }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ CAP BAR Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- CAP BAR "Â-"Â- */
     .cap-bar {
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
@@ -969,7 +1018,7 @@
       margin-bottom: 2px;
     }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ VERIFY Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- VERIFY "Â-"Â- */
     .verify-block {
       border: 1px solid var(--border);
       padding: 20px 24px;
@@ -997,7 +1046,7 @@
       word-break: break-all;
     }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ LINKS Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- LINKS "Â-"Â- */
     .links-section {
       border: 1px solid var(--border);
       padding: 24px;
@@ -1075,7 +1124,7 @@
       color: var(--muted);
     }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ FOOTER Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- FOOTER "Â-"Â- */
     .footer {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -1099,7 +1148,7 @@
       .banner-classified { font-size: 15px; }
     }
 
-    /* Ã¢â€â‚¬Ã¢â€â‚¬ VISITOR DEMO PANEL Ã¢â€â‚¬Ã¢â€â‚¬ */
+    /* "Â-"Â- VISITOR DEMO PANEL "Â-"Â- */
     .demo-panel {
       margin-bottom: 40px;
     }
@@ -1222,7 +1271,7 @@
 
   <!-- VISITOR DEMO PANEL -->
   <div class="demo-panel">
-    <div class="demo-header">// same url Ã¢â‚¬â€ three different people Ã¢â‚¬â€ three different pages</div>
+    <div class="demo-header">// same url -"Â three different people -"Â three different pages</div>
     <div class="demo-grid">
 
       <!-- Visitor 1: Developer, first visit, direct -->
@@ -1342,9 +1391,10 @@
     </p>
     <p>
       <strong>Presence changes that.</strong> One 12KB file. No backend. No cookies. No network calls.
-      Ten browser signals. Nine intent states. Classification in under 2 milliseconds -
+      Twenty-five browser signals. Nine intent states. Classification in under 2 milliseconds -
       before your first component renders.
     </p>
+    <p id="multiplier-line" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(201,209,217,0.5);line-height:1.8;border-top:1px solid #21262d;padding-top:14px;margin-top:4px;"></p>
   </div>
 
   <!-- 3. THE MODEL -->
@@ -1492,6 +1542,19 @@ localStorage.getItem('_ptop')</code>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var s = Presence.signals;
+
+  // MULTIPLIER SENTENCE
+  (function() {
+    var bm = s.bootMs;
+    var el = document.getElementById('multiplier-line');
+    if (!el) return;
+    if (bm && bm > 0 && bm < 50) {
+      var n = Math.round(1000 / bm).toLocaleString();
+      el.innerHTML = 'By the time you finished reading that headline, Presence had already classified you <span style="color:#3fb950;font-weight:600;">' + n + ' times over.</span>';
+    } else {
+      el.innerHTML = 'Presence classified this session in <span style="color:#3fb950;font-weight:600;">under 1ms</span> - before your browser finished parsing the headline.';
+    }
+  })();
   var _presenceCert=null;
   generateCertificate(s).then(function(cert){
     _presenceCert=cert;
@@ -1687,4 +1750,3 @@ function descTrust(v) {
         <div style="margin-top:16px;color:#64748b;font-size:10px;line-height:1.6;">This certificate was generated client-side. No data left this browser.<br>One session. One document. Not repeatable.</div>
       </div>
     </section>
-
