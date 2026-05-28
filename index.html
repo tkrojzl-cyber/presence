@@ -695,6 +695,7 @@
   };
 
   global.Presence = Presence;
+  global.generateCertificate = generateCertificate;
 
   // Set data attributes on body for CSS targeting
   document.addEventListener('DOMContentLoaded', function () {
@@ -1556,23 +1557,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   })();
   var _presenceCert=null;
-  generateCertificate(s).then(function(cert){
-    _presenceCert=cert;
-    var cp=document.getElementById('cert-panel');
-    if(!cp)return;
-    document.getElementById('cert-issued').textContent=cert.issued;
-    document.getElementById('cert-session').textContent=cert.sessionId;
-    document.getElementById('cert-state').textContent=cert.intentState;
-    document.getElementById('cert-tag').textContent=cert.actionTag;
-    document.getElementById('cert-tier').textContent=cert.capTier;
-    document.getElementById('cert-score').textContent=cert.capScore;
-    document.getElementById('cert-cogload').textContent=cert.cogLoad;
-    document.getElementById('cert-bootms').textContent=cert.bootMs;
-    document.getElementById('cert-source').textContent=cert.source;
-    document.getElementById('cert-device').textContent=cert.device;
-    document.getElementById('cert-hash').textContent=cert.hash;
-    cp.style.opacity='1';
-  });
+  try {
+    generateCertificate(s).then(function(cert){
+      _presenceCert=cert;
+      var cp=document.getElementById('cert-panel');
+      if(!cp)return;
+      document.getElementById('cert-issued').textContent=cert.issued;
+      document.getElementById('cert-session').textContent=cert.sessionId;
+      document.getElementById('cert-state').textContent=cert.intentState;
+      document.getElementById('cert-tag').textContent=cert.actionTag;
+      document.getElementById('cert-tier').textContent=cert.capTier;
+      document.getElementById('cert-score').textContent=cert.capScore;
+      document.getElementById('cert-cogload').textContent=cert.cogLoad;
+      document.getElementById('cert-bootms').textContent=cert.bootMs;
+      document.getElementById('cert-source').textContent=cert.source;
+      document.getElementById('cert-device').textContent=cert.device;
+      document.getElementById('cert-hash').textContent=cert.hash;
+      cp.style.opacity='1';
+    });
+  } catch(e) { console.warn('Presence cert:', e); }
 
 
   // boot line
