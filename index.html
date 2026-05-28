@@ -24,7 +24,7 @@
 
   var _BOOT = typeof performance !== 'undefined' ? performance.now() : 0;
 
-  // "Â-"Â- PERSIST SCROLL DEPTH + TIME ON PAGE "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+  // "--"-- PERSIST SCROLL DEPTH + TIME ON PAGE "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
   // Written to localStorage on beforeunload so next visit can read them
   var _pageStart = Date.now();
   try {
@@ -54,10 +54,10 @@
     var path     = window.location.pathname;
     var src      = (referrer + ' ' + ref).toLowerCase();
 
-    // "Â-"Â- SIGNAL 1 -"Â REFERRAL SOURCE "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 1 -"- REFERRAL SOURCE "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     // document.referrer + URLSearchParams ref/utm_source
 
-    // "Â-"Â- SIGNAL 2 -"Â TIME OF DAY "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 2 -"- TIME OF DAY "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     var hour = now.getHours();
     var timeWindow =
       (hour >= 5  && hour < 8)  ? 'EARLY'     :
@@ -65,12 +65,12 @@
       (hour >= 12 && hour < 17) ? 'AFTERNOON' :
       (hour >= 17 && hour < 22) ? 'EVENING'   : 'LATE';
 
-    // "Â-"Â- SIGNAL 3 -"Â DAY OF WEEK "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 3 -"- DAY OF WEEK "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     var dayOfWeek  = now.getDay();
     var isWeekend  = dayOfWeek === 0 || dayOfWeek === 6;
     var dayContext = isWeekend ? 'WEEKEND' : 'WEEKDAY';
 
-    // "Â-"Â- SIGNAL 4 -"Â DEVICE "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 4 -"- DEVICE "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     var width       = window.innerWidth;
     var touchPoints = navigator.maxTouchPoints || 0;
     var isTouch     = touchPoints > 0;
@@ -79,7 +79,7 @@
       (width < 768 && !isTouch) ? 'NARROW'  :
       (width >= 1440)           ? 'WIDE'    : 'DESKTOP';
 
-// "Â-"Â- CAPABILITY MODEL -"Â MULTI-SIGNAL COMPOSITE "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+// "--"-- CAPABILITY MODEL -"- MULTI-SIGNAL COMPOSITE "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     //
     // Research basis:
     // - Cores alone is a weak proxy. Buckets cap at 8 for privacy reasons (spec).
@@ -126,44 +126,44 @@
       }
     } catch(e) {}
 
-    // Dark mode -"Â strongest non-hardware sophistication signal
+    // Dark mode -"- strongest non-hardware sophistication signal
     var prefersDark = false;
     try {
       prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     } catch(e) {}
 
-    // Pointer precision -"Â mouse/trackpad vs touch finger
+    // Pointer precision -"- mouse/trackpad vs touch finger
     var pointerPrecision = 'unknown';
     try {
       if (window.matchMedia('(pointer: fine)').matches)   pointerPrecision = 'fine';
       else if (window.matchMedia('(pointer: coarse)').matches) pointerPrecision = 'coarse';
     } catch(e) {}
 
-    // Reduced motion -"Â accessibility-aware = technically engaged
+    // Reduced motion -"- accessibility-aware = technically engaged
     var prefersReducedMotion = false;
     try {
       prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     } catch(e) {}
 
-    // Hover capability -"Â non-hover = pure touch = consumption context
+    // Hover capability -"- non-hover = pure touch = consumption context
     var canHover = false;
     try { canHover = window.matchMedia('(hover: hover)').matches; } catch(e) {}
 
-    // "Â-"Â- CAPABILITY SCORE -"Â 0 to 100 "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- CAPABILITY SCORE -"- 0 to 100 "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     //
     // Weighted composite. Weights derived from signal reliability and
     // psychological/market research on what actually predicts technical sophistication:
     //
-    // deviceMemory    (25pts) -"Â strongest single predictor of device class
-    // cores           (15pts) -"Â useful but capped at 8 by spec (privacy noise)
-    // pixelRatio      (15pts) -"Â retina/4K = prosumer or developer environment
-    // screenArea      (10pts) -"Â large monitor = workstation context
-    // connectionQuality(10pts)-"Â infrastructure proxy
-    // prefersDark     (10pts) -"Â developer identity marker (80% vs 35% base rate)
-    // pointerPrecision(8pts)  -"Â fine = creation context, coarse = consumption
-    // colorDepth      (4pts)  -"Â pro display pipeline
-    // prefersReducedMotion(2pts) -"Â system-level awareness
-    // canHover        (1pt)   -"Â hover = non-touch production context
+    // deviceMemory    (25pts) -"- strongest single predictor of device class
+    // cores           (15pts) -"- useful but capped at 8 by spec (privacy noise)
+    // pixelRatio      (15pts) -"- retina/4K = prosumer or developer environment
+    // screenArea      (10pts) -"- large monitor = workstation context
+    // connectionQuality(10pts)-"- infrastructure proxy
+    // prefersDark     (10pts) -"- developer identity marker (80% vs 35% base rate)
+    // pointerPrecision(8pts)  -"- fine = creation context, coarse = consumption
+    // colorDepth      (4pts)  -"- pro display pipeline
+    // prefersReducedMotion(2pts) -"- system-level awareness
+    // canHover        (1pt)   -"- hover = non-touch production context
 
     var capScore = 0;
 
@@ -172,7 +172,7 @@
     else if (deviceMemory >= 2) capScore += 18;
     else if (deviceMemory >= 1) capScore += 15;
     else if (deviceMemory > 0)  capScore += 8;
-    // if deviceMemory unavailable (Firefox, Safari) -"Â neutral, score from other signals
+    // if deviceMemory unavailable (Firefox, Safari) -"- neutral, score from other signals
 
     // cores: capped at 8 by spec, so max signal is 8+
     if      (cores >= 8) capScore += 15;
@@ -214,7 +214,7 @@
     // Cap at 100
     capScore = Math.min(capScore, 100);
 
-    // "Â-"Â- CAPABILITY TIER "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- CAPABILITY TIER "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     // Maps to psychological segment:
     // SOVEREIGN  (75-100): Pro workstation. Dark mode. Retina. High RAM. Fine pointer.
     //                       Likely: developer, designer, researcher, power user.
@@ -239,12 +239,12 @@
       capScore >= 45 ? 'MID'      :
       capScore >= 20 ? 'STANDARD' : 'LOW';
 
-    // "Â-"Â- SIGNAL 6 -"Â LOCALE "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 6 -"- LOCALE "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     var lang        = (navigator.language || 'en').toLowerCase();
     var langPrimary = lang.split('-')[0];
     var langRegion  = lang.includes('-') ? lang.split('-')[1].toUpperCase() : '';
 
-    // "Â-"Â- SIGNAL 7 -"Â TIMEZONE / MARKET "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 7 -"- TIMEZONE / MARKET "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     var timezone = '';
     try { timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
     var market =
@@ -254,21 +254,21 @@
       timezone.includes('Pacific')   ? 'APAC' :
       timezone.includes('Australia') ? 'APAC' : 'OTHER';
 
-    // "Â-"Â- SIGNAL 8 -"Â SESSION HISTORY "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 8 -"- SESSION HISTORY "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     var sessionVisits = 1;
     try {
       sessionVisits = parseInt(sessionStorage.getItem('_pv') || '0', 10) + 1;
       sessionStorage.setItem('_pv', sessionVisits);
     } catch (e) {}
 
-    // "Â-"Â- SIGNAL 9 -"Â VISIT INTENSITY "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 9 -"- VISIT INTENSITY "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     var totalVisits = 1;
     try {
       totalVisits = parseInt(localStorage.getItem('_ptv') || '0', 10) + 1;
       localStorage.setItem('_ptv', totalVisits);
     } catch (e) {}
 
-    // "Â-"Â- SIGNAL 10 -"Â RETURNING VISITOR + RECENCY "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 10 -"- RETURNING VISITOR + RECENCY "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     var firstSeen      = null;
     var lastSeen       = null;
     var isReturning    = false;
@@ -291,21 +291,21 @@
       localStorage.setItem('_pls', nowTs);
     } catch (e) {}
 
-    // "Â-"Â- SIGNAL 11 -"Â SCROLL DEPTH (last visit) "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 11 -"- SCROLL DEPTH (last visit) "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     // Persisted on beforeunload. Reveals scanner vs reader.
     var scrollDepthLastVisit = 0;
     try {
       scrollDepthLastVisit = parseInt(localStorage.getItem('_psd') || '0', 10);
     } catch (e) {}
 
-    // "Â-"Â- SIGNAL 12 -"Â TIME ON PAGE (last visit) "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 12 -"- TIME ON PAGE (last visit) "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     // Persisted on beforeunload. Reveals passive drift vs intentional read.
     var timeOnPageLastVisit = 0;
     try {
       timeOnPageLastVisit = parseInt(localStorage.getItem('_ptop') || '0', 10);
     } catch (e) {}
 
-    // "Â-"Â- SIGNAL 13 -"Â UTM CONTENT + TERM "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- SIGNAL 13 -"- UTM CONTENT + TERM "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     // utm_content = creative/audience variant. utm_term = keyword/search intent.
     var utmSource   = (params.get('utm_source')   || '').toLowerCase();
     var utmMedium   = (params.get('utm_medium')   || '').toLowerCase();
@@ -321,7 +321,7 @@
       totalVisits >= 10 ? 'HIGH'   :
       totalVisits >= 3  ? 'MEDIUM' : 'LOW';
 
-    // "Â-"Â- PROFILE RESOLUTION "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- PROFILE RESOLUTION "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
     var source  = 'DIRECT';
     var profile = 'default';
 
@@ -383,16 +383,16 @@
     var allowed = ['researcher', 'founder', 'developer', 'deep_work', 'default'];
     if (fp && allowed.indexOf(fp) !== -1) profile = fp;
 
-    // "Â-"Â- INTENT STATE ENGINE -"Â 3 AXES, 9 STATES "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+    // "--"-- INTENT STATE ENGINE -"- 3 AXES, 9 STATES "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
 
-    // AXIS 1 -"Â ARRIVAL ENERGY
+    // AXIS 1 -"- ARRIVAL ENERGY
     // How intentional was this visit?
     var arrivalEnergy =
       (isReturning && intensity === 'HIGH')                      ? 'committed' :
       (!referrer && !utmSource && totalVisits > 1)               ? 'active'    :
       (referrer || utmSource)                                    ? 'passive'   : 'active';
 
-    // AXIS 2 -"Â COGNITIVE MODE
+    // AXIS 2 -"- COGNITIVE MODE
     // What are they trying to do right now?
     // Reader behaviour: >60% scroll depth, >90s on page last visit = evaluating
     // High session visits this session = executing (deep in the product)
@@ -403,14 +403,14 @@
       (utmTerm || utmContent)                                                       ? 'evaluating' :
       'exploring';
 
-    // AXIS 3 -"Â TRUST LEVEL
+    // AXIS 3 -"- TRUST LEVEL
     // Do they know you yet?
     var trustLevel =
       (isReturning && daysSinceFirst >= 7  && intensity === 'HIGH')   ? 'insider'      :
       (isReturning && totalVisits >= 3)                                ? 'acquaintance' :
       'stranger';
 
-    // INTENT STATE -"Â one of 9 canonical states
+    // INTENT STATE -"- one of 9 canonical states
     // Maps axes to a recommended experience strategy
     var intentState = arrivalEnergy + '_' + cognitiveMode + '_' + trustLevel;
 
@@ -523,11 +523,12 @@
     };
   }
 
-  // "Â-"Â- PUBLIC API "Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-"Â-
+  // "--"-- PUBLIC API "--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--"--
   var signals = detect();
 
 
-// -- SESSION CERTIFICATE GENERATOR v3.0.0 ----------------------------------  async function generateCertificate(signals) {
+  // - SESSION CERTIFICATE GENERATOR v3.0.0 -
+  async function generateCertificate(signals) {
     var issued    = new Date().toISOString();
     var sessionId = Math.abs(
       Math.round((signals.bootMs || 0) * 1000) ^ (new Date().getTime() % 0xFFFFFF)
@@ -756,7 +757,7 @@
 
     .wrap { max-width: 780px; margin: 0 auto; }
 
-    /* "Â-"Â- TOP BANNER "Â-"Â- */
+    /* "--"-- TOP BANNER "--"-- */
     .top-banner {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -804,7 +805,7 @@
       margin-bottom: 32px;
     }
 
-    /* "Â-"Â- PROFILE BLOCK "Â-"Â- */
+    /* "--"-- PROFILE BLOCK "--"-- */
     .profile-block {
       border: 1px solid var(--border);
       padding: 24px;
@@ -887,7 +888,7 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    /* "Â-"Â- MANIFESTO "Â-"Â- */
+    /* "--"-- MANIFESTO "--"-- */
     .manifesto {
       border-left: 2px solid var(--border);
       padding: 0 0 0 20px;
@@ -902,7 +903,7 @@
     .manifesto p:last-child { margin-bottom: 0; }
     .manifesto strong { color: var(--bright); font-weight: 500; }
 
-    /* "Â-"Â- MODEL BLOCK "Â-"Â- */
+    /* "--"-- MODEL BLOCK "--"-- */
     .model-block {
       border: 1px solid var(--border);
       padding: 24px;
@@ -966,7 +967,7 @@
     .states-table tr.current-state td { color: var(--bright); background: var(--dim-blue); }
     .states-table tr.current-state td:first-child { color: var(--blue); font-weight: 500; }
 
-    /* "Â-"Â- SECTION HEADER "Â-"Â- */
+    /* "--"-- SECTION HEADER "--"-- */
     .section-header {
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
@@ -977,7 +978,7 @@
       letter-spacing: 0.5px;
     }
 
-    /* "Â-"Â- SIGNALS GRID "Â-"Â- */
+    /* "--"-- SIGNALS GRID "--"-- */
     .signals-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1009,7 +1010,7 @@
       font-weight: 500;
     }
 
-    /* "Â-"Â- CAP BAR "Â-"Â- */
+    /* "--"-- CAP BAR "--"-- */
     .cap-bar {
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
@@ -1017,7 +1018,7 @@
       margin-bottom: 2px;
     }
 
-    /* "Â-"Â- VERIFY "Â-"Â- */
+    /* "--"-- VERIFY "--"-- */
     .verify-block {
       border: 1px solid var(--border);
       padding: 20px 24px;
@@ -1045,7 +1046,7 @@
       word-break: break-all;
     }
 
-    /* "Â-"Â- LINKS "Â-"Â- */
+    /* "--"-- LINKS "--"-- */
     .links-section {
       border: 1px solid var(--border);
       padding: 24px;
@@ -1123,7 +1124,7 @@
       color: var(--muted);
     }
 
-    /* "Â-"Â- FOOTER "Â-"Â- */
+    /* "--"-- FOOTER "--"-- */
     .footer {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -1147,7 +1148,7 @@
       .banner-classified { font-size: 15px; }
     }
 
-    /* "Â-"Â- VISITOR DEMO PANEL "Â-"Â- */
+    /* "--"-- VISITOR DEMO PANEL "--"-- */
     .demo-panel {
       margin-bottom: 40px;
     }
@@ -1270,7 +1271,7 @@
 
   <!-- VISITOR DEMO PANEL -->
   <div class="demo-panel">
-    <div class="demo-header">// same url -"Â three different people -"Â three different pages</div>
+    <div class="demo-header">// same url -"- three different people -"- three different pages</div>
     <div class="demo-grid">
 
       <!-- Visitor 1: Developer, first visit, direct -->
