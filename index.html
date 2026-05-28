@@ -527,8 +527,7 @@
   var signals = detect();
 
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ SESSION CERTIFICATE GENERATOR v3.0.0 Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
-  async function generateCertificate(signals) {
+// -- SESSION CERTIFICATE GENERATOR v3.0.0 ----------------------------------  async function generateCertificate(signals) {
     var issued    = new Date().toISOString();
     var sessionId = Math.abs(
       Math.round((signals.bootMs || 0) * 1000) ^ (new Date().getTime() % 0xFFFFFF)
