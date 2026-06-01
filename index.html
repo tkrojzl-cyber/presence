@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>presence.js — live demo</title>
+  <title>presence.js â€” live demo</title>
   <meta name="description" content="One file. No backend. No cookies. 28 signals. 9 intent states. Classification in under 2ms.">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -42,11 +42,15 @@
     .time-cell{padding:24px 28px;border-right:1px solid #21262d}
     .time-cell:last-child{border-right:none}
     a{color:#58a6ff;text-decoration:none} a:hover{text-decoration:underline}
+
+    /* TABS */
     .tab-bar{display:flex;border-bottom:1px solid #21262d;margin-bottom:28px;overflow-x:auto;gap:0}
     .tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:#8b949e;font-family:'Courier New',Courier,monospace;font-size:11px;letter-spacing:2px;padding:10px 18px;cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s;text-transform:uppercase}
     .tab-btn:hover{color:#e6edf3}
     .tab-btn.active{color:#3fb950;border-bottom-color:#3fb950}
     .tab-panel{display:none} .tab-panel.active{display:block}
+
+    /* PROFILE HERO CARDS */
     .profile-hero{border:1px solid #21262d;background:#0f1219;padding:28px;margin-bottom:20px;border-radius:2px}
     .profile-hero h2{font-size:20px;font-weight:700;margin-bottom:8px}
     .profile-hero .sub{font-size:12px;color:#8b949e;margin-bottom:16px;line-height:1.7}
@@ -56,6 +60,7 @@
     .sh-val{color:#3fb950;font-size:12px;font-weight:600}
     .code-block{background:#010409;border:1px solid #21262d;padding:16px;font-size:11px;line-height:1.8;overflow-x:auto;margin-top:12px;color:#8b949e}
     .code-block .kw{color:#ff7b72} .code-block .str{color:#a5d6ff} .code-block .cm{color:#3d444d} .code-block .fn{color:#d2a8ff} .code-block .num{color:#3fb950}
+
     @media(max-width:640px){
       .grid3{grid-template-columns:1fr} .grid2{grid-template-columns:1fr}
       .axis-grid{grid-template-columns:1fr} .axis-cell{border-right:none;border-bottom:1px solid #21262d}
@@ -67,11 +72,13 @@
 <body>
 <div class="wrap">
 
+  <!-- HEADER -->
   <div style="margin-bottom:32px">
     <div style="font-size:22px;color:#e6edf3;margin-bottom:4px">presence.js</div>
     <div class="muted" style="font-size:12px">// this page already knows something about you</div>
   </div>
 
+  <!-- THE TWO TIMES -->
   <div class="times-row">
     <div class="time-cell">
       <div class="label" style="margin-bottom:12px">SIGNAL DETECTION</div>
@@ -87,6 +94,7 @@
     </div>
   </div>
 
+  <!-- CLASSIFIED BANNER -->
   <div class="card card-top" style="margin-bottom:32px">
     <div class="label green" style="margin-bottom:10px">// presence is reading this session right now</div>
     <div style="font-size:22px;font-weight:700;margin-bottom:10px" id="classified-line">// classifying...</div>
@@ -94,7 +102,8 @@
     <div class="muted" style="font-size:11px;margin-top:10px;padding-top:10px;border-top:1px solid #21262d" id="banner-footer"></div>
   </div>
 
-  <div class="label" style="margin-bottom:14px">// what presence delivers — by visitor type</div>
+  <!-- TABS -->
+  <div class="label" style="margin-bottom:14px">// what presence delivers â€” by visitor type</div>
   <div class="tab-bar" id="tab-bar">
     <button class="tab-btn" data-tab="your-session">your session</button>
     <button class="tab-btn" data-tab="developer">developer</button>
@@ -103,7 +112,9 @@
     <button class="tab-btn" data-tab="deep-work">deep work</button>
   </div>
 
+  <!-- TAB: YOUR SESSION -->
   <div class="tab-panel" id="tab-your-session">
+
     <div class="card card-blue" style="margin-bottom:20px">
       <div class="label blue" style="margin-bottom:20px">// who you are</div>
       <div class="grid2" style="margin-bottom:20px">
@@ -125,6 +136,7 @@
       <div id="who-narrative" class="muted" style="font-size:12px;line-height:1.9;font-style:italic;border-top:1px solid #21262d;padding-top:14px"></div>
     </div>
 
+    <!-- 3-AXIS MODEL -->
     <div class="label" style="margin-bottom:14px">// the model - 3 axes, 9 intent states</div>
     <div class="axis-grid">
       <div class="axis-cell">
@@ -149,17 +161,19 @@
       <tbody id="states-body"></tbody>
     </table>
 
+    <!-- SIGNAL GRID -->
     <div class="label" style="margin-bottom:14px">// every signal read - and how</div>
     <div class="sig-grid" id="sig-grid"></div>
   </div>
 
+  <!-- TAB: DEVELOPER -->
   <div class="tab-panel" id="tab-developer">
     <div class="profile-hero" style="border-top:2px solid #3fb950">
       <div class="label green" style="margin-bottom:10px">// profile: developer</div>
       <h2 class="green">detected from: GitHub, npm, dev.to, Stack Overflow, GitLab</h2>
       <div class="sub">You arrived from a technical source. Presence skips the pitch. It shows the code, the architecture, the performance numbers. You do not need to be sold to -- you need to see how it works.</div>
       <div class="signal-highlight">
-        <div class="sh-item"><div class="sh-key">DETECTION SIGNAL</div><div class="sh-val">referrer includes [github.com](https://github.com)</div></div>
+        <div class="sh-item"><div class="sh-key">DETECTION SIGNAL</div><div class="sh-val">referrer includes github.com</div></div>
         <div class="sh-item"><div class="sh-key">CAPABILITY TIER</div><div class="sh-val">SOVEREIGN (typically)</div></div>
         <div class="sh-item"><div class="sh-key">POINTER</div><div class="sh-val">fine (mouse / trackpad)</div></div>
         <div class="sh-item"><div class="sh-key">PREFERS DARK</div><div class="sh-val">~80% yes</div></div>
@@ -172,30 +186,31 @@
       <span class="kw">const</span> signals = {<br>
       &nbsp;&nbsp;referrer: <span class="str">'https://github.com/...'</span>,<br>
       &nbsp;&nbsp;profile: <span class="str">'developer'</span>,<br>
-      &nbsp;&nbsp;capabilityTier: <span class="str">'SOVEREIGN'</span>,<br>
+      &nbsp;&nbsp;capabilityTier: <span class="str">'SOVEREIGN'</span>,   <span class="cm">// 16GB+ RAM, fine pointer, high DPR</span><br>
       &nbsp;&nbsp;prefersDark: <span class="num">true</span>,<br>
       &nbsp;&nbsp;intentState: <span class="str">'active_exploring_stranger'</span>,<br>
       &nbsp;&nbsp;recommendedExperience: <span class="str">'thesis_first'</span>,<br>
-      &nbsp;&nbsp;bootMs: <span class="num">0.4</span><br>
+      &nbsp;&nbsp;bootMs: <span class="num">0.4</span>   <span class="cm">// classification time, no network call</span><br>
       };<br><br>
       <span class="cm">// what the page shows them differently</span><br>
-      <span class="cm">// - code reveal (the actual detection script)</span><br>
+      <span class="cm">// - code reveal animation (the actual detection script)</span><br>
       <span class="cm">// - performance timeline (signal: 0.4ms vs React boot: 45ms)</span><br>
       <span class="cm">// - architecture decisions: why synchronous? why no backend?</span><br>
-      <span class="cm">// - no pricing, no testimonials, no book a call above the fold</span>
+      <span class="cm">// - no pricing, no testimonials, no "book a call" above the fold</span>
     </div>
     <div class="muted" style="font-size:11px;margin-top:16px;line-height:1.8;padding:16px;border:1px solid #21262d">
       <strong style="color:#e6edf3">Why this matters:</strong> A developer arriving from GitHub needs proof, not persuasion. Presence serves them raw signal data, annotated source code, and zero marketing friction. The CTA appears at the bottom, after they have already decided.
     </div>
   </div>
 
+  <!-- TAB: FOUNDER -->
   <div class="tab-panel" id="tab-founder">
     <div class="profile-hero" style="border-top:2px solid #f0b429">
       <div class="label amber" style="margin-bottom:10px">// profile: founder</div>
       <h2 class="amber">detected from: Product Hunt, Indie Hackers, Y Combinator, Twitter/X</h2>
       <div class="sub">You came from a product or startup community. Presence reads that as a buy signal. It leads with outcomes, speed, and business impact. Not architecture -- return on attention.</div>
       <div class="signal-highlight">
-        <div class="sh-item"><div class="sh-key">DETECTION SIGNAL</div><div class="sh-val">referrer includes [producthunt.com](https://producthunt.com)</div></div>
+        <div class="sh-item"><div class="sh-key">DETECTION SIGNAL</div><div class="sh-val">referrer includes producthunt.com</div></div>
         <div class="sh-item"><div class="sh-key">CAPABILITY TIER</div><div class="sh-val">CAPABLE - SOVEREIGN</div></div>
         <div class="sh-item"><div class="sh-key">TIME WINDOW</div><div class="sh-val">often DEEP_WORK or EVENING</div></div>
         <div class="sh-item"><div class="sh-key">EXPERIENCE</div><div class="sh-val">proof_first</div></div>
@@ -210,26 +225,28 @@
       &nbsp;&nbsp;profile: <span class="str">'founder'</span>,<br>
       &nbsp;&nbsp;intentState: <span class="str">'passive_evaluating_stranger'</span>,<br>
       &nbsp;&nbsp;recommendedExperience: <span class="str">'proof_first'</span>,<br>
-      &nbsp;&nbsp;timeWindow: <span class="str">'EVENING'</span>,<br>
+      &nbsp;&nbsp;timeWindow: <span class="str">'EVENING'</span>,   <span class="cm">// founders browse PH at night</span><br>
       &nbsp;&nbsp;bootMs: <span class="num">0.6</span><br>
       };<br><br>
       <span class="cm">// what the page shows them differently</span><br>
-      <span class="cm">// - terminal boot sequence (aesthetic match)</span><br>
+      <span class="cm">// - terminal boot sequence (aesthetic match: they speak product)</span><br>
       <span class="cm">// - comparison table vs GA4, Hotjar, Segment</span><br>
+      <span class="cm">// - "25 systems built in 5 months" as social proof</span><br>
       <span class="cm">// - Calendly CTA appears early, not buried</span>
     </div>
     <div class="muted" style="font-size:11px;margin-top:16px;line-height:1.8;padding:16px;border:1px solid #21262d">
-      <strong style="color:#e6edf3">Why this matters:</strong> A founder on Product Hunt is browsing 40 things at once. Presence shows them what they need in the first 10 seconds and gets out of the way.
+      <strong style="color:#e6edf3">Why this matters:</strong> A founder on Product Hunt is browsing 40 things at once. Presence shows them what they need in the first 10 seconds and gets out of the way. Boot sequence is aesthetic alignment -- they think in products, so the page feels like one.
     </div>
   </div>
 
+  <!-- TAB: RESEARCHER -->
   <div class="tab-panel" id="tab-researcher">
     <div class="profile-hero" style="border-top:2px solid #58a6ff">
       <div class="label blue" style="margin-bottom:10px">// profile: researcher</div>
-      <h2 class="blue">detected from: LinkedIn, [academia.edu](https://academia.edu), ResearchGate, .edu referrers</h2>
+      <h2 class="blue">detected from: LinkedIn, academia.edu, ResearchGate, .edu referrers</h2>
       <div class="sub">You arrived via a professional or academic network. Presence reads this as high-trust, slow evaluation. It goes deep. It explains methodology. It treats you as someone who will read every word.</div>
       <div class="signal-highlight">
-        <div class="sh-item"><div class="sh-key">DETECTION SIGNAL</div><div class="sh-val">referrer includes [linkedin.com](https://linkedin.com)</div></div>
+        <div class="sh-item"><div class="sh-key">DETECTION SIGNAL</div><div class="sh-val">referrer includes linkedin.com</div></div>
         <div class="sh-item"><div class="sh-key">EXPERIENCE</div><div class="sh-val">proof_first or remove_objection</div></div>
         <div class="sh-item"><div class="sh-key">TIME WINDOW</div><div class="sh-val">DEEP_WORK or AFTERNOON</div></div>
         <div class="sh-item"><div class="sh-key">LANGUAGE</div><div class="sh-val">detected, used for locale signals</div></div>
@@ -242,21 +259,24 @@
       <span class="kw">const</span> signals = {<br>
       &nbsp;&nbsp;referrer: <span class="str">'https://www.linkedin.com/...'</span>,<br>
       &nbsp;&nbsp;profile: <span class="str">'researcher'</span>,<br>
-      &nbsp;&nbsp;market: <span class="str">'EU'</span>,<br>
+      &nbsp;&nbsp;market: <span class="str">'EU'</span>,   <span class="cm">// timezone-derived, no IP</span><br>
+      &nbsp;&nbsp;language: <span class="str">'en'</span>,<br>
       &nbsp;&nbsp;intentState: <span class="str">'passive_evaluating_stranger'</span>,<br>
       &nbsp;&nbsp;recommendedExperience: <span class="str">'proof_first'</span>,<br>
       &nbsp;&nbsp;bootMs: <span class="num">0.5</span><br>
       };<br><br>
       <span class="cm">// what the page shows them differently</span><br>
-      <span class="cm">// - methodology section: why these signals?</span><br>
+      <span class="cm">// - no boot sequence (no theatre for a researcher)</span><br>
+      <span class="cm">// - methodology section: why these signals? why synchronous?</span><br>
       <span class="cm">// - GDPR angle: zero PII, zero backend, everything client-side</span><br>
-      <span class="cm">// - signal table with browser API citations</span>
+      <span class="cm">// - signal table with citations for each browser API used</span>
     </div>
     <div class="muted" style="font-size:11px;margin-top:16px;line-height:1.8;padding:16px;border:1px solid #21262d">
-      <strong style="color:#e6edf3">Why this matters:</strong> A researcher on LinkedIn is evaluating whether this is credible. Show them the methodology. That is the proof they need.
+      <strong style="color:#e6edf3">Why this matters:</strong> A researcher on LinkedIn is evaluating whether this is credible. The worst thing to show them is a countdown timer or a "limited slots available" banner. Presence shows them the methodology. That is the proof they need.
     </div>
   </div>
 
+  <!-- TAB: DEEP WORK -->
   <div class="tab-panel" id="tab-deep-work">
     <div class="profile-hero" style="border-top:2px solid #8b5cf6">
       <div class="label" style="color:#8b5cf6;margin-bottom:10px">// profile: deep work</div>
@@ -274,8 +294,8 @@
     <div class="code-block">
       <span class="cm">// what Presence detects for this profile</span><br>
       <span class="kw">const</span> signals = {<br>
-      &nbsp;&nbsp;referrer: <span class="str">''</span>,<br>
-      &nbsp;&nbsp;hour: <span class="num">6</span>,<br>
+      &nbsp;&nbsp;referrer: <span class="str">''</span>,   <span class="cm">// direct -- no referrer</span><br>
+      &nbsp;&nbsp;hour: <span class="num">6</span>,          <span class="cm">// 06:00 local time</span><br>
       &nbsp;&nbsp;timeWindow: <span class="str">'EARLY'</span>,<br>
       &nbsp;&nbsp;profile: <span class="str">'deep_work'</span>,<br>
       &nbsp;&nbsp;intentState: <span class="str">'active_exploring_stranger'</span>,<br>
@@ -285,22 +305,24 @@
       <span class="cm">// what the page shows them differently</span><br>
       <span class="cm">// - no terminal boot sequence (wastes their time)</span><br>
       <span class="cm">// - minimal hero: one sentence, one number, one action</span><br>
+      <span class="cm">// - clock shown: "06:14 -- DEEP WORK WINDOW ACTIVE"</span><br>
       <span class="cm">// - reduced motion respected automatically</span>
     </div>
     <div class="muted" style="font-size:11px;margin-top:16px;line-height:1.8;padding:16px;border:1px solid #21262d">
-      <strong style="color:#e6edf3">Why this matters:</strong> Someone visiting at 5:47am is not browsing. They are working. Presence respects the early window and gets out of the way.
+      <strong style="color:#e6edf3">Why this matters:</strong> Someone visiting at 5:47am is not browsing. They are working. The single biggest mistake most pages make is treating every visitor the same. Presence respects the early window. It gets out of the way.
     </div>
   </div>
 
+  <!-- THREE DEMO VISITORS (always visible) -->
   <div style="margin-top:32px">
-    <div class="label" style="margin-bottom:14px">// same url — three different people — three different pages</div>
+    <div class="label" style="margin-bottom:14px">// same url &mdash; three different people &mdash; three different pages</div>
     <div class="grid3" style="margin-bottom:32px">
       <div class="visitor-card">
         <div class="chrome-bar">
           <div class="chrome-dot" style="background:#f85149"></div>
           <div class="chrome-dot" style="background:#f0b72f"></div>
           <div class="chrome-dot" style="background:#3fb950"></div>
-          <div class="chrome-url">[github.com](https://github.com) &rarr; presence.js</div>
+          <div class="chrome-url">github.com &rarr; presence.js</div>
         </div>
         <div class="visitor-body">
           <div style="font-size:13px;color:#e6edf3;font-weight:600;margin-bottom:4px">Dev, first visit</div>
@@ -346,14 +368,17 @@
     </div>
   </div>
 
+  <!-- FOOTER -->
   <div style="padding-top:20px;border-top:1px solid #21262d;font-size:11px;color:#8b949e;line-height:1.9">
     presence.js &mdash; v3.0.0 &mdash; one file &mdash; no backend &mdash; no cookies &mdash; nothing left your browser<br>
     built by <a href="https://superchargebuilds.pro">Brainiac Ltd</a> &mdash; <a href="https://calendly.com/tkrojzl" class="green">book a call</a>
   </div>
 
 </div>
+
 <script>
 var _BOOT = performance.now();
+
 var S = (function() {
   var referrer = document.referrer || '';
   var params   = new URLSearchParams(window.location.search);
@@ -362,120 +387,289 @@ var S = (function() {
   var hour     = new Date().getHours();
   var width    = window.innerWidth;
   var src      = (referrer + ' ' + ref).toLowerCase();
-  var timeWindow = (hour>=5&&hour<8)?'EARLY':(hour>=8&&hour<12)?'DEEP_WORK':(hour>=12&&hour<17)?'AFTERNOON':(hour>=17&&hour<22)?'EVENING':'LATE';
+
+  var timeWindow =
+    (hour >= 5  && hour < 8)  ? 'EARLY'     :
+    (hour >= 8  && hour < 12) ? 'DEEP_WORK' :
+    (hour >= 12 && hour < 17) ? 'AFTERNOON' :
+    (hour >= 17 && hour < 22) ? 'EVENING'   : 'LATE';
+
   var dayNum = new Date().getDay();
-  var isWeekend = dayNum===0||dayNum===6;
-  var dayContext = isWeekend?'weekend':'weekday';
-  var device = width<768?'MOBILE':width<1100?'NARROW':width<1800?'DESKTOP':'WIDE';
+  var isWeekend = dayNum === 0 || dayNum === 6;
+  var dayContext = isWeekend ? 'weekend' : 'weekday';
+
+  var device = width < 768 ? 'MOBILE' : width < 1100 ? 'NARROW' : width < 1800 ? 'DESKTOP' : 'WIDE';
   var pointerPrecision = 'unknown';
-  try { if (window.matchMedia('(pointer: fine)').matches) pointerPrecision='fine'; if (window.matchMedia('(pointer: coarse)').matches) pointerPrecision='coarse'; } catch(e) {}
-  var deviceMemory = [navigator.dev](https://navigator.dev)iceMemory||0;
-  var cores = navigator.hardwareConcurrency||0;
-  var pixelRatio = [window.dev](https://window.dev)icePixelRatio||1;
-  var screenArea = screen.width*screen.height;
-  var colorDepth = screen.colorDepth||24;
-  var connectionQuality='unknown',downlink=0;
-  try { var nc=navigator.connection||navigator.mozConnection||navigator.webkitConnection; if(nc){connectionQuality=nc.effectiveType||'unknown';downlink=nc.downlink||0;} } catch(e) {}
-  var prefersDark=false,prefersReducedMotion=false,canHover=false;
-  try { prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches; } catch(e) {}
-  try { prefersReducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) {}
-  try { canHover=window.matchMedia('(hover: hover)').matches; } catch(e) {}
-  var detectMs = Math.round((performance.now()-_BOOT)*100)/100;
-  var capScore=0;
-  if(deviceMemory>=4)capScore+=25;else if(deviceMemory>=2)capScore+=18;else if(deviceMemory>=1)capScore+=15;else if(deviceMemory>0)capScore+=8;
-  if(cores>=8)capScore+=15;else if(cores>=4)capScore+=10;else if(cores>=2)capScore+=5;
-  if(pixelRatio>=3)capScore+=15;else if(pixelRatio>=2)capScore+=10;else if(pixelRatio>=1.5)capScore+=5;
-  if(screenArea>=2073600)capScore+=10;else if(screenArea>=1228800)capScore+=7;else if(screenArea>=786432)capScore+=3;
-  if(connectionQuality==='4g'&&downlink>=10)capScore+=10;else if(connectionQuality==='4g')capScore+=7;else if(connectionQuality==='3g')capScore+=3;else if(connectionQuality==='unknown')capScore+=5;
-  if(prefersDark)capScore+=10; if(pointerPrecision==='fine')capScore+=8;
-  if(colorDepth>=30)capScore+=4;else if(colorDepth>=24)capScore+=2;
-  if(prefersReducedMotion)capScore+=2; if(canHover)capScore+=1;
-  capScore=Math.min(capScore,100);
-  var capabilityTier=capScore>=75?'SOVEREIGN':capScore>=45?'CAPABLE':capScore>=20?'STANDARD':'CONSTRAINED';
-  var lang=(navigator.language||'en').toLowerCase();
-  var timezone='';
-  try { timezone=Intl.DateTimeFormat().resolvedOptions().timeZone||''; } catch(e) {}
-  var market=timezone.includes('America')?'NA':timezone.includes('Europe')?'EU':timezone.includes('Asia')?'APAC':timezone.includes('Pacific')?'APAC':timezone.includes('Australia')?'APAC':'OTHER';
-  var sessionVisits=1;
-  try { sessionVisits=parseInt(sessionStorage.getItem('_pv')||'0',10)+1; sessionStorage.setItem('_pv',sessionVisits); } catch(e) {}
-  var totalVisits=1;
-  try { totalVisits=parseInt(localStorage.getItem('_ptv')||'0',10)+1; localStorage.setItem('_ptv',totalVisits); } catch(e) {}
-  var isReturning=false,daysSinceFirst=0;
+  try { if (window.matchMedia('(pointer: fine)').matches) pointerPrecision = 'fine'; if (window.matchMedia('(pointer: coarse)').matches) pointerPrecision = 'coarse'; } catch(e) {}
+
+  var deviceMemory = navigator.deviceMemory || 0;
+  var cores        = navigator.hardwareConcurrency || 0;
+  var pixelRatio   = window.devicePixelRatio || 1;
+  var screenArea   = screen.width * screen.height;
+  var colorDepth   = screen.colorDepth || 24;
+
+  var connectionQuality = 'unknown', downlink = 0;
+  try { var nc = navigator.connection || navigator.mozConnection || navigator.webkitConnection; if (nc) { connectionQuality = nc.effectiveType || 'unknown'; downlink = nc.downlink || 0; } } catch(e) {}
+
+  var prefersDark = false, prefersReducedMotion = false, canHover = false;
+  try { prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; } catch(e) {}
+  try { prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) {}
+  try { canHover = window.matchMedia('(hover: hover)').matches; } catch(e) {}
+
+  // PHASE 1 COMPLETE â€” raw signal reads done
+  var detectMs = Math.round((performance.now() - _BOOT) * 100) / 100;
+
+  var capScore = 0;
+  if (deviceMemory >= 4) capScore += 25; else if (deviceMemory >= 2) capScore += 18; else if (deviceMemory >= 1) capScore += 15; else if (deviceMemory > 0) capScore += 8;
+  if (cores >= 8) capScore += 15; else if (cores >= 4) capScore += 10; else if (cores >= 2) capScore += 5;
+  if (pixelRatio >= 3) capScore += 15; else if (pixelRatio >= 2) capScore += 10; else if (pixelRatio >= 1.5) capScore += 5;
+  if (screenArea >= 2073600) capScore += 10; else if (screenArea >= 1228800) capScore += 7; else if (screenArea >= 786432) capScore += 3;
+  if (connectionQuality === '4g' && downlink >= 10) capScore += 10; else if (connectionQuality === '4g') capScore += 7; else if (connectionQuality === '3g') capScore += 3; else if (connectionQuality === 'unknown') capScore += 5;
+  if (prefersDark) capScore += 10;
+  if (pointerPrecision === 'fine') capScore += 8;
+  if (colorDepth >= 30) capScore += 4; else if (colorDepth >= 24) capScore += 2;
+  if (prefersReducedMotion) capScore += 2;
+  if (canHover) capScore += 1;
+  capScore = Math.min(capScore, 100);
+  var capabilityTier = capScore >= 75 ? 'SOVEREIGN' : capScore >= 45 ? 'CAPABLE' : capScore >= 20 ? 'STANDARD' : 'CONSTRAINED';
+
+  var lang = (navigator.language || 'en').toLowerCase();
+  var timezone = '';
+  try { timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch(e) {}
+  var market = timezone.includes('America') ? 'NA' : timezone.includes('Europe') ? 'EU' : timezone.includes('Asia') ? 'APAC' : timezone.includes('Pacific') ? 'APAC' : timezone.includes('Australia') ? 'APAC' : 'OTHER';
+
+  var sessionVisits = 1;
+  try { sessionVisits = parseInt(sessionStorage.getItem('_pv') || '0', 10) + 1; sessionStorage.setItem('_pv', sessionVisits); } catch(e) {}
+  var totalVisits = 1;
+  try { totalVisits = parseInt(localStorage.getItem('_ptv') || '0', 10) + 1; localStorage.setItem('_ptv', totalVisits); } catch(e) {}
+  var isReturning = false, daysSinceFirst = 0;
   try {
-    var firstSeen=localStorage.getItem('_pfs'); var nowTs=Date.now().toString();
-    if(!firstSeen){localStorage.setItem('_pfs',nowTs);}
-    else{isReturning=true;daysSinceFirst=Math.floor((Date.now()-parseInt(firstSeen,10))/86400000);}
-    localStorage.setItem('_pls',nowTs);
+    var firstSeen = localStorage.getItem('_pfs');
+    var nowTs = Date.now().toString();
+    if (!firstSeen) { localStorage.setItem('_pfs', nowTs); }
+    else { isReturning = true; daysSinceFirst = Math.floor((Date.now() - parseInt(firstSeen, 10)) / 86400000); }
+    localStorage.setItem('_pls', nowTs);
   } catch(e) {}
-  var scrollDepthLastVisit=0;
-  try { scrollDepthLastVisit=parseInt(localStorage.getItem('_psd')||'0',10); } catch(e) {}
-  var timeOnPageLastVisit=0;
-  try { timeOnPageLastVisit=parseInt(localStorage.getItem('_ptop')||'0',10); } catch(e) {}
-  var utmSource=(params.get('utm_source')||'').toLowerCase();
-  var utmContent=(params.get('utm_content')||'').toLowerCase();
-  var utmTerm=(params.get('utm_term')||'').toLowerCase();
-  if(utmSource)src=src+' '+utmSource;
-  var intensity=totalVisits>=10?'HIGH':totalVisits>=3?'MEDIUM':'LOW';
-  var source='DIRECT',profile='default';
-  if(src.includes('linkedin')||src.includes('[academia.edu](https://academia.edu)')||src.includes('researchgate')||referrer.includes('.edu')){source=src.includes('linkedin')?'LINKEDIN':'ACADEMIC';profile='researcher';}
-  else if(src.includes('producthunt')||src.includes('indiehackers')||src.includes('ycombinator')||src.includes('news.yc')||src.includes('twitter')||src.includes('[x.com](https://x.com)')||ref==='ph'){source=src.includes('producthunt')?'PRODUCTHUNT':(src.includes('twitter')||src.includes('[x.com](https://x.com)'))?'TWITTER/X':'INDIEHACKERS';profile='founder';}
-  else if(src.includes('github')||src.includes('dev.to')||src.includes('stackoverflow')||src.includes('gitlab')||src.includes('npmjs')||ref==='dev'||ref==='gh'){source=src.includes('github')?'GITHUB':src.includes('stackoverflow')?'STACKOVERFLOW':'DEV.TO';profile='developer';}
-  else if(!referrer&&hour>=5&&hour<8){profile='deep_work';}
-  if(path==='/r')profile='researcher'; if(path==='/f')profile='founder'; if(path==='/d')profile='developer';
-  var fp=params.get('profile');
-  if(fp&&['researcher','founder','developer','deep_work','default'].includes(fp))profile=fp;
-  var arrivalEnergy=(isReturning&&intensity==='HIGH')?'committed':(!referrer&&!utmSource&&totalVisits>1)?'active':(referrer||utmSource)?'passive':'active';
-  var cognitiveMode=(sessionVisits>=3)?'executing':(isReturning&&scrollDepthLastVisit>=60&&timeOnPageLastVisit>=90)?'evaluating':(isReturning&&(scrollDepthLastVisit>=30||timeOnPageLastVisit>=30))?'evaluating':(utmTerm||utmContent)?'evaluating':'exploring';
-  var trustLevel=(isReturning&&daysSinceFirst>=7&&intensity==='HIGH')?'insider':(isReturning&&totalVisits>=3)?'acquaintance':'stranger';
-  var intentState=arrivalEnergy+'_'+cognitiveMode+'_'+trustLevel;
-  var expMap={'passive_exploring_stranger':'hook_fast','passive_evaluating_stranger':'proof_first','passive_evaluating_acquaintance':'remove_objection','active_exploring_stranger':'thesis_first','active_evaluating_stranger':'proof_first','active_evaluating_acquaintance':'remove_objection','committed_executing_acquaintance':'kill_friction','committed_executing_insider':'next_level','committed_evaluating_insider':'reward_depth'};
-  var recommendedExperience=expMap[intentState]||'proof_first';
-  var referralSource=referrer.includes('github')?'GitHub':referrer.includes('linkedin')?'LinkedIn':referrer.includes('twitter')?'Twitter/X':referrer.includes('producthunt')?'ProductHunt':referrer.includes('reddit')?'Reddit':referrer?'Other':'Direct';
-  var bootMs=Math.round((performance.now()-_BOOT)*100)/100;
-  return {source:source,referralSource:referralSource,referrer:referrer,profile:profile,intentState:intentState,arrivalEnergy:arrivalEnergy,cognitiveMode:cognitiveMode,trustLevel:trustLevel,recommendedExperience:recommendedExperience,timeWindow:timeWindow,dayContext:dayContext,hour:hour,isWeekend:isWeekend,device:device,width:width,pointerPrecision:pointerPrecision,capabilityScore:capScore,capabilityTier:capabilityTier,deviceMemory:deviceMemory,cores:cores,pixelRatio:pixelRatio,screenArea:screenArea,connectionType:connectionQuality,prefersDark:prefersDark,prefersReducedMotion:prefersReducedMotion,market:market,timezone:timezone,language:lang.split('-')[0],sessionVisits:sessionVisits,totalVisits:totalVisits,isReturning:isReturning,daysSinceFirst:daysSinceFirst,scrollDepthLastVisit:scrollDepthLastVisit,timeOnPageLastVisit:timeOnPageLastVisit,utmContent:utmContent,utmTerm:utmTerm,intensity:intensity,detectMs:detectMs,bootMs:bootMs};
+  var scrollDepthLastVisit = 0;
+  try { scrollDepthLastVisit = parseInt(localStorage.getItem('_psd') || '0', 10); } catch(e) {}
+  var timeOnPageLastVisit = 0;
+  try { timeOnPageLastVisit = parseInt(localStorage.getItem('_ptop') || '0', 10); } catch(e) {}
+
+  var utmSource  = (params.get('utm_source')  || '').toLowerCase();
+  var utmContent = (params.get('utm_content') || '').toLowerCase();
+  var utmTerm    = (params.get('utm_term')    || '').toLowerCase();
+  if (utmSource) src = src + ' ' + utmSource;
+  var intensity = totalVisits >= 10 ? 'HIGH' : totalVisits >= 3 ? 'MEDIUM' : 'LOW';
+
+  var source = 'DIRECT', profile = 'default';
+  if (src.includes('linkedin') || src.includes('academia.edu') || src.includes('researchgate') || referrer.includes('.edu')) {
+    source = src.includes('linkedin') ? 'LINKEDIN' : 'ACADEMIC'; profile = 'researcher';
+  } else if (src.includes('producthunt') || src.includes('indiehackers') || src.includes('ycombinator') || src.includes('news.yc') || src.includes('twitter') || src.includes('x.com') || ref === 'ph') {
+    source = src.includes('producthunt') ? 'PRODUCTHUNT' : (src.includes('twitter') || src.includes('x.com')) ? 'TWITTER/X' : 'INDIEHACKERS';
+    profile = 'founder';
+  } else if (src.includes('github') || src.includes('dev.to') || src.includes('stackoverflow') || src.includes('gitlab') || src.includes('npmjs') || ref === 'dev' || ref === 'gh') {
+    source = src.includes('github') ? 'GITHUB' : src.includes('stackoverflow') ? 'STACKOVERFLOW' : 'DEV.TO';
+    profile = 'developer';
+  } else if (!referrer && hour >= 5 && hour < 8) {
+    profile = 'deep_work';
+  }
+  if (path === '/r') profile = 'researcher';
+  if (path === '/f') profile = 'founder';
+  if (path === '/d') profile = 'developer';
+  var fp = params.get('profile');
+  if (fp && ['researcher','founder','developer','deep_work','default'].includes(fp)) profile = fp;
+
+  var arrivalEnergy = (isReturning && intensity === 'HIGH') ? 'committed' : (!referrer && !utmSource && totalVisits > 1) ? 'active' : (referrer || utmSource) ? 'passive' : 'active';
+  var cognitiveMode = (sessionVisits >= 3) ? 'executing' : (isReturning && scrollDepthLastVisit >= 60 && timeOnPageLastVisit >= 90) ? 'evaluating' : (isReturning && (scrollDepthLastVisit >= 30 || timeOnPageLastVisit >= 30)) ? 'evaluating' : (utmTerm || utmContent) ? 'evaluating' : 'exploring';
+  var trustLevel = (isReturning && daysSinceFirst >= 7 && intensity === 'HIGH') ? 'insider' : (isReturning && totalVisits >= 3) ? 'acquaintance' : 'stranger';
+  var intentState = arrivalEnergy + '_' + cognitiveMode + '_' + trustLevel;
+
+  var expMap = {
+    'passive_exploring_stranger':'hook_fast','passive_evaluating_stranger':'proof_first',
+    'passive_evaluating_acquaintance':'remove_objection','active_exploring_stranger':'thesis_first',
+    'active_evaluating_stranger':'proof_first','active_evaluating_acquaintance':'remove_objection',
+    'committed_executing_acquaintance':'kill_friction','committed_executing_insider':'next_level',
+    'committed_evaluating_insider':'reward_depth'
+  };
+  var recommendedExperience = expMap[intentState] || 'proof_first';
+
+  var referralSource = referrer.includes('github') ? 'GitHub' : referrer.includes('linkedin') ? 'LinkedIn' : referrer.includes('twitter') ? 'Twitter/X' : referrer.includes('producthunt') ? 'ProductHunt' : referrer.includes('reddit') ? 'Reddit' : referrer ? 'Other' : 'Direct';
+
+  // PHASE 2 COMPLETE â€” full classification done
+  var bootMs = Math.round((performance.now() - _BOOT) * 100) / 100;
+
+  return {
+    source:source, referralSource:referralSource, referrer:referrer, profile:profile,
+    intentState:intentState, arrivalEnergy:arrivalEnergy, cognitiveMode:cognitiveMode,
+    trustLevel:trustLevel, recommendedExperience:recommendedExperience,
+    timeWindow:timeWindow, dayContext:dayContext, hour:hour, isWeekend:isWeekend,
+    device:device, width:width, pointerPrecision:pointerPrecision,
+    capabilityScore:capScore, capabilityTier:capabilityTier,
+    deviceMemory:deviceMemory, cores:cores, pixelRatio:pixelRatio,
+    screenArea:screenArea, connectionType:connectionQuality,
+    prefersDark:prefersDark, prefersReducedMotion:prefersReducedMotion,
+    market:market, timezone:timezone, language:lang.split('-')[0],
+    sessionVisits:sessionVisits, totalVisits:totalVisits,
+    isReturning:isReturning, daysSinceFirst:daysSinceFirst,
+    scrollDepthLastVisit:scrollDepthLastVisit, timeOnPageLastVisit:timeOnPageLastVisit,
+    utmContent:utmContent, utmTerm:utmTerm, intensity:intensity,
+    detectMs:detectMs, bootMs:bootMs
+  };
 })();
-window.addEventListener('beforeunload',function(){
-  try{var depth=Math.round((window.scrollY/(document.body.scrollHeight-window.innerHeight))*100);localStorage.setItem('_psd',String(isNaN(depth)?0:depth));localStorage.setItem('_ptop',String(Math.round((performance.now()-_BOOT)/1000)));}catch(e){}
+
+window.addEventListener('beforeunload', function() {
+  try {
+    var depth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+    localStorage.setItem('_psd', String(isNaN(depth) ? 0 : depth));
+    localStorage.setItem('_ptop', String(Math.round((performance.now() - _BOOT) / 1000)));
+  } catch(e) {}
 });
-var PROFILE_TAB={developer:'developer',founder:'founder',researcher:'researcher',deep_work:'deep-work',default:'your-session'};
-function activateTab(name){
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===name);});
-  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.toggle('active',p.id==='tab-'+name);});
+
+// â”€â”€ TABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+var PROFILE_TAB = {
+  developer: 'developer', founder: 'founder',
+  researcher: 'researcher', deep_work: 'deep-work', default: 'your-session'
+};
+
+function activateTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(p) {
+    p.classList.toggle('active', p.id === 'tab-' + name);
+  });
 }
-document.querySelectorAll('.tab-btn').forEach(function(btn){btn.addEventListener('click',function(){activateTab(btn.dataset.tab);});});
-activateTab(PROFILE_TAB[S.profile]||'your-session');
-(function render(){
-  var s=S;
-  document.getElementById('t-detect').textContent=s.detectMs+'ms';
-  document.getElementById('t-classify').textContent=s.bootMs+'ms';
-  var deviceLabel={MOBILE:'mobile',NARROW:'narrow screen',DESKTOP:'desktop',WIDE:'wide monitor'}[[s.dev](https://s.dev)ice]||[s.dev](https://s.dev)ice;
-  document.getElementById('classified-line').innerHTML='// classified as: <span class="green">'+s.arrivalEnergy+'</span> / <span class="blue">'+s.cognitiveMode+'</span> / <span class="amber">'+s.trustLevel+'</span>';
-  document.getElementById('banner-meta').textContent=deviceLabel+' \u2014 '+s.market+' market \u2014 intent: '+s.intentState;
-  document.getElementById('banner-footer').innerHTML='// classified in <span class="green">'+s.bootMs+'ms</span> \u2014 zero network calls \u2014 nothing left your browser';
-  var expLabels={proof_first:['show your working','Skip the pitch. Show the numbers, the source, the edge cases.'],hook_fast:['three seconds','One sentence or nothing. If it does not land immediately, you are gone.'],thesis_first:['skip to the argument','Lead with the idea. You already have a theory. The feature list can wait.'],remove_objection:['you have been thinking about it','You left, came back. Whatever did not land the first time is the only thing worth saying now.'],kill_friction:['just the button','Decision made. Just the thing you came to do.'],next_level:['you are already in','Skip the intro. Here is the changelog, the API, the stuff they do not put on the landing page.'],reward_depth:['deep read detected','You are not looking for a tool. You are looking for a point of view.']};
-  var exp=expLabels[s.recommendedExperience]||[s.recommendedExperience,''];
-  document.getElementById('who-profile').textContent=s.profile.toUpperCase().replace(/_/g,' ');
-  document.getElementById('who-intent').textContent=s.intentState;
-  document.getElementById('who-axes').textContent=s.arrivalEnergy+' energy / '+s.cognitiveMode+' mode / '+s.trustLevel;
-  document.getElementById('who-exp-label').textContent=exp[0];
-  document.getElementById('who-exp-desc').textContent=exp[1];
-  var narrative='You are on a '+deviceLabel+' in the '+s.market+' market, '+s.timeWindow.toLowerCase().replace('_',' ')+' on a '+s.dayContext+'. ';
-  narrative+=s.isReturning?'You have been here before. '+s.totalVisits+' visits recorded. ':'First visit. No prior data. Presence is classifying you from live signals only. ';
-  narrative+=([s.dev](https://s.dev)iceMemory?[s.dev](https://s.dev)iceMemory+'GB RAM':'RAM not exposed')+'. '+(s.prefersDark?'dark mode':'light mode')+'. '+(s.pointerPrecision==='fine'?'mouse or trackpad':s.pointerPrecision==='coarse'?'touchscreen':'input unknown')+'.';
-  document.getElementById('who-narrative').textContent=narrative;
-  function renderAxis(elId,vals,active){var el=document.getElementById(elId);el.innerHTML='';vals.forEach(function(v){var span=document.createElement('span');span.textContent=v;span.className='tag '+(v===active?'tag-active':'tag-inactive');[el.app](https://el.app)endChild(span);});}
-  renderAxis('ax-energy',['passive','active','committed'],s.arrivalEnergy);
-  renderAxis('ax-mode',['exploring','evaluating','executing'],s.cognitiveMode);
-  renderAxis('ax-trust',['stranger','acquaintance','insider'],s.trustLevel);
-  var states=[['passive_exploring_stranger','Random discovery. 3 seconds to decide.','Hook fast. One sentence. One CTA.'],['passive_evaluating_stranger','Arrived via link, reading carefully.','Social proof first. Specifics. No noise.'],['passive_evaluating_acquaintance','Drifted back. Still deciding.','The one thing that removes doubt.'],['active_exploring_stranger','Came looking. First time here.','Lead with the thesis, not features.'],['active_evaluating_stranger','Researching you specifically.','Evidence. Depth. Code over copy.'],['active_evaluating_acquaintance','Coming back to decide.','Remove the last objection.'],['committed_executing_acquaintance','Ready to act. Nearly there.','Kill friction. Just the button.'],['committed_executing_insider','Power user. Already sold.','Give them the next level.'],['committed_evaluating_insider','Deep engagement. Invested.','Reward them. Case studies. Depth.']];
-  var tbody=document.getElementById('states-body');
-  var activeKey=s.arrivalEnergy+'_'+s.cognitiveMode+'_'+s.trustLevel;
-  states.forEach(function(row){var tr=document.createElement('tr');if(row[0]===activeKey)tr.className='active-state';[0,1,2].forEach(function(i){var td=document.createElement('td');if(i===0)td.textContent=(row[0]===activeKey?'\u2192 ':'')+row[0].replace(/_/g,' / ');if(i===1)td.textContent=row[1];if(i===2)td.textContent=row[2];[tr.app](https://tr.app)endChild(td);});[tbody.app](https://tbody.app)endChild(tr);});
-  function capBar(score){var f=Math.round(score/5);return '[' + '='.repeat(f) + '.'.repeat(20-f) + '] '+score+'/100';}
-  var signals=[['SIGNAL DETECTION',s.detectMs+'ms','28 browser signals read. Time from script start to signal complete.'],['FULL CLASSIFICATION',s.bootMs+'ms','Time from script start to complete profile + intent resolution.'],['INTENT STATE',s.intentState.replace(/_/g,' / '),'Cross-product of arrival energy, cognitive mode, and trust level.'],['ARRIVAL ENERGY',s.arrivalEnergy,'How intentional this visit was.'],['COGNITIVE MODE',s.cognitiveMode,'What you are doing right now.'],['TRUST LEVEL',s.trustLevel,'Days since first visit + intensity.'],['EXPERIENCE',s.recommendedExperience,'What this page should emphasise.'],['PROFILE',s.profile.replace(/_/g,' '),'Visitor archetype resolved.'],['SOURCE',s.referralSource.toUpperCase(),'Where Presence thinks you came from.'],['DEVICE',[s.dev](https://s.dev)ice,'Screen width + touch points.'],['CAPABILITY SCORE',capBar(s.capabilityScore),'Composite 0-100 across 10 signals.'],['CAPABILITY TIER',s.capabilityTier,'SOVEREIGN / CAPABLE / STANDARD / CONSTRAINED.'],['DEVICE MEMORY',([s.dev](https://s.dev)iceMemory||'?')+'GB','Strongest single hardware predictor.'],['CORES',(s.cores||'?')+' CPU cores','navigator.hardwareConcurrency.'],['PIXEL RATIO',s.pixelRatio+'x','2x+ = retina / HiDPI.'],['SCREEN AREA',s.screenArea?s.screenArea.toLocaleString()+'px':'unknown','Large area = workstation context.'],['CONNECTION',s.connectionType,'navigator.connection.effectiveType.'],['PREFERS DARK',s.prefersDark?'Yes':'No','~80% developers vs ~35% general users.'],['POINTER',s.pointerPrecision,'fine = mouse. coarse = touchscreen.'],['REDUCED MOTION',s.prefersReducedMotion?'Yes':'No','System accessibility preference.'],['MARKET',s.market,'Derived from timezone. No IP lookup.'],['TIMEZONE',s.timezone,'Intl.DateTimeFormat. Zero network calls.'],['LANGUAGE',s.language,'Browser language setting.'],['TIME WINDOW',s.timeWindow,'Time-of-day window when page loaded.'],['DAY CONTEXT',s.dayContext,'Weekday vs weekend.'],['INTENSITY',s.intensity+' ('+s.totalVisits+' visits)','Total visit count: LOW / MEDIUM / HIGH.'],['IS RETURNING',s.isReturning?'Yes':'No','localStorage shows a previous visit.'],['SCROLL (LAST)',s.scrollDepthLastVisit>0?s.scrollDepthLastVisit+'%':'no data yet','Persisted on beforeunload from last visit.'],['TIME ON PAGE',s.timeOnPageLastVisit>0?s.timeOnPageLastVisit+'s':'no data yet','Persisted on beforeunload from last visit.']];
-  var grid=document.getElementById('sig-grid');
-  signals.forEach(function(sig){var cell=document.createElement('div');cell.className='sig-cell';cell.innerHTML='<div class="sig-key">'+sig[0]+'</div><div class="sig-val">'+sig[1]+'</div><div class="sig-why">'+sig[2]+'</div>';[grid.app](https://grid.app)endChild(cell);});
+
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() { activateTab(btn.dataset.tab); });
+});
+
+// Auto-activate tab matching detected profile
+var autoTab = PROFILE_TAB[S.profile] || 'your-session';
+activateTab(autoTab);
+
+// â”€â”€ RENDER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+document.addEventListener('DOMContentLoaded', function() {
+(function render() {
+  var s = S;
+
+  document.getElementById('t-detect').textContent   = s.detectMs + 'ms';
+  document.getElementById('t-classify').textContent = s.bootMs   + 'ms';
+
+  var deviceLabel = {MOBILE:'mobile',NARROW:'narrow screen',DESKTOP:'desktop',WIDE:'wide monitor'}[s.device] || s.device;
+  document.getElementById('classified-line').innerHTML =
+    '// classified as: <span class="green">' + s.arrivalEnergy + '</span>' +
+    ' / <span class="blue">' + s.cognitiveMode + '</span>' +
+    ' / <span class="amber">' + s.trustLevel + '</span>';
+  document.getElementById('banner-meta').textContent =
+    deviceLabel + ' \u2014 ' + s.market + ' market \u2014 intent: ' + s.intentState;
+  document.getElementById('banner-footer').innerHTML =
+    '// classified in <span class="green">' + s.bootMs + 'ms</span> \u2014 zero network calls \u2014 nothing left your browser';
+
+  var expLabels = {
+    proof_first:      ['show your working',               'Skip the pitch. Show the numbers, the source, the edge cases.'],
+    hook_fast:        ['three seconds',                   'One sentence or nothing. If it does not land immediately, you are gone.'],
+    thesis_first:     ['skip to the argument',            'Lead with the idea. You already have a theory. The feature list can wait.'],
+    remove_objection: ['you have been thinking about it', 'You left, came back. Whatever did not land the first time is the only thing worth saying now.'],
+    kill_friction:    ['just the button',                 'Decision made. Just the thing you came to do.'],
+    next_level:       ['you are already in',              'Skip the intro. Here is the changelog, the API, the stuff they do not put on the landing page.'],
+    reward_depth:     ['deep read detected',              'You are not looking for a tool. You are looking for a point of view.'],
+  };
+  var exp = expLabels[s.recommendedExperience] || [s.recommendedExperience, ''];
+
+  document.getElementById('who-profile').textContent   = s.profile.toUpperCase().replace(/_/g,' ');
+  document.getElementById('who-intent').textContent    = s.intentState;
+  document.getElementById('who-axes').textContent      = s.arrivalEnergy + ' energy / ' + s.cognitiveMode + ' mode / ' + s.trustLevel;
+  document.getElementById('who-exp-label').textContent = exp[0];
+  document.getElementById('who-exp-desc').textContent  = exp[1];
+
+  var narrative = 'You are on a ' + deviceLabel + ' in the ' + s.market + ' market, ' + s.timeWindow.toLowerCase().replace('_',' ') + ' on a ' + s.dayContext + '. ';
+  narrative += s.isReturning ? 'You have been here before. ' + s.totalVisits + ' visits recorded. ' : 'First visit. No prior data. Presence is classifying you from live signals only. ';
+  narrative += (s.deviceMemory ? s.deviceMemory + 'GB RAM' : 'RAM not exposed') + '. ' + (s.prefersDark ? 'dark mode' : 'light mode') + '. ' + (s.pointerPrecision === 'fine' ? 'mouse or trackpad' : s.pointerPrecision === 'coarse' ? 'touchscreen' : 'input unknown') + '.';
+  document.getElementById('who-narrative').textContent = narrative;
+
+  function renderAxis(elId, vals, active) {
+    var el = document.getElementById(elId); el.innerHTML = '';
+    vals.forEach(function(v) {
+      var span = document.createElement('span');
+      span.textContent = v;
+      span.className = 'tag ' + (v === active ? 'tag-active' : 'tag-inactive');
+      el.appendChild(span);
+    });
+  }
+  renderAxis('ax-energy', ['passive','active','committed'], s.arrivalEnergy);
+  renderAxis('ax-mode',   ['exploring','evaluating','executing'], s.cognitiveMode);
+  renderAxis('ax-trust',  ['stranger','acquaintance','insider'], s.trustLevel);
+
+  var states = [
+    ['passive_exploring_stranger',       'Random discovery. 3 seconds to decide.',          'Hook fast. One sentence. One CTA.'],
+    ['passive_evaluating_stranger',      'Arrived via link, reading carefully.',             'Social proof first. Specifics. No noise.'],
+    ['passive_evaluating_acquaintance',  'Drifted back. Still deciding.',                    'The one thing that removes doubt.'],
+    ['active_exploring_stranger',        'Came looking. First time here.',                   'Lead with the thesis, not features.'],
+    ['active_evaluating_stranger',       'Researching you specifically.',                    'Evidence. Depth. Code over copy.'],
+    ['active_evaluating_acquaintance',   'Coming back to decide.',                           'Remove the last objection.'],
+    ['committed_executing_acquaintance', 'Ready to act. Nearly there.',                      'Kill friction. Just the button.'],
+    ['committed_executing_insider',      'Power user. Already sold.',                        'Give them the next level.'],
+    ['committed_evaluating_insider',     'Deep engagement. Invested.',                       'Reward them. Case studies. Depth.'],
+  ];
+  var tbody = document.getElementById('states-body');
+  var activeKey = s.arrivalEnergy + '_' + s.cognitiveMode + '_' + s.trustLevel;
+  states.forEach(function(row) {
+    var tr = document.createElement('tr');
+    if (row[0] === activeKey) tr.className = 'active-state';
+    ['(row[0]===activeKey?"\u2192 ":"")+row[0].replace(/_/g," / ")', 'row[1]', 'row[2]'].forEach(function(_, i) {
+      var td = document.createElement('td');
+      if (i === 0) td.textContent = (row[0] === activeKey ? '\u2192 ' : '') + row[0].replace(/_/g,' / ');
+      if (i === 1) td.textContent = row[1];
+      if (i === 2) td.textContent = row[2];
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  function capBar(score) {
+    var f = Math.round(score / 5);
+    return '[' + '='.repeat(f) + '.'.repeat(20-f) + '] ' + score + '/100';
+  }
+  var signals = [
+    ['SIGNAL DETECTION',   s.detectMs+'ms',                                                    '28 browser signals read. Time from script start to signal complete.'],
+    ['FULL CLASSIFICATION', s.bootMs+'ms',                                                     'Time from script start to complete profile + intent resolution.'],
+    ['INTENT STATE',       s.intentState.replace(/_/g,' / '),                                  'Cross-product of arrival energy, cognitive mode, and trust level.'],
+    ['ARRIVAL ENERGY',     s.arrivalEnergy,                                                    'How intentional this visit was.'],
+    ['COGNITIVE MODE',     s.cognitiveMode,                                                    'What you are doing right now.'],
+    ['TRUST LEVEL',        s.trustLevel,                                                       'Days since first visit + intensity.'],
+    ['EXPERIENCE',         s.recommendedExperience,                                            'What this page should emphasise.'],
+    ['PROFILE',            s.profile.replace(/_/g,' '),                                        'Visitor archetype resolved.'],
+    ['SOURCE',             s.referralSource.toUpperCase(),                                     'Where Presence thinks you came from.'],
+    ['DEVICE',             s.device,                                                           'Screen width + touch points.'],
+    ['CAPABILITY SCORE',   capBar(s.capabilityScore),                                          'Composite 0-100 across 10 signals.'],
+    ['CAPABILITY TIER',    s.capabilityTier,                                                   'SOVEREIGN / CAPABLE / STANDARD / CONSTRAINED.'],
+    ['DEVICE MEMORY',      (s.deviceMemory||'?')+'GB',                                        'Strongest single hardware predictor.'],
+    ['CORES',              (s.cores||'?')+' CPU cores',                                       'navigator.hardwareConcurrency.'],
+    ['PIXEL RATIO',        s.pixelRatio+'x',                                                  '2x+ = retina / HiDPI.'],
+    ['SCREEN AREA',        s.screenArea?s.screenArea.toLocaleString()+'px':'unknown',         'Large area = workstation context.'],
+    ['CONNECTION',         s.connectionType,                                                   'navigator.connection.effectiveType.'],
+    ['PREFERS DARK',       s.prefersDark?'Yes':'No',                                         '~80% developers vs ~35% general users.'],
+    ['POINTER',            s.pointerPrecision,                                                 'fine = mouse. coarse = touchscreen.'],
+    ['REDUCED MOTION',     s.prefersReducedMotion?'Yes':'No',                                'System accessibility preference.'],
+    ['MARKET',             s.market,                                                           'Derived from timezone. No IP lookup.'],
+    ['TIMEZONE',           s.timezone,                                                         'Intl.DateTimeFormat. Zero network calls.'],
+    ['LANGUAGE',           s.language,                                                         'Browser language setting.'],
+    ['TIME WINDOW',        s.timeWindow,                                                       'Time-of-day window when page loaded.'],
+    ['DAY CONTEXT',        s.dayContext,                                                       'Weekday vs weekend.'],
+    ['INTENSITY',          s.intensity+' ('+s.totalVisits+' visits)',                         'Total visit count: LOW / MEDIUM / HIGH.'],
+    ['IS RETURNING',       s.isReturning?'Yes':'No',                                         'localStorage shows a previous visit.'],
+    ['SCROLL (LAST)',      s.scrollDepthLastVisit>0?s.scrollDepthLastVisit+'%':'no data yet','Persisted on beforeunload from last visit.'],
+    ['TIME ON PAGE',       s.timeOnPageLastVisit>0?s.timeOnPageLastVisit+'s':'no data yet',  'Persisted on beforeunload from last visit.'],
+  ];
+  var grid = document.getElementById('sig-grid');
+  signals.forEach(function(sig) {
+    var cell = document.createElement('div'); cell.className = 'sig-cell';
+    cell.innerHTML = '<div class="sig-key">'+sig[0]+'</div><div class="sig-val">'+sig[1]+'</div><div class="sig-why">'+sig[2]+'</div>';
+    grid.appendChild(cell);
+  });
 })();
+}); // DOMContentLoaded
 </script>
 </body>
 </html>
