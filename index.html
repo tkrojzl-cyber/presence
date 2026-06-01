@@ -1505,88 +1505,37 @@ localStorage.getItem('_ptop')</code>
     <code>['_ptv','_pfs','_pls','_psd','_ptop'].forEach(k=>localStorage.removeItem(k));sessionStorage.clear();location.reload();</code>
   </div>
 
-
-  <!-- 7. NPM + USE IT -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-dot" style="background:var(--green);"></div>
-      <div class="section-title">USE IT</div>
-      <div class="section-sub">npm install or CDN -- zero config -- works in any stack</div>
-    </div>
-
-    <div style="margin-bottom:16px;">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:8px;letter-spacing:0.15em;">// NPM</div>
-      <code style="display:block;background:var(--surface);border:1px solid var(--border);padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);">npm install presence-js</code>
-    </div>
-
-    <div style="margin-bottom:16px;">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:8px;letter-spacing:0.15em;">// CDN</div>
-      <code style="display:block;background:var(--surface);border:1px solid var(--border);padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green);word-break:break-all;">&lt;script src="https://cdn.jsdelivr.net/npm/presence-js@3.0.0/presence.js"&gt;&lt;/script&gt;</code>
-    </div>
-
-    <div style="margin-bottom:0;">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:8px;letter-spacing:0.15em;">// USE</div>
-      <code style="display:block;background:var(--surface);border:1px solid var(--border);padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);line-height:1.8;">Presence.signals.intentState<span style="color:var(--muted);">  // active_evaluating_acquaintance</span><br>Presence.signals.arrivalEnergy<span style="color:var(--muted);">  // active | passive | committed</span><br>Presence.signals.cognitiveMode<span style="color:var(--muted);">  // exploring | evaluating | executing</span><br>Presence.signals.trustLevel<span style="color:var(--muted);">  // stranger | acquaintance | insider</span><br>Presence.signals.capabilityTier<span style="color:var(--muted);">  // SOVEREIGN | CAPABLE | STANDARD</span><br><br><span style="color:var(--muted);">// SHA-256 sealed session certificate</span><br>Presence.generateCertificate().then(cert =&gt; console.log(cert.hash));</code>
-    </div>
-  </div>
-
-  <!-- 8. FOOTER LINKS -->
+  <!-- 6. FOOTER LINKS -->
   <div class="links-section">
     <div class="links-header">// BUILT BY BRAINIAC LTD</div>
     <div class="links-grid">
-
       <div class="link-card">
         <div class="link-card-top">
           <div class="link-label">GITHUB</div>
           <div class="link-url">github.com/tkrojzl-cyber/presence</div>
-          <div class="link-desc">Source code. MIT. Read it, fork it, ship it. Zero dependencies confirmed. If it is useful, consider sponsoring.</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <a class="link-btn" href="https://github.com/tkrojzl-cyber/presence" target="_blank">VIEW SOURCE</a>
-            <a class="link-btn" href="https://github.com/sponsors/tkrojzl-cyber" target="_blank" style="background:var(--surface);color:var(--text);border:1px solid var(--border);">SPONSOR</a>
-          </div>
+          <div class="link-desc">Source code. MIT. Read it, fork it, ship it. Zero dependencies confirmed.</div>
+          <a class="link-btn" href="https://github.com/tkrojzl-cyber/presence" target="_blank">VIEW SOURCE</a>
         </div>
         <div class="qr-wrap"><div id="qr-github"></div></div>
         <div class="qr-caption">Scan to open repo</div>
       </div>
-
-      <div class="link-card">
-        <div class="link-card-top">
-          <div class="link-label">NPM</div>
-          <div class="link-url">npmjs.com/package/presence-js</div>
-          <div class="link-desc">presence-js on npm. Drop into any Node, Vite, or bundler project. Same zero-dependency build. MIT.</div>
-          <a class="link-btn" href="https://www.npmjs.com/package/presence-js" target="_blank" style="background:var(--red);">npm install presence-js</a>
-        </div>
-      </div>
-
-      <div class="link-card">
-        <div class="link-card-top">
-          <div class="link-label">ORIGIN</div>
-          <div class="link-url">origin.brainiacltd.com</div>
-          <div class="link-desc">Presence applied to proof of authorship. Upload any file. ORIGIN hashes it, reads your cognitive state at that exact moment, and seals both into a machine-verifiable certificate.</div>
-          <a class="link-btn" href="https://origin.brainiacltd.com" target="_blank" style="background:var(--purple);">SEE ORIGIN</a>
-        </div>
-      </div>
-
       <div class="link-card">
         <div class="link-card-top">
           <div class="link-label">ARCHON STACK</div>
           <div class="link-url">archon-stack.online</div>
-          <div class="link-desc">Presence is one tool. Archon Stack is the system it was built inside -- self-hosted AI infrastructure for organisations that cannot send their data to someone else's cloud.</div>
+          <div class="link-desc">Presence is one tool. Archon Stack is what it was built inside - a self-hosted AI system that designs, ships, and maintains software without external API costs.</div>
           <a class="link-btn" href="https://archon-stack.online" target="_blank">SEE WHAT BUILT THIS</a>
         </div>
         <div class="qr-wrap"><div id="qr-archon"></div></div>
         <div class="qr-caption">Scan to open Archon Stack</div>
       </div>
-
     </div>
   </div>
 
-
   <div class="footer">
-    <span><a href="https://github.com/tkrojzl-cyber/presence" style="color:inherit;text-decoration:none;">github</a></span>
-    <span><a href="https://www.npmjs.com/package/presence-js" style="color:inherit;text-decoration:none;">npm</a></span>
-    <span><a href="https://github.com/sponsors/tkrojzl-cyber" style="color:inherit;text-decoration:none;">sponsor</a></span>
-    <span>presence.js v3.0.0 -- mit -- brainiac ltd</span>
+    <span>github</span>
+    <span>archon-stack.online</span>
+    <span>presence.js v3.0.0 -- built by brainiac ltd -- mit license</span>
   </div>
 
 </div>
