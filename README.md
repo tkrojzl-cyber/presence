@@ -1,107 +1,104 @@
 # presence.js
 
-**Zero-dependency visitor intelligence. No cookies. No backend. No network calls.**
+Zero-dependency visitor intelligence. No cookies. No backend. No network calls. One 12KB script.
 
-One 12KB script. Drop it in. Your page knows who is visiting and what they need - in under 2ms, before your first component renders.
-
----
+Drop it in. Your page knows who is visiting and what they need in under 2ms, before your first component renders.
 
 ## What it does
 
 Large companies have spent billions building systems that figure out who a visitor is before they speak. That capability was locked behind enterprise contracts, CDPs, ML teams, and cookie consent banners.
 
-Presence changes that. It reads ten browser signals that were always there, classifies every visitor into one of **nine intent states** across three axes, and tells your page exactly what to show and what to suppress.
+Presence changes that. It reads fourteen browser signals that were always there, classifies every visitor into one of nine intent states across three axes, and tells your page exactly what to show and what to suppress.
 
 This is what democratising the internet looks like. Not another SaaS dashboard at $500/month. A file. That anyone can drop into any page.
 
----
-
 ## Install
 
-**CDN (fastest):**
+CDN (fastest):
+
 ```html
 <script src="https://cdn.jsdelivr.net/gh/tkrojzl-cyber/presence@main/presence.js"></script>
 ```
 
-**Self-hosted:**
+Self-hosted:
+
 ```html
 <script src="presence.js"></script>
 ```
 
-**npm:** coming in v2.1.0
+npm: coming in v2.2.0
 
----
-
-## The 3-Axis Intent Model (v2.0.0)
+## The 3-Axis Intent Model (v2.1.0)
 
 Every visitor is classified across three axes simultaneously.
 
 ### Axis 1 - Arrival Energy
+
 How intentional was this visit?
 
 | Value | Meaning | How detected |
 |---|---|---|
-| `passive` | Arrived via link, social, referral | referrer present |
-| `active` | Came directly, typed URL, bookmarked | no referrer, returning |
-| `committed` | High-intensity returning visitor | high totalVisits + isReturning |
+| passive | Arrived via link, social, referral | referrer present |
+| active | Came directly, typed URL, bookmarked | no referrer, returning |
+| committed | High-intensity returning visitor | high totalVisits + isReturning |
 
 ### Axis 2 - Cognitive Mode
+
 What are they trying to do right now?
 
 | Value | Meaning | How detected |
 |---|---|---|
-| `exploring` | Scanning, deciding if this is worth attention | first session, low scroll depth |
-| `evaluating` | Reading properly, comparing, thinking | scroll depth >30%, time >30s, UTM signals |
-| `executing` | Ready to act, needs the trigger | 3+ page views this session |
+| exploring | Scanning, deciding if this is worth attention | first session, low scroll depth |
+| evaluating | Reading properly, comparing, thinking | scroll depth >30%, time >30s, UTM signals |
+| executing | Ready to act, needs the trigger | 3+ page views this session |
 
 ### Axis 3 - Trust Level
+
 Do they know you yet?
 
 | Value | Meaning | How detected |
 |---|---|---|
-| `stranger` | First visit or very few visits | totalVisits < 3 |
-| `acquaintance` | Has been here, not yet invested | 3-9 visits |
-| `insider` | Long tenure, high intensity | 7+ days since first visit, HIGH intensity |
+| stranger | First visit or very few visits | totalVisits < 3 |
+| acquaintance | Has been here, not yet invested | 3-9 visits |
+| insider | Long tenure, high intensity | 7+ days since first visit, HIGH intensity |
 
-### The 9 Intent States
+## The 9 Intent States
 
 The three axes combine into a single `intentState` string and a `recommendedExperience`:
 
 | Intent State | Who they are | What they need |
 |---|---|---|
-| `passive_exploring_stranger` | Random discovery | Hook fast. One sentence. One CTA. |
-| `passive_evaluating_stranger` | Arrived via link, reading carefully | Social proof first. No noise. |
-| `passive_evaluating_acquaintance` | Drifted back, still deciding | The one thing that removes doubt. |
-| `active_exploring_stranger` | Came looking, first time | Lead with the thesis, not features. |
-| `active_evaluating_stranger` | Researching you specifically | Evidence. Depth. Code over copy. |
-| `active_evaluating_acquaintance` | Coming back to decide | Remove the last objection. |
-| `committed_executing_acquaintance` | Ready to act, nearly there | Kill friction. Just the button. |
-| `committed_executing_insider` | Power user, already sold | Give them the next level. |
-| `committed_evaluating_insider` | Deep engagement, invested | Reward them. Depth, community. |
+| passive_exploring_stranger | Random discovery | Hook fast. One sentence. One CTA. |
+| passive_evaluating_stranger | Arrived via link, reading carefully | Social proof first. No noise. |
+| passive_evaluating_acquaintance | Drifted back, still deciding | The one thing that removes doubt. |
+| active_exploring_stranger | Came looking, first time | Lead with the thesis, not features. |
+| active_evaluating_stranger | Researching you specifically | Evidence. Depth. Code over copy. |
+| active_evaluating_acquaintance | Coming back to decide | Remove the last objection. |
+| committed_executing_acquaintance | Ready to act, nearly there | Kill friction. Just the button. |
+| committed_executing_insider | Power user, already sold | Give them the next level. |
+| committed_evaluating_insider | Deep engagement, invested | Reward them. Depth, community. |
 
----
+## All Signals (v2.1.0)
 
-## All Signals (v2.0.0)
+**v1 signals:**
 
-### v1 signals
-- **Referral source** - document.referrer + URL params
-- **Time of day** - hour bucketed into EARLY / DEEP_WORK / AFTERNOON / EVENING / LATE
-- **Day of week** - WEEKDAY vs WEEKEND
-- **Device** - screen width + touch points (MOBILE / DESKTOP / WIDE / NARROW)
-- **Hardware** - navigator.hardwareConcurrency (proxy for technical sophistication)
-- **Locale / Language** - navigator.language
-- **Timezone / Market** - Intl.DateTimeFormat (NA / EU / APAC / OTHER)
-- **Session history** - sessionStorage page view count
-- **Visit intensity** - localStorage total visit count (LOW / MEDIUM / HIGH)
-- **Returning visitor + recency** - localStorage first seen + last seen timestamps
+1. Referral source - document.referrer + URL params
+2. Time of day - hour bucketed into EARLY / DEEP_WORK / AFTERNOON / EVENING / LATE
+3. Day of week - WEEKDAY vs WEEKEND
+4. Device - screen width + touch points (MOBILE / DESKTOP / WIDE / NARROW)
+5. Hardware - multi-signal composite (cores, deviceMemory, pixelRatio, dark mode, pointer, screen area, color depth, connection quality, reduced motion, hover capability). Scored 0-100 across 10 weighted signals.
+6. Locale / Language - navigator.language
+7. Timezone / Market - Intl.DateTimeFormat (NA / EU / APAC / OTHER)
+8. Session history - sessionStorage page view count
+9. Visit intensity - localStorage total visit count (LOW / MEDIUM / HIGH)
+10. Returning visitor + recency - localStorage first seen + last seen timestamps
 
-### v2 signals (new in 2.0.0)
-- **scrollDepthLastVisit** - How far the visitor scrolled on their last visit (%). Written to localStorage on beforeunload. Reveals scanner vs reader.
-- **timeOnPageLastVisit** - How long they spent on their last visit (seconds). Written to localStorage on beforeunload. Reveals passive drift vs intentional read.
-- **utmContent** - utm_content parameter. Carries creative or audience variant intent.
-- **utmTerm** - utm_term parameter. Carries explicit search keyword intent.
+**v2 signals (new in 2.0.0):**
 
----
+11. scrollDepthLastVisit - How far the visitor scrolled on their last visit (%). Written to localStorage on beforeunload. Reveals scanner vs reader.
+12. timeOnPageLastVisit - How long they spent on their last visit (seconds). Written to localStorage on beforeunload. Reveals passive drift vs intentional read.
+13. utmContent - utm_content parameter. Carries creative or audience variant intent.
+14. utmTerm - utm_term parameter. Carries explicit search keyword intent.
 
 ## Quick start
 
@@ -110,12 +107,12 @@ The three axes combine into a single `intentState` string and a `recommendedExpe
 <script>
   var s = Presence.signals;
 
-  // Basic - adapt by profile
+  // Adapt by profile
   if (s.profile === 'developer') {
     document.getElementById('hero').textContent = 'Zero-dependency. Drop one script tag.';
   }
 
-  // v2 - adapt by intent state
+  // Adapt by intent state
   if (s.recommendedExperience === 'hook_fast') {
     document.getElementById('nav').style.display = 'none';
     document.getElementById('cta').style.display = 'block';
@@ -127,37 +124,35 @@ The three axes combine into a single `intentState` string and a `recommendedExpe
 </script>
 ```
 
----
-
 ## API
 
-```js
+```javascript
 // Core signals object - all data in one place
 Presence.signals
 
 // Get current profile
-Presence.getProfile()         // 'developer' | 'founder' | 'researcher' | 'deep_work' | 'default'
+Presence.getProfile()  // 'developer' | 'founder' | 'researcher' | 'deep_work' | 'default'
 
-// v2 - Get intent state
-Presence.getIntentState()     // e.g. 'active_evaluating_stranger'
+// Get intent state
+Presence.getIntentState()  // e.g. 'active_evaluating_stranger'
 
-// v2 - Get recommended experience
-Presence.getExperience()      // e.g. 'proof_first'
+// Get recommended experience
+Presence.getExperience()  // e.g. 'proof_first'
 
 // Get any signal by key
-Presence.get('bootMs')        // e.g. 1
+Presence.get('bootMs')  // e.g. 1
 
 // Run code for specific profiles
 Presence.when('developer', function(s) {
   showCodeExample();
 });
 
-// v2 - Run code for specific intent states
+// Run code for specific intent states
 Presence.whenState('committed_executing_insider', function(s) {
   showAdvancedDocs();
 });
 
-// v2 - Run code for recommended experience type
+// Run code for recommended experience type
 Presence.whenExperience('reduce_friction', function(s) {
   hideIntro();
   highlightCTA();
@@ -166,8 +161,8 @@ Presence.whenExperience('reduce_friction', function(s) {
 // Swap text content by profile
 Presence.adapt('#headline', {
   developer: 'Drop one script. Know everything.',
-  founder:   'Your page. Personalised. No backend.',
-  default:   'Visitor intelligence for every site.'
+  founder: 'Your page. Personalised. No backend.',
+  default: 'Visitor intelligence for every site.'
 });
 
 // Show element only for certain profiles
@@ -176,8 +171,6 @@ Presence.showFor('#github-link', ['developer', 'researcher']);
 // Debug - prints all signals to console
 Presence.debug()
 ```
-
----
 
 ## CSS targeting
 
@@ -195,20 +188,15 @@ Presence sets data attributes on `<body>` automatically:
 }
 
 /* Trust-level based social proof */
-[data-presence-trust="stranger"] .testimonials {
-  display: block;
-}
-[data-presence-trust="insider"] .testimonials {
-  display: none;
-}
+[data-presence-trust="stranger"] .testimonials { display: block; }
+[data-presence-trust="insider"] .testimonials { display: none; }
 
 /* Suppress intro for committed visitors */
-[data-presence-energy="committed"] .intro-section {
-  display: none;
-}
+[data-presence-energy="committed"] .intro-section { display: none; }
 ```
 
 Available attributes:
+
 - `data-presence` - profile
 - `data-presence-source` - referral source
 - `data-presence-device` - device type
@@ -218,71 +206,24 @@ Available attributes:
 - `data-presence-lang` - language code
 - `data-presence-hardware` - hardware tier
 - `data-presence-dayctx` - WEEKDAY / WEEKEND
-- `data-presence-intent` - full intent state string
-- `data-presence-experience` - recommended experience
-- `data-presence-energy` - arrival energy axis
-- `data-presence-mode` - cognitive mode axis
-- `data-presence-trust` - trust level axis
+- `data-presence-intent` - full intent state
+- `data-presence-mode` - cognitive mode
+- `data-presence-energy` - arrival energy
+- `data-presence-trust` - trust level
 
----
+## Verify it yourself
 
-## Verify zero network calls
+One claim: no network calls. Verify in 30 seconds.
 
-Open DevTools. Check the Network tab. You will see zero outbound requests.
-
-Or run in console:
-```js
-Presence.debug()
+```bash
+grep -n "fetch\|XMLHttpRequest\|WebSocket\|navigator.sendBeacon\|new Image" presence.js
 ```
 
-Check what localStorage keys were written:
-```js
-localStorage.getItem('_ptv')   // total visits
-localStorage.getItem('_pfs')   // first seen timestamp
-localStorage.getItem('_pls')   // last seen timestamp
-localStorage.getItem('_psd')   // scroll depth last visit
-localStorage.getItem('_ptop')  // time on page last visit
-```
-
-Reset to simulate a new visitor:
-```js
-['_ptv','_pfs','_pls','_psd','_ptop'].forEach(k=>localStorage.removeItem(k));
-sessionStorage.clear();
-location.reload();
-```
-
----
-
-## Live demo
-
-`https://tkrojzl-cyber.github.io/presence`
-
-Open it. The page classifies you in real time and explains every signal it read.
-
----
-
-## Changelog
-
-### v2.0.0
-- 3-axis intent model: arrivalEnergy x cognitiveMode x trustLevel
-- 9 canonical intent states with recommended experience mapping
-- Signal 11: scrollDepthLastVisit (persisted on beforeunload)
-- Signal 12: timeOnPageLastVisit (persisted on beforeunload)
-- Signal 13: utm_content and utm_term parsing
-- New API methods: getIntentState, getExperience, whenState, whenExperience
-- New body data attributes: data-presence-intent, data-presence-experience, data-presence-energy, data-presence-mode, data-presence-trust
-- suppressElements and emphasiseElements arrays in signals output
-
-### v1.2.0
-- Added bootMs performance signal
-- Added debug method with console.table output
-- CSS data-attribute layer on body
-
-### v1.0.0
-- Initial release: 10 signals, 5 profiles, zero dependencies
-
----
+You will find nothing. The script runs entirely in the browser. No data leaves the device.
 
 ## License
 
-MIT - Built by Brainiac Ltd - https://superchargebuilds.pro
+MIT. Use it, fork it, modify it, ship it.
+
+Built by Brainiac Ltd.
+
