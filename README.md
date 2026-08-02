@@ -1,20 +1,12 @@
 # presence.js
 
-Zero-dependency visitor intelligence. No cookies. No backend. No network calls. One 12KB script.
+Zero-dependency visitor intelligence. No cookies. No backend. No network calls. One file, no build step.
 
-Drop it in. Your page knows who is visiting and what they need in under 2ms, before your first component renders.
-
-## What it does
-
-Large companies have spent billions building systems that figure out who a visitor is before they speak. That capability was locked behind enterprise contracts, CDPs, ML teams, and cookie consent banners.
-
-Presence changes that. It reads fourteen browser signals that were always there, classifies every visitor into one of nine intent states across three axes, and tells your page exactly what to show and what to suppress.
-
-This is what democratising the internet looks like. Not another SaaS dashboard at $500/month. A file. That anyone can drop into any page.
+It reads browser signals that are already available client-side, classifies each visitor into one of nine intent states across three axes, and exposes the result as a single object your page can read before the first component renders.
 
 ## Install
 
-CDN (fastest):
+CDN:
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/tkrojzl-cyber/presence@main/presence.js"></script>
@@ -26,11 +18,11 @@ Self-hosted:
 <script src="presence.js"></script>
 ```
 
-npm: coming in v2.2.0
+npm: planned for v2.2.0.
 
 ## The 3-Axis Intent Model (v2.1.0)
 
-Every visitor is classified across three axes simultaneously.
+Each visitor is classified across three axes. The combination produces a single `intentState` string.
 
 ### Axis 1 - Arrival Energy
 
@@ -64,41 +56,100 @@ Do they know you yet?
 
 ## The 9 Intent States
 
-The three axes combine into a single `intentState` string and a `recommendedExperience`:
+Each state maps to a `recommendedExperience` value, plus arrays of elements to suppress and emphasise.
 
-| Intent State | Who they are | What they need |
-|---|---|---|
-| passive_exploring_stranger | Random discovery | Hook fast. One sentence. One CTA. |
-| passive_evaluating_stranger | Arrived via link, reading carefully | Social proof first. No noise. |
-| passive_evaluating_acquaintance | Drifted back, still deciding | The one thing that removes doubt. |
-| active_exploring_stranger | Came looking, first time | Lead with the thesis, not features. |
-| active_evaluating_stranger | Researching you specifically | Evidence. Depth. Code over copy. |
-| active_evaluating_acquaintance | Coming back to decide | Remove the last objection. |
-| committed_executing_acquaintance | Ready to act, nearly there | Kill friction. Just the button. |
-| committed_executing_insider | Power user, already sold | Give them the next level. |
-| committed_evaluating_insider | Deep engagement, invested | Reward them. Depth, community. |
+| Intent State | recommendedExperience | Suppress | Emphasise |
+|---|---|---|---|
+| passive_exploring_stranger | hook_fast | long_copy, pricing_detail, faq | headline, single_cta |
+| passive_evaluating_stranger | proof_first | hero_video, feature_list | social_proof, code_example, github_link |
+| passive_evaluating_acquaintance | remove_doubt | hero, intro_copy | objection_handler, comparison, guarantee |
+| active_exploring_stranger | thesis_first | pricing_cta, sign_up_prompt | core_idea, founder_voice |
+| active_evaluating_stranger | proof_first | hero_video, feature_list | social_proof, code_example, github_link |
+| active_evaluating_acquaintance | remove_doubt | hero, intro_copy | objection_handler, comparison, guarantee |
+| committed_executing_acquaintance | reduce_friction | hero, intro_copy, social_proof | primary_cta, one_click_action |
+| committed_executing_insider | next_level | intro_copy, basic_features | advanced_docs, api_reference, changelog |
+| committed_evaluating_insider | deepen_value | cta_primary | case_study, advanced_config, community |
 
-## All Signals (v2.1.0)
+## All Signals (52 in v2.1.0)
 
-**v1 signals:**
+**Profile and Intent (8):**
 
-1. Referral source - document.referrer + URL params
-2. Time of day - hour bucketed into EARLY / DEEP_WORK / AFTERNOON / EVENING / LATE
-3. Day of week - WEEKDAY vs WEEKEND
-4. Device - screen width + touch points (MOBILE / DESKTOP / WIDE / NARROW)
-5. Hardware - multi-signal composite (cores, deviceMemory, pixelRatio, dark mode, pointer, screen area, color depth, connection quality, reduced motion, hover capability). Scored 0-100 across 10 weighted signals.
-6. Locale / Language - navigator.language
-7. Timezone / Market - Intl.DateTimeFormat (NA / EU / APAC / OTHER)
-8. Session history - sessionStorage page view count
-9. Visit intensity - localStorage total visit count (LOW / MEDIUM / HIGH)
-10. Returning visitor + recency - localStorage first seen + last seen timestamps
+1. `profile` - Visitor archetype (developer, founder, researcher, deep_work, default)
+2. `intentState` - Full 3-axis classification string
+3. `arrivalEnergy` - Axis 1: passive / active / committed
+4. `cognitiveMode` - Axis 2: exploring / evaluating / executing
+5. `trustLevel` - Axis 3: stranger / acquaintance / insider
+6. `recommendedExperience` - What to show this visitor
+7. `suppressElements` - Array of UI elements to hide
+8. `emphasiseElements` - Array of UI elements to highlight
 
-**v2 signals (new in 2.0.0):**
+**Source and Referral (7):**
 
-11. scrollDepthLastVisit - How far the visitor scrolled on their last visit (%). Written to localStorage on beforeunload. Reveals scanner vs reader.
-12. timeOnPageLastVisit - How long they spent on their last visit (seconds). Written to localStorage on beforeunload. Reveals passive drift vs intentional read.
-13. utmContent - utm_content parameter. Carries creative or audience variant intent.
-14. utmTerm - utm_term parameter. Carries explicit search keyword intent.
+9. `source` - Traffic source (DIRECT / SEARCH / SOCIAL / REFERRAL / UTM / OTHER)
+10. `referrer` - Raw document.referrer
+11. `utmSource` - utm_source parameter
+12. `utmMedium` - utm_medium parameter
+13. `utmCampaign` - utm_campaign parameter
+14. `utmContent` - utm_content parameter
+15. `utmTerm` - utm_term parameter
+
+**Time Context (4):**
+
+16. `timeWindow` - EARLY / DEEP_WORK / AFTERNOON / EVENING / LATE
+17. `dayContext` - WEEKDAY / WEEKEND
+18. `hour` - 0-23
+19. `isWeekend` - boolean
+
+**Device and Touch (4):**
+
+20. `device` - MOBILE / DESKTOP / WIDE / NARROW
+21. `width` - window.innerWidth
+22. `isTouch` - boolean
+23. `touchPoints` - navigator.maxTouchPoints
+
+**Hardware and Capability (11):**
+
+24. `capabilityScore` - 0-100 composite across 10 hardware signals
+25. `capabilityTier` - LIMITED / CAPABLE / POWERFUL
+26. `hardwareProfile` - LOW / MID / HIGH
+27. `cores` - navigator.hardwareConcurrency
+28. `deviceMemory` - navigator.deviceMemory (GB)
+29. `pixelRatio` - window.devicePixelRatio
+30. `screenArea` - screen.width x screen.height
+31. `colorDepth` - screen.colorDepth
+32. `connectionQuality` - navigator.connection.effectiveType
+33. `downlink` - navigator.connection.downlink
+34. `rtt` - navigator.connection.rtt
+
+**Browser Preferences (4):**
+
+35. `prefersDark` - prefers-color-scheme: dark
+36. `pointerPrecision` - fine / coarse / unknown
+37. `prefersReducedMotion` - boolean
+38. `canHover` - boolean
+
+**Locale and Market (5):**
+
+39. `lang` - navigator.language (lowercase)
+40. `langPrimary` - primary code (e.g. en, cs)
+41. `langRegion` - region code (e.g. US, CZ)
+42. `timezone` - IANA timezone string
+43. `market` - NA / EU / APAC / OTHER
+
+**Visit History (8):**
+
+44. `intensity` - LOW / MEDIUM / HIGH
+45. `isReturning` - boolean
+46. `sessionVisits` - page views this session (sessionStorage)
+47. `totalVisits` - lifetime visits (localStorage)
+48. `daysSinceFirst` - days since first visit
+49. `daysSinceLast` - days since last visit
+50. `scrollDepthLastVisit` - scroll % from last visit (localStorage, written on beforeunload)
+51. `timeOnPageLastVisit` - seconds on last visit (localStorage, written on beforeunload)
+
+**Performance (1):**
+
+52. `bootMs` - time from page load to Presence.ready via performance.now()
 
 ## Quick start
 
@@ -107,19 +158,13 @@ The three axes combine into a single `intentState` string and a `recommendedExpe
 <script>
   var s = Presence.signals;
 
-  // Adapt by profile
   if (s.profile === 'developer') {
-    document.getElementById('hero').textContent = 'Zero-dependency. Drop one script tag.';
+    document.getElementById('hero').textContent = 'Zero-dependency. One script tag.';
   }
 
-  // Adapt by intent state
   if (s.recommendedExperience === 'hook_fast') {
     document.getElementById('nav').style.display = 'none';
     document.getElementById('cta').style.display = 'block';
-  }
-
-  if (s.recommendedExperience === 'reduce_friction') {
-    document.getElementById('intro').style.display = 'none';
   }
 </script>
 ```
@@ -127,7 +172,7 @@ The three axes combine into a single `intentState` string and a `recommendedExpe
 ## API
 
 ```javascript
-// Core signals object - all data in one place
+// All 52 signals in one object
 Presence.signals
 
 // Get current profile
@@ -160,26 +205,26 @@ Presence.whenExperience('reduce_friction', function(s) {
 
 // Swap text content by profile
 Presence.adapt('#headline', {
-  developer: 'Drop one script. Know everything.',
-  founder: 'Your page. Personalised. No backend.',
+  developer: 'Drop one script. Read 52 signals.',
+  founder: 'Your page knows who is visiting.',
   default: 'Visitor intelligence for every site.'
 });
 
 // Show element only for certain profiles
 Presence.showFor('#github-link', ['developer', 'researcher']);
 
-// Debug - prints all signals to console
+// Print all signals to console
 Presence.debug()
 ```
 
 ## CSS targeting
 
-Presence sets data attributes on `<body>` automatically:
+Presence sets 18 data attributes on `<body>` automatically:
 
 ```css
-/* Different hero for different profiles */
+/* Adapt layout by profile */
 [data-presence="developer"] .hero-copy::after {
-  content: 'Zero-dependency. 12KB. No build step.';
+  content: 'Zero-dependency. No build step.';
 }
 
 /* Show CTA only when visitor is ready to execute */
@@ -187,12 +232,9 @@ Presence sets data attributes on `<body>` automatically:
   display: block;
 }
 
-/* Trust-level based social proof */
+/* Social proof for strangers, not insiders */
 [data-presence-trust="stranger"] .testimonials { display: block; }
 [data-presence-trust="insider"] .testimonials { display: none; }
-
-/* Suppress intro for committed visitors */
-[data-presence-energy="committed"] .intro-section { display: none; }
 ```
 
 Available attributes:
@@ -204,26 +246,28 @@ Available attributes:
 - `data-presence-intensity` - LOW / MEDIUM / HIGH
 - `data-presence-returning` - true / false
 - `data-presence-lang` - language code
-- `data-presence-hardware` - hardware tier
+- `data-presence-hardware` - LOW / MID / HIGH
+- `data-presence-capability` - LIMITED / CAPABLE / POWERFUL
+- `data-presence-cap-score` - 0-100
+- `data-presence-dark` - true / false
+- `data-presence-pointer` - fine / coarse / unknown
 - `data-presence-dayctx` - WEEKDAY / WEEKEND
 - `data-presence-intent` - full intent state
-- `data-presence-mode` - cognitive mode
+- `data-presence-experience` - recommended experience
 - `data-presence-energy` - arrival energy
+- `data-presence-mode` - cognitive mode
 - `data-presence-trust` - trust level
 
 ## Verify it yourself
 
-One claim: no network calls. Verify in 30 seconds.
+No network calls. Verify in 30 seconds:
 
 ```bash
 grep -n "fetch\|XMLHttpRequest\|WebSocket\|navigator.sendBeacon\|new Image" presence.js
 ```
 
-You will find nothing. The script runs entirely in the browser. No data leaves the device.
+Returns nothing. The script runs entirely in the browser. No data leaves the device.
 
 ## License
 
-MIT. Use it, fork it, modify it, ship it.
-
-Built by Brainiac Ltd.
-
+MIT. Built by Brainiac Ltd.
