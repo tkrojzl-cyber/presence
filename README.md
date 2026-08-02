@@ -1,4 +1,4 @@
-# presence.js
+ presence.js
 
 Zero-dependency visitor intelligence. No cookies. No backend. No network calls. One file, no build step.
 
