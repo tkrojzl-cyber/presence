@@ -47,10 +47,10 @@
     var path     = window.location.pathname;
     var src      = (referrer + ' ' + ref).toLowerCase();
 
-    // ── SIGNAL 1 — REFERRAL SOURCE ─────────────────────────────────────────
+    // ── SIGNAL 1 - REFERRAL SOURCE ─────────────────────────────────────────
     // document.referrer + URLSearchParams ref/utm_source
 
-    // ── SIGNAL 2 — TIME OF DAY ─────────────────────────────────────────────
+    // ── SIGNAL 2 - TIME OF DAY ─────────────────────────────────────────────
     var hour = now.getHours();
     var timeWindow =
       (hour >= 5  && hour < 8)  ? 'EARLY'     :
@@ -58,12 +58,12 @@
       (hour >= 12 && hour < 17) ? 'AFTERNOON' :
       (hour >= 17 && hour < 22) ? 'EVENING'   : 'LATE';
 
-    // ── SIGNAL 3 — DAY OF WEEK ─────────────────────────────────────────────
+    // ── SIGNAL 3 - DAY OF WEEK ─────────────────────────────────────────────
     var dayOfWeek  = now.getDay();
     var isWeekend  = dayOfWeek === 0 || dayOfWeek === 6;
     var dayContext = isWeekend ? 'WEEKEND' : 'WEEKDAY';
 
-    // ── SIGNAL 4 — DEVICE ──────────────────────────────────────────────────
+    // ── SIGNAL 4 - DEVICE ──────────────────────────────────────────────────
     var width       = window.innerWidth;
     var touchPoints = navigator.maxTouchPoints || 0;
     var isTouch     = touchPoints > 0;
@@ -72,7 +72,7 @@
       (width < 768 && !isTouch) ? 'NARROW'  :
       (width >= 1440)           ? 'WIDE'    : 'DESKTOP';
 
-// ── CAPABILITY MODEL — MULTI-SIGNAL COMPOSITE ─────────────────────────
+// ── CAPABILITY MODEL - MULTI-SIGNAL COMPOSITE ─────────────────────────
     //
     // Research basis:
     // - Cores alone is a weak proxy. Buckets cap at 8 for privacy reasons (spec).
@@ -119,44 +119,44 @@
       }
     } catch(e) {}
 
-    // Dark mode — strongest non-hardware sophistication signal
+    // Dark mode - strongest non-hardware sophistication signal
     var prefersDark = false;
     try {
       prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     } catch(e) {}
 
-    // Pointer precision — mouse/trackpad vs touch finger
+    // Pointer precision - mouse/trackpad vs touch finger
     var pointerPrecision = 'unknown';
     try {
       if (window.matchMedia('(pointer: fine)').matches)   pointerPrecision = 'fine';
       else if (window.matchMedia('(pointer: coarse)').matches) pointerPrecision = 'coarse';
     } catch(e) {}
 
-    // Reduced motion — accessibility-aware = technically engaged
+    // Reduced motion - accessibility-aware = technically engaged
     var prefersReducedMotion = false;
     try {
       prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     } catch(e) {}
 
-    // Hover capability — non-hover = pure touch = consumption context
+    // Hover capability - non-hover = pure touch = consumption context
     var canHover = false;
     try { canHover = window.matchMedia('(hover: hover)').matches; } catch(e) {}
 
-    // ── CAPABILITY SCORE — 0 to 100 ───────────────────────────────────────
+    // ── CAPABILITY SCORE - 0 to 100 ───────────────────────────────────────
     //
     // Weighted composite. Weights derived from signal reliability and
     // psychological/market research on what actually predicts technical sophistication:
     //
-    // deviceMemory    (25pts) — strongest single predictor of device class
-    // cores           (15pts) — useful but capped at 8 by spec (privacy noise)
-    // pixelRatio      (15pts) — retina/4K = prosumer or developer environment
-    // screenArea      (10pts) — large monitor = workstation context
-    // connectionQuality(10pts)— infrastructure proxy
-    // prefersDark     (10pts) — developer identity marker (80% vs 35% base rate)
-    // pointerPrecision(8pts)  — fine = creation context, coarse = consumption
-    // colorDepth      (4pts)  — pro display pipeline
-    // prefersReducedMotion(2pts) — system-level awareness
-    // canHover        (1pt)   — hover = non-touch production context
+    // deviceMemory    (25pts) - strongest single predictor of device class
+    // cores           (15pts) - useful but capped at 8 by spec (privacy noise)
+    // pixelRatio      (15pts) - retina/4K = prosumer or developer environment
+    // screenArea      (10pts) - large monitor = workstation context
+    // connectionQuality(10pts)- infrastructure proxy
+    // prefersDark     (10pts) - developer identity marker (80% vs 35% base rate)
+    // pointerPrecision(8pts)  - fine = creation context, coarse = consumption
+    // colorDepth      (4pts)  - pro display pipeline
+    // prefersReducedMotion(2pts) - system-level awareness
+    // canHover        (1pt)   - hover = non-touch production context
 
     var capScore = 0;
 
@@ -165,7 +165,7 @@
     else if (deviceMemory >= 2) capScore += 18;
     else if (deviceMemory >= 1) capScore += 15;
     else if (deviceMemory > 0)  capScore += 8;
-    // if deviceMemory unavailable (Firefox, Safari) — neutral, score from other signals
+    // if deviceMemory unavailable (Firefox, Safari) - neutral, score from other signals
 
     // cores: capped at 8 by spec, so max signal is 8+
     if      (cores >= 8) capScore += 15;
@@ -232,12 +232,12 @@
       capScore >= 45 ? 'MID'      :
       capScore >= 20 ? 'STANDARD' : 'LOW';
 
-    // ── SIGNAL 6 — LOCALE ──────────────────────────────────────────────────
+    // ── SIGNAL 6 - LOCALE ──────────────────────────────────────────────────
     var lang        = (navigator.language || 'en').toLowerCase();
     var langPrimary = lang.split('-')[0];
     var langRegion  = lang.includes('-') ? lang.split('-')[1].toUpperCase() : '';
 
-    // ── SIGNAL 7 — TIMEZONE / MARKET ──────────────────────────────────────
+    // ── SIGNAL 7 - TIMEZONE / MARKET ──────────────────────────────────────
     var timezone = '';
     try { timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
     var market =
@@ -247,21 +247,21 @@
       timezone.includes('Pacific')   ? 'APAC' :
       timezone.includes('Australia') ? 'APAC' : 'OTHER';
 
-    // ── SIGNAL 8 — SESSION HISTORY ────────────────────────────────────────
+    // ── SIGNAL 8 - SESSION HISTORY ────────────────────────────────────────
     var sessionVisits = 1;
     try {
       sessionVisits = parseInt(sessionStorage.getItem('_pv') || '0', 10) + 1;
       sessionStorage.setItem('_pv', sessionVisits);
     } catch (e) {}
 
-    // ── SIGNAL 9 — VISIT INTENSITY ────────────────────────────────────────
+    // ── SIGNAL 9 - VISIT INTENSITY ────────────────────────────────────────
     var totalVisits = 1;
     try {
       totalVisits = parseInt(localStorage.getItem('_ptv') || '0', 10) + 1;
       localStorage.setItem('_ptv', totalVisits);
     } catch (e) {}
 
-    // ── SIGNAL 10 — RETURNING VISITOR + RECENCY ───────────────────────────
+    // ── SIGNAL 10 - RETURNING VISITOR + RECENCY ───────────────────────────
     var firstSeen      = null;
     var lastSeen       = null;
     var isReturning    = false;
@@ -284,21 +284,21 @@
       localStorage.setItem('_pls', nowTs);
     } catch (e) {}
 
-    // ── SIGNAL 11 — SCROLL DEPTH (last visit) ─────────────────────────────
+    // ── SIGNAL 11 - SCROLL DEPTH (last visit) ─────────────────────────────
     // Persisted on beforeunload. Reveals scanner vs reader.
     var scrollDepthLastVisit = 0;
     try {
       scrollDepthLastVisit = parseInt(localStorage.getItem('_psd') || '0', 10);
     } catch (e) {}
 
-    // ── SIGNAL 12 — TIME ON PAGE (last visit) ─────────────────────────────
+    // ── SIGNAL 12 - TIME ON PAGE (last visit) ─────────────────────────────
     // Persisted on beforeunload. Reveals passive drift vs intentional read.
     var timeOnPageLastVisit = 0;
     try {
       timeOnPageLastVisit = parseInt(localStorage.getItem('_ptop') || '0', 10);
     } catch (e) {}
 
-    // ── SIGNAL 13 — UTM CONTENT + TERM ────────────────────────────────────
+    // ── SIGNAL 13 - UTM CONTENT + TERM ────────────────────────────────────
     // utm_content = creative/audience variant. utm_term = keyword/search intent.
     var utmSource   = (params.get('utm_source')   || '').toLowerCase();
     var utmMedium   = (params.get('utm_medium')   || '').toLowerCase();
@@ -376,16 +376,16 @@
     var allowed = ['researcher', 'founder', 'developer', 'deep_work', 'default'];
     if (fp && allowed.indexOf(fp) !== -1) profile = fp;
 
-    // ── INTENT STATE ENGINE — 3 AXES, 9 STATES ────────────────────────────
+    // ── INTENT STATE ENGINE - 3 AXES, 9 STATES ────────────────────────────
 
-    // AXIS 1 — ARRIVAL ENERGY
+    // AXIS 1 - ARRIVAL ENERGY
     // How intentional was this visit?
     var arrivalEnergy =
       (isReturning && intensity === 'HIGH')                      ? 'committed' :
       (!referrer && !utmSource && totalVisits > 1)               ? 'active'    :
       (referrer || utmSource)                                    ? 'passive'   : 'active';
 
-    // AXIS 2 — COGNITIVE MODE
+    // AXIS 2 - COGNITIVE MODE
     // What are they trying to do right now?
     // Reader behaviour: >60% scroll depth, >90s on page last visit = evaluating
     // High session visits this session = executing (deep in the product)
@@ -396,14 +396,14 @@
       (utmTerm || utmContent)                                                       ? 'evaluating' :
       'exploring';
 
-    // AXIS 3 — TRUST LEVEL
+    // AXIS 3 - TRUST LEVEL
     // Do they know you yet?
     var trustLevel =
       (isReturning && daysSinceFirst >= 7  && intensity === 'HIGH')   ? 'insider'      :
       (isReturning && totalVisits >= 3)                                ? 'acquaintance' :
       'stranger';
 
-    // INTENT STATE — one of 9 canonical states
+    // INTENT STATE - one of 9 canonical states
     // Maps axes to a recommended experience strategy
     var intentState = arrivalEnergy + '_' + cognitiveMode + '_' + trustLevel;
 
